@@ -1,15 +1,16 @@
 import tensorflow as tf
-# from tensorflow.keras import layers
-# from tensorflow.keras import regularizers
-# from tensorflow.keras.models import Model
-# from tensorflow.keras import Sequential
-from tensorflow.data import Dataset
-# import matplotlib.pyplot as plt
+from tensorflow.keras import layers
+from tensorflow.keras import regularizers
+from tensorflow.keras.models import Model
+from tensorflow.keras import Sequential
+import matplotlib.pyplot as plt
 import numpy as np
 import random
 import math
 from numba import jit
-# import numba
+import numba
+from tensorflow.data import Dataset
+
 
 @jit(nopython=True)
 def get_vec_mat(x,y):
@@ -53,12 +54,13 @@ def generate_multi_gaussian(x, y, n,vec_mat):
     return mat
 
 @jit(parallel = True)
-def generate_multi_gaussian_alot(x,y,n_images, n):
+def generate_multi_gaussian_alot(x,y,n_images, n=5):
     vec_mat=get_vec_mat(X,Y)
     pressure_mat=np.zeros((n_images,x,y),dtype=np.float32)
     for i in range(n_images):
         pressure_mat[i,:,:]=generate_multi_gaussian(x, y, n, vec_mat)
     return pressure_mat
+
 
 def Convolution(input, filter, padding="SAME"):
   convolved = tf.nn.conv2d(input, filter, strides=[1, 1, 1, 1], padding=padding)
@@ -70,6 +72,12 @@ def gauss_blur(input, num_angles, kern_size=40, fwhm=20):
     return Convolution(input, gauss_kernel, padding="SAME")
 
 def makeGaussian(size, fwhm = 3, center=None):
+    """ Make a square gaussian kernel.
+
+    size is the length of a side of the square
+    fwhm is full-width-half-maximum, which
+    can be thought of as an effective radius.
+    """
     x = np.arange(0, size, 1, float)
     y = x[:,np.newaxis]
 
@@ -124,9 +132,10 @@ def hat(x,r):
     resalt=0
   return resalt
 
-def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.npy'):
+
+def generate_pressure_map(n_images, x= 97, y = 97, part='fresh_gauss.npy'):
   hat_mat=round_fun((x, y), (int(x/2), int(x/2)), lambda r: hat(r,int(x/3)))
-  pressure_mat = generate_multi_gaussian_alot(x, y, n_images, n_gauses)
+  pressure_mat = generate_multi_gaussian_alot(x,y,n_images,n_gauses)
   pressure_mat_a = pressure_mat*hat_mat
   with open(part, 'wb') as f:
     np.save(f, pressure_mat_a)
@@ -158,6 +167,7 @@ def fiber_sim(m, n_angles, pressure_mat):
     sum_tensor = summ(sq_deriv_tensor)
 
     return sum_tensor, pressure_tensor
+
 
 def sim_on_gpu(part, n_random_rot=16, n_angles=4, batch_size_preproc=128):
   with open(part, 'rb') as f: # /content/drive/MyDrive/Colab_projects/fresh_gauss.npy
@@ -194,4 +204,121 @@ def prepare_dataset_for_train(input, output, batch_size_fit_model=1024):
   dataset= tf.data.Dataset.from_tensor_slices((input,output))
   dataset_b = dataset.batch(batch_size_fit_model)
   return dataset_b, dataset
+
+
+class SensorNN3(Model): 
+    def __init__(self, input_shape, output_shape): 
+        super(SensorNN3, self).__init__() 
+        self.sequential = tf.keras.Sequential([layers.Conv1D(100, 5, strides=2, activation='relu'), 
+                                               layers.Conv1D(200, 5, strides=2, activation='relu'), 
+                                               layers.Conv1D(400, 5, strides=3, activation='relu'), 
+                                               layers.Reshape([400*3]), 
+                                               layers.Dense(900, activation='relu'), 
+                                               layers.Dense(30*30, activation='relu'), 
+                                               layers.Reshape((30, 30, 1)), 
+                                               layers.Conv2DTranspose(1, (6, 6), (2, 2)), 
+                                               layers.Reshape(output_shape)]) 
+    def call(self, x): 
+        return self.sequential(x)
+
+class SensorNN4S(Model):
+    def __init__(self, input_shape, output_shape):
+        super(SensorNN4S, self).__init__()
+        self.sequential = tf.keras.Sequential([layers.Reshape((64, 5, 1)),
+                                               layers.Conv2D(4, (5, 1), strides=(1, 1), activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv2D(16, (5, 1), strides=(1, 1), activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv2D(64*16, (5, 5), activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv2D(64*16, (5, 1), activation='relu', kernel_initializer='random_normal'),
+                                               layers.Flatten(),
+                                               layers.Dense(900, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Dense(30*30, activation='relu'),
+                                               layers.Reshape((30, 30, 1)),
+                                               layers.Conv2DTranspose(1, (6, 6), (2, 2), kernel_initializer='random_normal'),
+                                               layers.Reshape(output_shape)])
+    def call(self, x):
+        return self.sequential(x)
+
+
+# def my_proc():
+#   input, output, input_test, output_test = sim_on_gpu('/content/drive/MyDrive/Colab_projects/fresh_gauss15.npy', n_random_rot=16, n_angles=4, batch_size_preproc=128)
+#   input_shape = input.shape
+#   output_shape = output.shape
+#   dataset_b, dataset = prepare_dataset_for_train(input, output, batch_size_fit_model=1024)
+#   dataset_test_b, dataset_test = prepare_dataset_for_train(input_test, output_test, batch_size_fit_model=1024)
+#   return dataset_b,dataset_test_b
+
+
+# p = multiprocessing.Process(target=run_tensorflow)
+# p.start()
+# dataset_b, dataset_test_b = p.join()
+
+
+input, output, input_test, output_test = sim_on_gpu('fresh_gauss10_100000.npy', n_random_rot=1, n_angles=5, batch_size_preproc=128*8)
+input_shape = input.shape
+output_shape = output.shape
+dataset_b, dataset = prepare_dataset_for_train(input, output, batch_size_fit_model=1024*2)
+dataset_test_b, dataset_test = prepare_dataset_for_train(input_test, output_test, batch_size_fit_model=1024*2)
+
+
+
+model = SensorNN4(input_shape[1:3], output_shape[1:3])
+model.build(input_shape)
+model.summary()
+model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss=tf.keras.losses.MeanSquaredError(), metrics=['accuracy'])
+
+
+input_shape
+
+
+input_test.shape
+
+
+model.fit(dataset_b, epochs = 60, verbose=1)
+
+
+model.save('/content/drive/MyDrive/Colab_projects/my_models/modelS_2_5fi.nn')
+
+
+# model = tf.keras.models.load_model('/content/drive/MyDrive/Colab_projects/my_models/modelS_2_5fi.nn')
+
+
+model.evaluate(dataset_test_b)
+
+
+predictions = model.predict(dataset_test_b)
+predictions.shape
+
+
+with open("pred_S4_5g_5", 'wb') as f:
+    np.save(f, predictions)
+    np.save(f, output_test)
+
+
+# with open("pred_S4_5g_4", 'rb') as f:
+#     predictions = np.load(f)
+#     output_test = np.load(f)
+
+
+for fech, label in dataset_b.take(1):
+  predictions = model.predict(fech)
+  output1=label
+
+
+N = 24 #28 26 24 23 21 20
+plt.imshow(predictions[N])
+plt.show()
+plt.imshow(output_test[N])
+plt.show()
+
+
+N = 1
+plt.imshow(predictions1[N])
+plt.show()
+plt.imshow(output1[N])
+plt.show()
+
+
+dataset[15]
+
+
 

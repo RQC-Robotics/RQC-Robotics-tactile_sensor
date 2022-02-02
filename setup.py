@@ -7,5 +7,6 @@ setup(
     author='korbash and Artem',
     author_email='korbash179@gmail.com',
     packages=find_packages('sensor_lib'),
+    package_dir={'': 'sensor_lib'},
     long_description=open(join(dirname(__file__), 'README.txt')).read(),
 )
