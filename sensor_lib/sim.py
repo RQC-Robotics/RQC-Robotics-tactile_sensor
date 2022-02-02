@@ -54,7 +54,7 @@ def generate_multi_gaussian(x, y, n,vec_mat):
 
 @jit(parallel = True)
 def generate_multi_gaussian_alot(x,y,n_images, n):
-    vec_mat=get_vec_mat(X,Y)
+    vec_mat=get_vec_mat(x,y)
     pressure_mat=np.zeros((n_images,x,y),dtype=np.float32)
     for i in range(n_images):
         pressure_mat[i,:,:]=generate_multi_gaussian(x, y, n, vec_mat)
