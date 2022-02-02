@@ -31,12 +31,12 @@ def generate_gaus_params(x, y):
     return np.dot(np.dot(R, M), R.transpose()), np.random.rand(1,2)*np.array([x, y])/3 + np.array([x, y])/3
 
 @jit(nopython=True)
-def gaussian_func(x, y, M, mu, vec_mat):
-    vec_mat=get_vec_mat(x,y)
+def gaussian_func(X, Y, M, mu, vec_mat):
+    vec_mat=get_vec_mat(X,Y)
     x = vec_mat - mu.transpose()
-    f=np.zeros((x,y,1))
-    for i in range(x):
-        for j in range(y):
+    f=np.zeros((X,Y,1))
+    for i in range(X):
+        for j in range(Y):
             r=np.dot(M,x[i,j,:,:])
             r2=np.dot(x[i,j,:,:].transpose(),r)
             f[i,j,:]=r2
@@ -54,6 +54,10 @@ def generate_multi_gaussian(x, y, n,vec_mat):
 
 @jit(parallel = True)
 def generate_multi_gaussian_alot(x,y,n_images, n):
+    x=int(x)
+    y=int(y)
+    n_images=int(n_images)
+    n=int(n)
     vec_mat=get_vec_mat(x,y)
     pressure_mat=np.zeros((n_images,x,y),dtype=np.float32)
     for i in range(n_images):
@@ -159,14 +163,18 @@ def fiber_sim(m, n_angles, pressure_mat):
 
     return sum_tensor, pressure_tensor
 
-def sim_on_gpu(part, n_random_rot=16, n_angles=4, batch_size_preproc=128):
+def sim_on_gpu(part, n_random_rot=16, n_angles=4, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000):
   with open(part, 'rb') as f: # /content/drive/MyDrive/Colab_projects/fresh_gauss.npy
     mas = np.load(f)
-    mas=mas[0:70000] 
+  if size == None:
+    saze=min(mas.shape[0],max_possible_size)
+  if test_size == None:
+    test_size = int(size/10) 
+  mas=mas[0:size] 
   mas=mas.astype('float32') 
-  dataset = tf.data.Dataset.from_tensor_slices(mas[0:-1000])
+  dataset = tf.data.Dataset.from_tensor_slices(mas[0:-test_size])
   batches = dataset.batch(batch_size_preproc, drop_remainder=False)
-  dataset_test = tf.data.Dataset.from_tensor_slices(mas[-1000:])
+  dataset_test = tf.data.Dataset.from_tensor_slices(mas[-test_size:])
   batches_test = dataset_test.batch(batch_size_preproc, drop_remainder=False)
   # batches.map(lambda img: generate_dataset_gpu2(16, 4, tf.constant(img,dtype=tf.float32)))
   input=[]
