@@ -135,18 +135,22 @@ def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.
   with open(part, 'wb') as f:
     np.save(f, pressure_mat_a)
 
-def fiber_sim(m, n_angles, pressure_mat):
+def fiber_sim(pressure_mat, n_angles, m=None):
     n_images = pressure_mat.shape[0]
     X = pressure_mat.shape[1]
     Y = pressure_mat.shape[2]
 
     pressure_mat = tf.constant(pressure_mat,dtype=tf.float32)
-    pressure_mat_angl = pressure_mat[:, :, :, tf.newaxis]
-    # pressure_mat2=tf.tile(pressure_mat,[m,1,1,1])
-    # pressure_mat_angl=tf.keras.layers.RandomRotation(
-    #   (0, 2*np.pi), fill_mode='constant', interpolation='bilinear',
-    #   seed=None, fill_value=0.0)(pressure_mat2)
-    pressure_tensor = pressure_mat_angl[:,:,:,0]
+    pressure_mat = pressure_mat[:, :, :, tf.newaxis]
+    if m==None:
+      pressure_mat_angl=pressure_mat
+      m=1
+    else:
+      pressure_mat2=tf.tile(pressure_mat,[m,1,1,1])
+      pressure_mat_angl=tf.keras.layers.RandomRotation(
+                          (0, 2*np.pi), fill_mode='constant', interpolation='bilinear',
+                          seed=None, fill_value=0.0)(pressure_mat2)
+      pressure_tensor = pressure_mat_angl[:,:,:,0]
     # pressure_tensor = tf.tile(pressure_tensor,[m_std,1,1])
     # pressure_mat_angl_nose = add_nose(pressure_mat_angl,std,m_std)
     rotated_array = []
@@ -163,11 +167,11 @@ def fiber_sim(m, n_angles, pressure_mat):
 
     return sum_tensor, pressure_tensor
 
-def sim_on_gpu(part, n_random_rot=16, n_angles=4, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000):
+def sim_on_gpu(part, n_random_rot=None, n_angles=4, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000):
   with open(part, 'rb') as f: # /content/drive/MyDrive/Colab_projects/fresh_gauss.npy
     mas = np.load(f)
   if size == None:
-    saze=min(mas.shape[0],max_possible_size)
+    size=min(mas.shape[0],max_possible_size)
   if test_size == None:
     test_size = int(size/10) 
   mas=mas[0:size] 
@@ -180,7 +184,7 @@ def sim_on_gpu(part, n_random_rot=16, n_angles=4, batch_size_preproc=128,size=No
   input=[]
   output=[]
   for batch in batches:
-    input1, output1 = fiber_sim(n_random_rot, n_angles, batch)
+    input1, output1 = fiber_sim(batch, n_angles, n_random_rot)
     input.append(input1)
     output.append(output1)
   input=np.concatenate(input)
@@ -190,7 +194,7 @@ def sim_on_gpu(part, n_random_rot=16, n_angles=4, batch_size_preproc=128,size=No
   input_test=[]
   output_test=[]
   for batch in batches_test:
-    input_test1, output_test1 = fiber_sim(n_random_rot, n_angles, batch)
+    input_test1, output_test1 = fiber_sim(batch, n_angles)
     input_test.append(input_test1)
     output_test.append(output_test1)
   input_test=np.concatenate(input_test)
