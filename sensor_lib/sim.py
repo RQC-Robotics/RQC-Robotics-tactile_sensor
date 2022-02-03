@@ -150,7 +150,7 @@ def fiber_sim(pressure_mat, n_angles, m=None):
       pressure_mat_angl=tf.keras.layers.RandomRotation(
                           (0, 2*np.pi), fill_mode='constant', interpolation='bilinear',
                           seed=None, fill_value=0.0)(pressure_mat2)
-      pressure_tensor = pressure_mat_angl[:,:,:,0]
+    pressure_tensor = pressure_mat_angl[:,:,:,0]
     # pressure_tensor = tf.tile(pressure_tensor,[m_std,1,1])
     # pressure_mat_angl_nose = add_nose(pressure_mat_angl,std,m_std)
     rotated_array = []
