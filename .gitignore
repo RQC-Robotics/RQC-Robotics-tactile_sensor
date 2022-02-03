@@ -4,3 +4,4 @@
 *.npy
 *.nn
 *main_egnore.ipynb
+*.virtual_documents
