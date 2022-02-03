@@ -6,6 +6,6 @@ setup(
     version='1.0',
     author='korbash and Artem',
     author_email='korbash179@gmail.com',
-    py_modules=['sensor_lib']
-    # long_description=open(join(dirname(__file__), 'README.txt')).read(),
+    packages=find_packages(),
+    long_description=open(join(dirname(__file__), 'README.txt')).read(),
 )
