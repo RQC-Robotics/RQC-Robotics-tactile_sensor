@@ -13,8 +13,7 @@ class SensorNN3(Model):
                                                layers.Reshape([400*3]),
                                                layers.Dense(900, activation='relu', kernel_initializer='random_normal'),
                                                layers.Dense(30*30, activation='relu'),
-                                               layers.Reshape((30, 30, 1)),
-                                               layers.Conv2DTranspose(1, (6, 6), (2, 2), kernel_initializer='random_normal'),
+                                               layers.Dense(64*64),
                                                layers.Reshape(output_shape)])
     def call(self, x):
         return self.sequential(x) 
