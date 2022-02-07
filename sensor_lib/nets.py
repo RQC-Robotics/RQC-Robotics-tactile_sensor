@@ -4,6 +4,21 @@ from tensorflow.keras import regularizers
 from tensorflow.keras.models import Model
 from tensorflow.keras import Sequential
 
+class SensorNN3(Model):
+    def __init__(self, input_shape, output_shape):
+        super(SensorNN3, self).__init__()
+        self.sequential = tf.keras.Sequential([layers.Conv1D(100, 5, strides=2, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv1D(200, 5, strides=2, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv1D(400, 5, strides=3, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Reshape([400*3]),
+                                               layers.Dense(900, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Dense(30*30, activation='relu'),
+                                               layers.Reshape((30, 30, 1)),
+                                               layers.Conv2DTranspose(1, (6, 6), (2, 2), kernel_initializer='random_normal'),
+                                               layers.Reshape(output_shape)])
+    def call(self, x):
+        return self.sequential(x) 
+
 class SensorNN4S(Model):
     def __init__(self, input_shape, output_shape):
         super(SensorNN4S, self).__init__()
@@ -33,6 +48,18 @@ class SensorNN5S(Model):
                                                layers.Dense(900, activation='relu', kernel_initializer='random_normal'),
                                                layers.Dense(30*30, activation='relu'),
                                                layers.Dense(64*64),
+                                               layers.Reshape(output_shape)])
+    def call(self, x):
+        return self.sequential(x)
+
+class SensorNN(Model):
+    def __init__(self, input_shape, output_shape):
+        super(SensorNN, self).__init__()
+        self.sequential = tf.keras.Sequential([layers.Flatten(input_shape=input_shape),
+                                               layers.Dense(600, activation='relu'),
+                                               layers.Dense(600, activation='relu'),
+                                               layers.Dense(600, activation='relu'),
+                                               layers.Dense(output_shape[0]*output_shape[1], activation='relu'),
                                                layers.Reshape(output_shape)])
     def call(self, x):
         return self.sequential(x)
