@@ -17,6 +17,20 @@ class SensorNN3(Model):
                                                layers.Reshape(output_shape)])
     def call(self, x):
         return self.sequential(x) 
+    
+class SensorNN3B(Model):
+    def __init__(self, input_shape, output_shape):
+        super(SensorNN3, self).__init__()
+        self.sequential = tf.keras.Sequential([layers.Conv1D(50, 5, strides=2, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv1D(200, 5, strides=2, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv1D(800, 5, strides=3, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Reshape([800*3]),
+                                               layers.Dense(1800, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Dense(60*60, activation='relu'),
+                                               layers.Dense(64*64),
+                                               layers.Reshape(output_shape)])
+    def call(self, x):
+        return self.sequential(x) 
 
 class SensorNN4S(Model):
     def __init__(self, input_shape, output_shape):
