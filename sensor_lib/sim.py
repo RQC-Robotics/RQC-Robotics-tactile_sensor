@@ -135,7 +135,7 @@ def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.
   with open(part, 'wb') as f:
     np.save(f, pressure_mat_a)
 
-def fiber_sim(pressure_mat, n_angles, m=None):
+def fiber_sim(pressure_mat, n_angles, fwhm=20, m=None):
     n_images = pressure_mat.shape[0]
     X = pressure_mat.shape[1]
     Y = pressure_mat.shape[2]
@@ -161,13 +161,13 @@ def fiber_sim(pressure_mat, n_angles, m=None):
     
     pressure_tensor = tf.slice(pressure_tensor, [0, int(X/6.0), int(Y/6.0)], [n_images*m, int(X*(1.0 - 2.0/6.0)), int(Y*(1.0 - 2.0/6.0))])
     sliced_tensor = tf.slice(rot_tensor, [0, int(X/6.0), int(Y/6.0), 0], [n_images*m, int(X*(1.0 - 2.0/6.0)), int(Y*(1.0 - 2.0/6.0)), n_angles])
-    blured_mat = gauss_blur(sliced_tensor, n_angles, kern_size=50, fwhm=20)
+    blured_mat = gauss_blur(sliced_tensor, n_angles, kern_size=50, fwhm=fwhm)
     sq_deriv_tensor =  square(derivate(blured_mat,n_angles))
     sum_tensor = summ(sq_deriv_tensor)
 
     return sum_tensor, pressure_tensor
 
-def sim_on_gpu(part, n_random_rot=None, n_angles=4, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000):
+def sim_on_gpu(part, n_random_rot=None, n_angles=4, fwhm=10, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000):
   with open(part, 'rb') as f: # /content/drive/MyDrive/Colab_projects/fresh_gauss.npy
     mas = np.load(f)
   if size == None:
@@ -184,7 +184,7 @@ def sim_on_gpu(part, n_random_rot=None, n_angles=4, batch_size_preproc=128,size=
   input=[]
   output=[]
   for batch in batches:
-    input1, output1 = fiber_sim(batch, n_angles, n_random_rot)
+    input1, output1 = fiber_sim(batch, n_angles, fwhm, n_random_rot)
     input.append(input1)
     output.append(output1)
   input=np.concatenate(input)
