@@ -167,7 +167,7 @@ def fiber_sim(pressure_mat, n_angles, fwhm=20, m=None):
 
     return sum_tensor, pressure_tensor
 
-def sim_on_gpu(part, n_random_rot=None, n_angles=4, fwhm=10, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000,n_del):
+def sim_on_gpu(part, n_random_rot=None, n_angles=4, fwhm=10, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000,n_del=1):
   with open(part, 'rb') as f: # /content/drive/MyDrive/Colab_projects/fresh_gauss.npy
     mas = np.load(f)
   if size == None:
