@@ -113,3 +113,34 @@ class SensorNN(Model):
                                                layers.Reshape(output_shape)])
     def call(self, x):
         return self.sequential(x)
+    
+def SensorNN5S_norm_deep(input_shape,output_shape):
+  lay_in=layers.Input(input_shape[1:3])
+  lay=layers.Reshape((input_shape[1], input_shape[2], 1))(lay_in)
+  lay=layers.Conv2D(8, (3, 1), strides=(1, 1), padding='same', activation='relu', kernel_initializer='random_normal', name='Conv_1.1')(lay)
+  lay1=layers.MaxPool2D((2, 1), strides=(2, 1), name='MaxPool_1.1')(lay)
+  lay1=layers.Normalization(axis=None)(lay1)
+  lay1=layers.Conv2D(64, (3, 1), strides=(1, 1), padding='same', activation='relu', kernel_initializer='random_normal', name='Conv_1.2')(lay1)
+  lay1=layers.MaxPool2D((2, 1), strides=(2, 1), name='MaxPool_1.2')(lay1)
+  lay1=layers.Normalization(axis=None)(lay1)
+
+  lay2=layers.MaxPool2D((4, 1), strides=(4, 1), name='MaxPool_1.0')(lay)
+  lay=layers.concatenate([lay1,lay2], name='concatenate_1')
+
+  lay1=layers.Conv2D(128, (3, 1), strides=(1, 1), padding='same', activation='relu', kernel_initializer='random_normal', name='Conv_2.1')(lay)
+  lay1=layers.MaxPool2D((2, 1), strides=(2, 1), name='MaxPool_2.1')(lay1)
+  lay1=layers.Normalization(axis=None)(lay1)
+  lay1=layers.Conv2D(128, (3, 1), strides=(1, 1), padding='same', activation='relu', kernel_initializer='random_normal', name='Conv_2.2')(lay1)
+  lay1=layers.MaxPool2D((2, 1), strides=(2, 1), name='MaxPool_2.2')(lay1)
+
+  lay2=layers.MaxPool2D((4, 1), strides=(4, 1), name='MaxPool_2.0')(lay)
+  lay=layers.concatenate([lay1,lay2], name='concatenate_2')
+
+  lay=layers.Conv2D(64, (1, input_shape[2]), strides=(1, 1), activation='relu', kernel_initializer='random_normal', name='Conv_3')(lay)
+  lay=layers.Flatten()(lay)
+  lay=layers.Dense(15*13, activation='relu', name='Dense_4')(lay)
+  lay=layers.Dense(30*30, activation='relu', name='Dense_5')(lay)
+  lay=layers.Dense(64*64, activation='relu', name='Dense_6')(lay)
+  lay_out=layers.Reshape(output_shape[1:3])(lay)
+  model = tf.keras.Model(lay_in, lay_out)
+  return model
