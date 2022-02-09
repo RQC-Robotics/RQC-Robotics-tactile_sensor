@@ -87,7 +87,7 @@ class SensorNN5S_norm(Model):
     
 class SensorNN5S_norm2(Model):
     def __init__(self, input_shape, output_shape):
-        super(SensorNN5S_norm_mini, self).__init__()
+        super(SensorNN5S_norm2, self).__init__()
         self.sequential = tf.keras.Sequential([layers.Reshape((input_shape[0], input_shape[1], 1)),
                                                layers.Conv2D(4, (5, 1), strides=(1, 1), activation='relu', kernel_initializer='random_normal'),
                                                layers.Normalization(axis=None),
