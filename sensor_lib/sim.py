@@ -185,7 +185,7 @@ def sim_on_gpu(part, n_random_rot=None, n_angles=4, fwhm=10, batch_size_preproc=
   output=[]
   for batch in batches:
     input1, output1 = fiber_sim(batch, n_angles, fwhm, n_random_rot)
-    input1=input1[:,:n_del:,:,:]
+    input1=input1[:,::n_del,:,:]
     input1=tf.tile(input1,[1,n_del,1,1])
     input.append(input1)
     output.append(output1)
@@ -197,7 +197,7 @@ def sim_on_gpu(part, n_random_rot=None, n_angles=4, fwhm=10, batch_size_preproc=
   output_test=[]
   for batch in batches_test:
     input_test1, output_test1 = fiber_sim(batch, n_angles)
-    input_test1=input1[:,:n_del:,:,:]
+    input_test1=input1[:,::n_del,:,:]
     input_test1=tf.tile(input_test1,[1,n_del,1,1])
     input_test.append(input_test1)
     output_test.append(output_test1)
