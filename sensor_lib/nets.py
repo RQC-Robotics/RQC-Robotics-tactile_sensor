@@ -85,19 +85,17 @@ class SensorNN5S_norm(Model):
     def call(self, x):
         return self.sequential(x)
     
-class SensorNN5S_norm_mini(Model):
+class SensorNN5S_norm2(Model):
     def __init__(self, input_shape, output_shape):
         super(SensorNN5S_norm_mini, self).__init__()
         self.sequential = tf.keras.Sequential([layers.Reshape((input_shape[0], input_shape[1], 1)),
-                                               layers.Normalization(axis=None),
                                                layers.Conv2D(4, (5, 1), strides=(1, 1), activation='relu', kernel_initializer='random_normal'),
                                                layers.Normalization(axis=None),
                                                layers.Conv2D(16, (5, 1), strides=(1, 1), activation='relu', kernel_initializer='random_normal'),
-                                               layers.Normalization(axis=None),
-                                               layers.Conv2D(4*16, (5, input_shape[1]), activation='relu', kernel_initializer='random_normal'),
-                                               layers.Normalization(axis=None),
+                                               layers.Conv2D(8*16, (5, input_shape[1]), activation='relu', kernel_initializer='random_normal'),
+                                               layers.Conv2D(16*16, (5, input_shape[1]), activation='relu', kernel_initializer='random_normal'),
                                                layers.Flatten(),
-                                               layers.Dense(300, activation='relu', kernel_initializer='random_normal'),
+                                               layers.Dense(900, activation='relu', kernel_initializer='random_normal'),
                                                layers.Dense(30*30, activation='relu'),
                                                layers.Dense(64*64),
                                                layers.Reshape(output_shape)])
