@@ -140,7 +140,7 @@ def SensorNN5S_norm_deep(input_shape,output_shape):
   lay=layers.Flatten()(lay)
   lay=layers.Dense(15*13, activation='relu', name='Dense_4', kernel_initializer='random_normal', bias_initializer='random_normal')(lay)
   lay=layers.Dense(30*30, activation='relu', name='Dense_5', kernel_initializer='random_normal', bias_initializer='random_normal')(lay)
-  lay=layers.Dense(64*64, activation='relu', name='Dense_6', kernel_initializer='random_normal', bias_initializer='random_normal')(lay)
+  lay=layers.Dense(64*64, activation=lambda x : tf.nn.leaky_relu(x, alpha=0.01), name='Dense_6', kernel_initializer='random_normal', bias_initializer='random_normal')(lay)
   lay_out=layers.Reshape(output_shape[1:3])(lay)
   model = tf.keras.Model(lay_in, lay_out)
   return model
