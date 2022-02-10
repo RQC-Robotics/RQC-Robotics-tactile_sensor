@@ -20,15 +20,21 @@ def get_vec_mat(x,y):
     return mas   
 
 @jit(nopython=True)
-def generate_gaus_params(x, y):
+def generate_gaus_params(x, y,size_kof):
     theta = np.pi*np.random.random()
-    a = np.random.random()/(x+y)*8.0
-    b = np.random.random()/(x+y)*8.0
+    a = random.lognormvariate(0, 0.8)/(x+y)*size_kof
+    b = random.lognormvariate(0, 0.8)/(x+y)*size_kof
 
     c, s = np.cos(theta), np.sin(theta)
     R = np.array(((c, -s), (s, c)))
     M = np.array(((a, 0), (0, b)))
-    return np.dot(np.dot(R, M), R.transpose()), np.random.rand(1,2)*np.array([x, y])/3 + np.array([x, y])/3
+    # while True:
+    #   P = np.random.rand(1,2)*np.array([x, y])/3
+    #   if np.linalg.norm(P) <= x/3:
+    #     P = P + np.array([x, y])/3
+    #     break
+    P = np.random.rand(1,2)*np.array([x, y])/2 + np.array([x, y])/4
+    return np.dot(np.dot(R, M), R.transpose()), P
 
 @jit(nopython=True)
 def gaussian_func(X, Y, M, mu, vec_mat):
@@ -44,16 +50,16 @@ def gaussian_func(X, Y, M, mu, vec_mat):
     return np.exp(f*-1)[:,:,0]
 
 @jit(nopython=True)
-def generate_multi_gaussian(x, y, n,vec_mat):
+def generate_multi_gaussian(x, y, n,vec_mat,size_kof):
     mat = np.zeros((x, y), dtype=np.float32)
     for i in range(n):
-        M, mu = generate_gaus_params(float(x),float(y))
+        M, mu = generate_gaus_params(float(x),float(y),size_kof)
         gauss_mat = gaussian_func(x,y,M, mu, vec_mat)
         mat += gauss_mat*random.random()
     return mat
 
 @jit(parallel = True)
-def generate_multi_gaussian_alot(x,y,n_images, n):
+def generate_multi_gaussian_alot(x,y,n_images, n,dd):
     x=int(x)
     y=int(y)
     n_images=int(n_images)
@@ -61,7 +67,7 @@ def generate_multi_gaussian_alot(x,y,n_images, n):
     vec_mat=get_vec_mat(x,y)
     pressure_mat=np.zeros((n_images,x,y),dtype=np.float32)
     for i in range(n_images):
-        pressure_mat[i,:,:]=generate_multi_gaussian(x, y, n, vec_mat)
+        pressure_mat[i,:,:]=generate_multi_gaussian(x, y, n, vec_mat, dd)
     return pressure_mat
 
 def Convolution(input, filter, padding="SAME"):
@@ -128,9 +134,9 @@ def hat(x,r):
     resalt=0
   return resalt
 
-def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.npy'):
+def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.npy',size_g=6):
   hat_mat=round_fun((x, y), (int(x/2), int(x/2)), lambda r: hat(r,int(x/3)))
-  pressure_mat = generate_multi_gaussian_alot(x, y, n_images, n_gauses)
+  pressure_mat = generate_multi_gaussian_alot(x, y, n_images, n_gauses, size_g)
   pressure_mat_a = pressure_mat*hat_mat
   pressure_mat_a=pressure_mat_a.astype('float32') 
   with open(part, 'wb') as f:
