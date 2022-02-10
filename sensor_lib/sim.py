@@ -132,6 +132,7 @@ def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.
   hat_mat=round_fun((x, y), (int(x/2), int(x/2)), lambda r: hat(r,int(x/3)))
   pressure_mat = generate_multi_gaussian_alot(x, y, n_images, n_gauses)
   pressure_mat_a = pressure_mat*hat_mat
+  pressure_mat_a=pressure_mat_a.astype('float32') 
   with open(part, 'wb') as f:
     np.save(f, pressure_mat_a)
 
