@@ -31,7 +31,7 @@ def show_gerd(dic,fun,text_dic={},size=(5,5)):
     x,y=key
     x_key.add(x)
     y_key.add(y)
-  val = next(iter(dic.values()))
+  val = next(iter(dic.values())) # ???
   for k,v in val.items():
     a_key.add(k)
   a_key=sorted(list(a_key), reverse=False)
@@ -69,9 +69,9 @@ def show_datasets(dataSets):
     keys.append(key)
   df = pd.concat(vals, keys=keys, axis=1)
   show_gerd(
-      df.xs('pic',level=1,axis=1).head().to_dict(),
+      df.xs('pic',level=1,axis=1).to_dict(),
       lambda x,mas: x.imshow(mas),
-      df.xs('loss',level=1,axis=1).head().to_dict()
+      df.xs('loss',level=1,axis=1).to_dict()
       )
   
 def loss(mt,mto):
