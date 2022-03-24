@@ -41,7 +41,7 @@ def show_gerd(dic,fun,text_dic={},size=(5,5)):
   Y=len(y_key)
   A=len(a_key)
 
-  fig, axes = plt.subplots(X*A, Y)
+  fig, axes = plt.subplots(X*A, Y, squeeze=False)
   for a in range(A):
     for y in range(Y):
       for x in range(X):
