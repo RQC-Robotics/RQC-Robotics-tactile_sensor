@@ -1,8 +1,5 @@
 import tensorflow as tf
-# from tensorflow.keras import layers
-# from tensorflow.keras import regularizers
-# from tensorflow.keras.models import Model
-# from tensorflow.keras import Sequential
+import .data_analis as ds
 from tensorflow.data import Dataset
 # import matplotlib.pyplot as plt
 import numpy as np
@@ -171,7 +168,7 @@ def visual_for_test(ten,fun='img'):
     ldic[(0,angls[i])] = ldic2
   if fun=='img': fun = lambda x,mas: x.imshow(mas)
   if fun=='plt': fun = lambda x,mas: x.plot(mas)
-  sl.data_analis.show_gerd(dic,fun,ldic)    
+  ds.show_gerd(dic,fun,ldic)    
     
 def fiber_sim(pressure_mat, n_angles, fwhm=20, m=None):
     n_images = pressure_mat.shape[0]
