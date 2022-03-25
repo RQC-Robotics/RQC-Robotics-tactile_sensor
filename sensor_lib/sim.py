@@ -142,6 +142,37 @@ def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.
   with open(part, 'wb') as f:
     np.save(f, pressure_mat_a)
 
+def loss_fun(input,alf):
+  return tf.keras.layers.Activation(
+      lambda x: tf.math.sin(
+          alf * tf.math.minimum(tf.math.square(x),tf.math.square(np.pi/2))   
+           ))(input)
+
+def sum_losses(input):
+  trans = 1-input
+  return 1 - tf.reduce_prod(trans, axis=1, keepdims=False)   
+ 
+def visual_for_test(ten,fun='img'):
+  mas = ten.numpy()
+  n_ang = mas.shape[-1]
+  l = mas.shape[0]
+  l2=len(mas.shape)
+  angls=np.linspace(0, 180, n_ang, endpoint=False)
+  dic={}
+  ldic={}
+  for i in range(n_ang):
+    dic2={}
+    ldic2={}
+    for j in range(l):
+      if l2==4: dic2[j] = mas[j,:,:,i]    
+      else: dic2[j] = mas[j,:,i]
+      ldic2[j] = np.amax(mas)
+    dic[(0,angls[i])] = dic2
+    ldic[(0,angls[i])] = ldic2
+  if fun=='img': fun = lambda x,mas: x.imshow(mas)
+  if fun=='plt': fun = lambda x,mas: x.plot(mas)
+  sl.data_analis.show_gerd(dic,fun,ldic)    
+    
 def fiber_sim(pressure_mat, n_angles, fwhm=20, m=None):
     n_images = pressure_mat.shape[0]
     X = pressure_mat.shape[1]
@@ -162,7 +193,7 @@ def fiber_sim(pressure_mat, n_angles, fwhm=20, m=None):
     # pressure_mat_angl_nose = add_nose(pressure_mat_angl,std,m_std)
     rotated_array = []
     for i in range (n_angles):
-      rot_mat = rotate(pressure_mat_angl, i*np.pi/n_angles)
+      rot_mat = rotate(pressure_mat_angl, i/n_angles/2)
       rotated_array.append(rot_mat)
     rot_tensor = tf.concat(rotated_array, axis=-1)
     
@@ -173,6 +204,67 @@ def fiber_sim(pressure_mat, n_angles, fwhm=20, m=None):
     sum_tensor = summ(sq_deriv_tensor)
 
     return sum_tensor, pressure_tensor
+
+def fiber_real_sim(pressure_mat, cfg):
+    n_angles = cfg['num different fibers directions']
+    m = cfg['num random rotation']
+    if m=='None': m=None
+    x = cfg['distanse between fibers']
+    fwhm = cfg['width of fiber sensibility']['value']
+    kernl_size = cfg['width of fiber sensibility']['accuracy']
+    fwhm = fwhm/x
+    kernl_size =min(int(kernl_size*fwhm),64)
+    alf = cfg['kof between aply forse and loss']
+    test=cfg['test mod']
+
+    n_images = pressure_mat.shape[0]
+    X = pressure_mat.shape[1]
+    Y = pressure_mat.shape[2]
+
+    pressure_mat = tf.constant(pressure_mat,dtype=tf.float32)
+    pressure_mat = pressure_mat[:, :, :, tf.newaxis]
+    if m==None:
+      pressure_mat_angl=pressure_mat
+      m=1
+    else:
+      pressure_mat2=tf.tile(pressure_mat,[m,1,1,1])
+      pressure_mat_angl=tf.keras.layers.RandomRotation(
+                          (0, 1), fill_mode='constant', interpolation='bilinear',
+                          seed=None, fill_value=0.0)(pressure_mat2)
+    pressure_tensor = pressure_mat_angl[:,:,:,0]
+    rotated_array = []
+    for i in range (n_angles):
+      rot_mat = rotate(pressure_mat_angl, i/n_angles/2)
+      rotated_array.append(rot_mat)
+    rot_tensor = tf.concat(rotated_array, axis=-1)
+    if test:
+      print('after_fiber_rot')
+      visual_for_test(rot_tensor)
+    pressure_tensor = tf.slice(pressure_tensor, [0, int(X/6.0), int(Y/6.0)], [n_images*m, int(X*(1.0 - 2.0/6.0)), int(Y*(1.0 - 2.0/6.0))])
+    sliced_tensor = tf.slice(rot_tensor, [0, int(X/6.0), int(Y/6.0), 0], [n_images*m, int(X*(1.0 - 2.0/6.0)), int(Y*(1.0 - 2.0/6.0)), n_angles])
+    if test:
+      print('after_slise')
+      visual_for_test(sliced_tensor)
+    blured_mat = gauss_blur(sliced_tensor, n_angles, kern_size=kernl_size, fwhm=fwhm)
+    if test:  
+      print('after_blur')
+      visual_for_test(blured_mat)
+    print(alf)
+    sq_deriv_tensor =  loss_fun(derivate(blured_mat),alf)
+    if test:
+      print('loss_fun')
+      visual_for_test(sq_deriv_tensor)
+    sum_tensor = sum_losses(sq_deriv_tensor)
+    if test:
+      print('sum_loss')
+      visual_for_test(sum_tensor,fun='plt')
+    std=cfg['reletive nose in fiber transmition detection']
+    delt=cfg['nose in fiber transmition detection']
+    signal=tf.random.normal((n_images,64,n_angles),mean=1,stddev=std)*sum_tensor + tf.random.normal((n_images,64,n_angles),mean=0,stddev=delt)
+    if test:
+      print('signal')
+      visual_for_test(signal,fun='plt')
+    return signal, pressure_tensor
 
 def sim_on_gpu(part, n_random_rot=None, n_angles=4, fwhm=10, batch_size_preproc=128,size=None,test_size=None,max_possible_size=70000,n_del=1):
   with open(part, 'rb') as f: # /content/drive/MyDrive/Colab_projects/fresh_gauss.npy
@@ -211,6 +303,47 @@ def sim_on_gpu(part, n_random_rot=None, n_angles=4, fwhm=10, batch_size_preproc=
   input_test=np.concatenate(input_test)
   output_test=np.concatenate(output_test)
   input_test=input_test[:,:,0,:]
+  return input, output, input_test, output_test
+
+def sim_on_gpu2(path,bath_conf,sim_conf):
+  size = bath_conf['size']
+  max_possible_size = bath_conf['max_possible_size']
+  test_size = bath_conf['test_size']
+  batch_size_preproc = bath_conf['batch_size_preproc']
+  n_del = bath_conf['n_del']
+  mas = np.load(part, mmap_mode='r')
+  if size == None:
+    size=min(mas.shape[0],max_possible_size)
+  if test_size == None:
+    test_size = int(size/10) 
+  mas=mas[0:size] 
+  mas=mas.astype('float32') 
+  dataset = tf.data.Dataset.from_tensor_slices(mas[0:-test_size])
+  batches = dataset.batch(batch_size_preproc, drop_remainder=False)
+  dataset_test = tf.data.Dataset.from_tensor_slices(mas[-test_size:])
+  batches_test = dataset_test.batch(batch_size_preproc, drop_remainder=False)
+
+  input=[]
+  output=[]
+  for batch in batches:
+    input1, output1 = fiber_real_sim(batch, sim_conf)
+    input1=input1[:,::n_del,:]
+    input1=tf.tile(input1,[1,n_del,1])
+    input.append(input1)
+    output.append(output1)
+  input=np.concatenate(input)
+  output=np.concatenate(output)
+
+  input_test=[]
+  output_test=[]
+  for batch in batches_test:
+    input_test1, output_test1 = fiber_real_sim(batch, sim_conf)
+    input_test1=input_test1[:,::n_del,:]
+    input_test1=tf.tile(input_test1,[1,n_del,1])
+    input_test.append(input_test1)
+    output_test.append(output_test1)
+  input_test=np.concatenate(input_test)
+  output_test=np.concatenate(output_test)
   return input, output, input_test, output_test
 
 def prepare_dataset_for_train(input, output, batch_size_fit_model=1024):
