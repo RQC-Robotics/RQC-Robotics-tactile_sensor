@@ -247,7 +247,7 @@ def fiber_real_sim(pressure_mat, cfg):
       print('after_blur')
       visual_for_test(blured_mat)
     print(alf)
-    sq_deriv_tensor =  loss_fun(derivate(blured_mat, num_angles),alf)
+    sq_deriv_tensor =  loss_fun(derivate(blured_mat, n_angles),alf)
     if test:
       print('loss_fun')
       visual_for_test(sq_deriv_tensor)
