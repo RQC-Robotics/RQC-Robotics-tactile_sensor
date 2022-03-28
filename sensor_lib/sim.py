@@ -308,7 +308,7 @@ def sim_on_gpu2(path,bath_conf,sim_conf):
   test_size = bath_conf['test_size']
   batch_size_preproc = bath_conf['batch_size_preproc']
   n_del = bath_conf['n_del']
-  mas = np.load(part, mmap_mode='r')
+  mas = np.load(path, mmap_mode='r')
   if size == None:
     size=min(mas.shape[0],max_possible_size)
   if test_size == None:
