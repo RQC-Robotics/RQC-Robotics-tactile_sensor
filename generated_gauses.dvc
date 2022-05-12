@@ -1,0 +1,5 @@
+outs:
+- md5: 3145aa963960fc3f6d7c7282abb4b084.dir
+  size: 15137199712
+  nfiles: 4
+  path: generated_gauses
