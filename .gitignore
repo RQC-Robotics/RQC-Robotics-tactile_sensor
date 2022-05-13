@@ -5,4 +5,4 @@
 *.nn
 *main_egnore.ipynb
 *.virtual_documents
-/generated_gauses
+/data
