@@ -1,5 +1,6 @@
 [core]
     autostage = true
+    remote = yasen
 ['remote "yasen"']
     url = s3://dvc-sensor
     endpointurl = https://storage.yandexcloud.net
