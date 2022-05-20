@@ -5,7 +5,7 @@ from tensorflow.data import Dataset
 import numpy as np
 import random
 import math
-from numba import jit
+# from numba import jit
 
 def get_vec_mat(x,y):
     mas=np.zeros((x,y,2),dtype=np.float32)

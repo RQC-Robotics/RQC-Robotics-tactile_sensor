@@ -5,10 +5,10 @@ from tensorflow.data import Dataset
 import numpy as np
 import random
 import math
-from numba import jit
+# from numba import jit
 # import numba
 
-@jit(nopython=True)
+# @jit(nopython=True)
 def get_vec_mat(x,y):
     mas=np.zeros((x,y,2,1),dtype=np.float32)
     for i in range(x):
@@ -16,7 +16,7 @@ def get_vec_mat(x,y):
             mas[i,j,:,0]=[i,j]
     return mas   
 
-@jit(nopython=True)
+# @jit(nopython=True)
 def generate_gaus_params(x, y,size_kof):
     theta = np.pi*np.random.random()
     a = random.lognormvariate(0, 0.8)/(x+y)*size_kof
@@ -33,7 +33,7 @@ def generate_gaus_params(x, y,size_kof):
     P = np.random.rand(1,2)*np.array([x, y])/2 + np.array([x, y])/4
     return np.dot(np.dot(R, M), R.transpose()), P
 
-@jit(nopython=True)
+# @jit(nopython=True)
 def gaussian_func(X, Y, M, mu, vec_mat):
     vec_mat=get_vec_mat(X,Y)
     x = vec_mat - mu.transpose()
@@ -46,7 +46,7 @@ def gaussian_func(X, Y, M, mu, vec_mat):
     # print(f.shape)
     return np.exp(f*-1)[:,:,0]
 
-@jit(nopython=True)
+# @jit(nopython=True)
 def generate_multi_gaussian(x, y, n,vec_mat,size_kof):
     mat = np.zeros((x, y), dtype=np.float32)
     for i in range(n):
@@ -55,7 +55,7 @@ def generate_multi_gaussian(x, y, n,vec_mat,size_kof):
         mat += gauss_mat*random.random()
     return mat
 
-@jit(parallel = True)
+# @jit(parallel = True)
 def generate_multi_gaussian_alot(x,y,n_images, n,dd):
     x=int(x)
     y=int(y)
