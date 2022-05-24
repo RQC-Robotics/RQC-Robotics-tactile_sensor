@@ -49,9 +49,7 @@ def gaussian_func_flat(g_param, vec_mat):
     return tf.math.exp(f * -1)
 
 
-tf.function
-
-
+# @tf.function
 def generate_multi_gaussian_flat(gaus_data, vec_mat):
     params = tf.vectorized_map(generate_gaus_params, gaus_data)
     gauses = tf.vectorized_map(
@@ -59,9 +57,7 @@ def generate_multi_gaussian_flat(gaus_data, vec_mat):
     return tf.reduce_sum(gauses, 0)
 
 
-tf.function
-
-
+# @tf.function
 def generate_pictures(gaus_data, vec_mat):
     # vec_mat=tf.constant(get_vec_mat(x,y),dtype=tf.float32)
     # vec_mat=tf.reshape(vec_mat,[-1,2])
@@ -71,7 +67,7 @@ def generate_pictures(gaus_data, vec_mat):
     pictures = tf.vectorized_map(
         lambda data: generate_multi_gaussian_flat(data, vec_mat),
         gaus_data,
-        fallback_to_while_loop=False)
+        fallback_to_while_loop=True)
     # return tf.reshape(pictures,[n_pic,x,y])
     return pictures
 

@@ -1,0 +1,4 @@
+outs:
+- md5: b355c93b5892fc96ec1aeb77f8da6ddf
+  size: 32896
+  path: gaus_param.npy
