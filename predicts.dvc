@@ -1,0 +1,5 @@
+outs:
+- md5: 870bb5272ac47b3febe7d5f879b6e6c2.dir
+  size: 33024
+  nfiles: 2
+  path: predicts

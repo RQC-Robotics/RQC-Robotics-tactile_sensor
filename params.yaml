@@ -9,15 +9,15 @@ env:
         x_len: 64 # in pixels
         y_len: 64 # in pixels    
         n_angles: 4
+        n_spl: 1 # show  
     
     phys:
-        fiber sensibility : 
+        fiber_sensibility : 
             value: 0.6 # width of fiber in mm
             accuracy: 4 # it is (size of kernl)/value 
         kof: 1 # between aply forse and loss in gramms 
         reletive_nose: 0 # in fiber transmition detection
         nose: 0 #  in fiber transmition detection
-        test_mod: False # verbose mod for testing sim
     
 dataset:
     pic_path: 'data/presure/pic'
@@ -27,8 +27,11 @@ dataset:
 sim:
     pic_path: 'data/fiber_loss/pic'
     # video_path: 'data/fiber_loss/video' for future
-    random_rot: [False, 10]
+    random_rot: 1
     batch_size: 128
+    test_size: 'None'
+    max_possible_size: 1000
+    test_mod: False # verbose mod for testing sim
 
 train:
     models_path: 'models'
@@ -38,3 +41,4 @@ train:
 
 evaluate:
     reports_path: 'reports'     
+    pred_path: 'predicts'

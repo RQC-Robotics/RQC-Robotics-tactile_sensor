@@ -155,15 +155,6 @@ def hat(x, r):
     return resalt
 
 
-# def generate_pressure_map(n_images, n_gauses , x= 97, y = 97, part='fresh_gauss.npy',size_g=6):
-#  hat_mat=round_fun((x, y), (int(x/2), int(x/2)), lambda r: hat(r,int(x/3)))
-#  pressure_mat = generate_multi_gaussian_alot(x, y, n_images, n_gauses, size_g)
-#  pressure_mat_a = pressure_mat*hat_mat
-#  pressure_mat_a=pressure_mat_a.astype('float32')
-#  with open(part, 'wb') as f:
-#    np.save(f, pressure_mat_a)
-
-
 def loss_fun(input, alf):
     return tf.keras.layers.Activation(lambda x: tf.math.sin(
         alf * tf.math.minimum(tf.math.square(x), tf.math.square(np.pi / 2))))(
@@ -201,18 +192,21 @@ def visual_for_test(ten, fun='img'):
     ds.show_gerd(dic, fun, ldic)
 
 
-def fiber_real_sim(pressure_mat, cfg):
-    n_angles = cfg['num different fibers directions']
-    m = cfg['num random rotation']
-    if m == 'None':
+def fiber_real_sim(pressure_mat, config):
+    geo = config['env']['sen_geometry']
+    phys = config['env']['phys']
+    n_angles = geo['n_angles']
+    m = config['sim']['random_rot']
+    if m == 1:
         m = None
-    x = cfg['distanse between fibers']
-    fwhm = cfg['width of fiber sensibility']['value']
-    kernl_size = cfg['width of fiber sensibility']['accuracy']
+    x = geo['distanse']
+    fwhm = phys['fiber_sensibility']['value']
+    kernl_size = phys['fiber_sensibility']['accuracy']
     fwhm = fwhm / x
-    kernl_size = min(int(kernl_size * fwhm), 64)
-    alf = cfg['kof between aply forse and loss']
-    test = cfg['test mod']
+    n = pressure_mat.shape[1]
+    kernl_size = min(int(kernl_size * fwhm), n)
+    alf = phys['kof']
+    test = config['sim']['test_mod']
 
     n_images = pressure_mat.shape[0]
     X = pressure_mat.shape[1]
@@ -240,17 +234,18 @@ def fiber_real_sim(pressure_mat, cfg):
     if test:
         print('after_fiber_rot')
         visual_for_test(rot_tensor)
-    pressure_tensor2 = tf.slice(
-        pressure_tensor, [0, int(X / 6.0), int(Y / 6.0)],
-        [n_images * m,
-         int(X * (1.0 - 2.0/6.0)),
-         int(Y * (1.0 - 2.0/6.0))])
-    sliced_tensor = tf.slice(rot_tensor,
-                             [0, int(X / 6.0), int(Y / 6.0), 0], [
-                                 n_images * m,
-                                 int(X * (1.0 - 2.0/6.0)),
-                                 int(Y * (1.0 - 2.0/6.0)), n_angles
-                             ])
+    # pressure_tensor2 = tf.slice(
+    #     pressure_tensor, [0, int(X / 6.0), int(Y / 6.0)],
+    #     [n_images * m,
+    #      int(X * (1.0 - 2.0/6.0)),
+    #      int(Y * (1.0 - 2.0/6.0))])
+    # sliced_tensor = tf.slice(rot_tensor,
+    #                          [0, int(X / 6.0), int(Y / 6.0), 0], [
+    #                              n_images * m,
+    #                              int(X * (1.0 - 2.0/6.0)),
+    #                              int(Y * (1.0 - 2.0/6.0)), n_angles
+    #                          ])
+    sliced_tensor = rot_tensor
     if test:
         print('after_slise')
         visual_for_test(sliced_tensor)
@@ -269,12 +264,12 @@ def fiber_real_sim(pressure_mat, cfg):
     if test:
         print('sum_loss')
         visual_for_test(sum_tensor, fun='plt')
-    std = cfg['reletive nose in fiber transmition detection']
-    delt = cfg['nose in fiber transmition detection']
-    signal = tf.random.normal((n_images, 64, n_angles), mean=1,
+    std = phys['reletive_nose']
+    delt = phys['nose']
+    signal = tf.random.normal((n_images, n, n_angles), mean=1,
                               stddev=std) * sum_tensor + tf.random.normal(
-                                  (n_images, 64, n_angles), mean=0, stddev=delt)
+                                  (n_images, n, n_angles), mean=0, stddev=delt)
     if test:
         print('signal')
         visual_for_test(signal, fun='plt')
-    return signal, pressure_tensor2
+    return signal, pressure_tensor
