@@ -16,7 +16,8 @@ def get_vec_mat(x, y):
     return mas
 
 
-def gen_rand_cof(n_gaus, x, y, size_kof):
+def gen_rand_cof(n_gaus, x, y, size_kof, seed):
+    np.random.seed(seed)
     theta = np.pi * np.random.random(size=(n_gaus, 1))
     E = np.random.lognormal(0, 0.8, size=(n_gaus, 2)) / (x+y) * size_kof
     P = np.random.rand(n_gaus, 2) * np.array([x, y]) / 2 + np.array([x, y]) / 4
@@ -192,7 +193,8 @@ def visual_for_test(ten, fun='img'):
     ds.show_gerd(dic, fun, ldic)
 
 
-def fiber_real_sim(pressure_mat, config):
+def fiber_real_sim(pressure_mat, config, seed):
+    np.random.seed(seed)
     geo = config['env']['sen_geometry']
     phys = config['env']['phys']
     n_angles = geo['n_angles']
@@ -275,7 +277,7 @@ def fiber_real_sim(pressure_mat, config):
     return signal, pressure_tensor
 
 
-def sim_on_gpu(mas, test_size, batch_size, config):
+def sim_on_gpu(mas, test_size, batch_size, config, seed):
     n_del = config['env']['sen_geometry']['n_spl']
     dataset = tf.data.Dataset.from_tensor_slices(mas[0:-test_size])
     batches = dataset.batch(batch_size, drop_remainder=False)
@@ -285,7 +287,7 @@ def sim_on_gpu(mas, test_size, batch_size, config):
     input = []
     output = []
     for batch in batches:
-        input1, output1 = fiber_real_sim(batch, config)
+        input1, output1 = fiber_real_sim(batch, config, seed)
         input1 = input1[:, ::n_del, :]
         input1 = tf.tile(input1, [1, n_del, 1])
         input.append(input1)
@@ -296,7 +298,7 @@ def sim_on_gpu(mas, test_size, batch_size, config):
     input_test = []
     output_test = []
     for batch in batches_test:
-        input_test1, output_test1 = fiber_real_sim(batch, config)
+        input_test1, output_test1 = fiber_real_sim(batch, config, seed)
         input_test1 = input_test1[:, ::n_del, :]
         input_test1 = tf.tile(input_test1, [1, n_del, 1])
         input_test.append(input_test1)
