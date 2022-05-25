@@ -16,8 +16,8 @@ env:
             value: 0.6 # width of fiber in mm
             accuracy: 4 # it is (size of kernl)/value 
         kof: 1 # between aply forse and loss in gramms 
-        reletive_nose: 0 # in fiber transmition detection
-        nose: 0 #  in fiber transmition detection
+        reletive_nose: 0.01 # in fiber transmition detection
+        nose: 0.01 #  in fiber transmition detection
     
 dataset:
     pic_path: 'data/presure/pic'
@@ -31,7 +31,7 @@ sim:
     batch_size: 128
     test_size: 'None'
     max_possible_size: 1000
-    test_mod: False # verbose mod for testing sim
+    test_mod: True # verbose mod for testing sim
 
 train:
     models_path: 'models'

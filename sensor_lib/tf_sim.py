@@ -273,3 +273,34 @@ def fiber_real_sim(pressure_mat, config):
         print('signal')
         visual_for_test(signal, fun='plt')
     return signal, pressure_tensor
+
+
+def sim_on_gpu(mas, test_size, batch_size, config):
+    n_del = config['env']['sen_geometry']['n_spl']
+    dataset = tf.data.Dataset.from_tensor_slices(mas[0:-test_size])
+    batches = dataset.batch(batch_size, drop_remainder=False)
+    dataset_test = tf.data.Dataset.from_tensor_slices(mas[-test_size:])
+    batches_test = dataset_test.batch(batch_size, drop_remainder=False)
+
+    input = []
+    output = []
+    for batch in batches:
+        input1, output1 = fiber_real_sim(batch, config)
+        input1 = input1[:, ::n_del, :]
+        input1 = tf.tile(input1, [1, n_del, 1])
+        input.append(input1)
+        output.append(output1)
+    input = np.concatenate(input)
+    output = np.concatenate(output)
+
+    input_test = []
+    output_test = []
+    for batch in batches_test:
+        input_test1, output_test1 = fiber_real_sim(batch, config)
+        input_test1 = input_test1[:, ::n_del, :]
+        input_test1 = tf.tile(input_test1, [1, n_del, 1])
+        input_test.append(input_test1)
+        output_test.append(output_test1)
+    input_test = np.concatenate(input_test)
+    output_test = np.concatenate(output_test)
+    return input, output, input_test, output_test
