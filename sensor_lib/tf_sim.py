@@ -131,7 +131,7 @@ def summ(input):
                         [0, 2, 1, 3])
 
 
-def add_nose(input, std, n):
+def add_noize(input, std, n):
     input2 = tf.tile(input, [n, 1, 1, 1])
     noise = 1 + tf.random.normal(
         shape=tf.shape(input2), mean=0.0, stddev=std, dtype=tf.float32)
@@ -266,8 +266,8 @@ def fiber_real_sim(pressure_mat, config, seed):
     if test:
         print('sum_loss')
         visual_for_test(sum_tensor, fun='plt')
-    std = phys['reletive_nose']
-    delt = phys['nose']
+    std = phys['reletive_noize']
+    delt = phys['noize']
     signal = tf.random.normal((n_images, n, n_angles), mean=1,
                               stddev=std) * sum_tensor + tf.random.normal(
                                   (n_images, n, n_angles), mean=0, stddev=delt)

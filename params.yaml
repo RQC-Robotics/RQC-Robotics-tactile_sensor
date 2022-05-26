@@ -1,7 +1,7 @@
 random_seed: 4732
 
 env:
-    presure_profile:
+    pressure_profile:
         n_gauses: 10
         size_kof: 5
         g_param_path: 'data/gaus_param.npy'
@@ -18,12 +18,12 @@ env:
             value: 0.6 # width of fiber in mm
             accuracy: 4 # it is (size of kernl)/value 
         kof: 1 # between aply forse and loss in gramms 
-        reletive_nose: 0.01 # in fiber transmition detection
-        nose: 0.01 #  in fiber transmition detection
+        reletive_noize: 0.01 # in fiber transmition detection
+        noize: 0.01 #  in fiber transmition detection
     
 dataset:
-    pic_path: 'data/presure/pic'
-    # video_path: 'data/presure/pic' for future
+    pic_path: 'data/pressure/pic'
+    # video_path: 'data/pressure/pic' for future
     n_sampels: 150
 
 sim:
@@ -38,7 +38,7 @@ sim:
 train:
     models_path: 'models'
     batch_size: 128
-    lerning_rate: 0.0001
+    learning_rate: 0.0001
     n_epochs: 20
 
 evaluate:
