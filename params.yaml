@@ -18,8 +18,8 @@ env:
             value: 0.6 # width of fiber in mm
             accuracy: 4 # it is (size of kernl)/value 
         kof: 1 # between aply forse and loss in gramms 
-        reletive_noize: 0.01 # in fiber transmition detection
-        noize: 0.01 #  in fiber transmition detection
+        reletive_noise: 0.01 # in fiber transmition detection
+        noise: 0.01 #  in fiber transmition detection
     
 dataset:
     pic_path: 'data/pressure/pic'
@@ -32,7 +32,7 @@ sim:
     random_rot: 1
     batch_size: 128
     test_size: 'None'
-    max_possible_size: 1000
+    max_possible_size: 20000
     test_mod: True # verbose mod for testing sim
 
 train:
