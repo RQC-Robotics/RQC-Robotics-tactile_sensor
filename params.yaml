@@ -7,7 +7,7 @@ env:
         g_param_path: 'data/gaus_param.npy'
 
     sen_geometry:
-        distanse: 0.5 # between fibers in mm
+        distance: 0.5 # between fibers in mm
         x_len: 64 # in pixels
         y_len: 64 # in pixels    
         n_angles: 4
@@ -16,15 +16,15 @@ env:
     phys:
         fiber_sensibility : 
             value: 0.6 # width of fiber in mm
-            accuracy: 4 # it is (size of kernl)/value 
-        kof: 1 # between aply forse and loss in gramms 
-        reletive_noise: 0.01 # in fiber transmition detection
-        noise: 0.01 #  in fiber transmition detection
+            accuracy: 4 # it is (size of kernel)/value 
+        kof: 1 # between apply force and loss in grams 
+        relative_noise: 0.01 # in fiber transmission detection
+        noise: 0.01 #  in fiber transmission detection
     
 dataset:
     pic_path: 'data/pressure/pic'
     # video_path: 'data/pressure/pic' for future
-    n_sampels: 150
+    n_samples: 150
 
 sim:
     pic_path: 'data/fiber_loss/pic'

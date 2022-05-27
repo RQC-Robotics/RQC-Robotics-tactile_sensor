@@ -260,12 +260,12 @@ def fiber_real_sim(pressure_mat, cfg):
     m = cfg['num random rotation']
     if m == 'None':
         m = None
-    x = cfg['distanse between fibers']
+    x = cfg['distance between fibers']
     fwhm = cfg['width of fiber sensibility']['value']
     kernl_size = cfg['width of fiber sensibility']['accuracy']
     fwhm = fwhm / x
     kernl_size = min(int(kernl_size * fwhm), 64)
-    alf = cfg['kof between aply forse and loss']
+    alf = cfg['kof between apply force and loss']
     test = cfg['test mod']
 
     n_images = pressure_mat.shape[0]
@@ -306,7 +306,7 @@ def fiber_real_sim(pressure_mat, cfg):
                                  int(Y * (1.0 - 2.0/6.0)), n_angles
                              ])
     if test:
-        print('after_slise')
+        print('after_slice')
         visual_for_test(sliced_tensor)
     blured_mat = gauss_blur(sliced_tensor,
                             n_angles,
@@ -323,8 +323,8 @@ def fiber_real_sim(pressure_mat, cfg):
     if test:
         print('sum_loss')
         visual_for_test(sum_tensor, fun='plt')
-    std = cfg['reletive nose in fiber transmition detection']
-    delt = cfg['nose in fiber transmition detection']
+    std = cfg['relative nose in fiber transmission detection']
+    delt = cfg['nose in fiber transmission detection']
     signal = tf.random.normal((n_images, 64, n_angles), mean=1,
                               stddev=std) * sum_tensor + tf.random.normal(
                                   (n_images, 64, n_angles), mean=0, stddev=delt)

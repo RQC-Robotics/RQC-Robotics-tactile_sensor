@@ -150,10 +150,10 @@ def round_fun(shape, centr, fun):
 
 def hat(x, r):
     if abs(x) < r:
-        resalt = math.exp(1 / 8 / ((x / r)**2 - 1**2))
+        result = math.exp(1 / 8 / ((x / r)**2 - 1**2))
     else:
-        resalt = 0
-    return resalt
+        result = 0
+    return result
 
 
 def loss_fun(input, alf):
@@ -201,7 +201,7 @@ def fiber_real_sim(pressure_mat, config, seed):
     m = config['sim']['random_rot']
     if m == 1:
         m = None
-    x = geo['distanse']
+    x = geo['distance']
     fwhm = phys['fiber_sensibility']['value']
     kernl_size = phys['fiber_sensibility']['accuracy']
     fwhm = fwhm / x
@@ -266,7 +266,7 @@ def fiber_real_sim(pressure_mat, config, seed):
     if test:
         print('sum_loss')
         visual_for_test(sum_tensor, fun='plt')
-    std = phys['reletive_noise']
+    std = phys['relative_noise']
     delt = phys['noise']
     signal = tf.random.normal((n_images, n, n_angles), mean=1,
                               stddev=std) * sum_tensor + tf.random.normal(
