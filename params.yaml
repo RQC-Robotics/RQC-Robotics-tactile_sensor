@@ -2,7 +2,7 @@ random_seed: 4732
 
 env:
     presure_profile:
-        n_gauses: 10
+        n_gauses: 30
         size_kof: 5
         g_param_path: 'data/gaus_param.npy'
 
@@ -24,22 +24,27 @@ env:
 dataset:
     pic_path: 'data/presure/pic'
     # video_path: 'data/presure/pic' for future
-    n_sampels: 15
+    n_sampels: 100000
+
+gengaus:
+    batch_size: 1000
 
 sim:
     pic_path: 'data/fiber_loss/pic'
     # video_path: 'data/fiber_loss/video' for future
-    random_rot: 1
+    random_rot: 10
     batch_size: 128
     test_size: 'None'
-    max_possible_size: 1000
-    test_mod: True # verbose mod for testing sim
+    max_possible_size: 1000000
+    test_mod: False # verbose mod for testing sim
+    save_pic: True
+    pic_path: 'reports/sim'
 
 train:
     models_path: 'models'
     batch_size: 128
     lerning_rate: 0.0001
-    n_epochs: 20
+    n_epochs: 50
 
 evaluate:
     reports_path: 'reports'     

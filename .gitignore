@@ -7,3 +7,4 @@
 *.virtual_documents
 /models
 /predicts
+/logs

@@ -1,6 +1,7 @@
 import tensorflow as tf
 import sensor_lib.data_analis as ds
 from tensorflow.data import Dataset
+from os.path import join as jn
 # import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -167,7 +168,7 @@ def sum_losses(input):
     return 1 - tf.reduce_prod(trans, axis=1, keepdims=False)
 
 
-def visual_for_test(ten, fun='img'):
+def visual_for_test(ten, fun='img', save=False, name='pic'):
     mas = ten.numpy()
     n_ang = mas.shape[-1]
     l = mas.shape[0]
@@ -190,7 +191,7 @@ def visual_for_test(ten, fun='img'):
         fun = lambda x, mas: x.imshow(mas)
     if fun == 'plt':
         fun = lambda x, mas: x.plot(mas)
-    ds.show_gerd(dic, fun, ldic)
+    ds.show_gerd(dic, fun, ldic, save=save, name=name)
 
 
 def fiber_real_sim(pressure_mat, config, seed):
@@ -235,7 +236,9 @@ def fiber_real_sim(pressure_mat, config, seed):
     rot_tensor = tf.concat(rotated_array, axis=-1)
     if test:
         print('after_fiber_rot')
-        visual_for_test(rot_tensor)
+        visual_for_test(rot_tensor,
+                        save=config['sim']['save_pic'],
+                        name=jn(config['sim']['pic_path'], 'after_fiber_tot'))
     # pressure_tensor2 = tf.slice(
     #     pressure_tensor, [0, int(X / 6.0), int(Y / 6.0)],
     #     [n_images * m,
@@ -250,34 +253,56 @@ def fiber_real_sim(pressure_mat, config, seed):
     sliced_tensor = rot_tensor
     if test:
         print('after_slise')
-        visual_for_test(sliced_tensor)
+        visual_for_test(sliced_tensor,
+                        save=config['sim']['save_pic'],
+                        name=jn(config['sim']['pic_path'], 'after_slise'))
     blured_mat = gauss_blur(sliced_tensor,
                             n_angles,
                             kern_size=kernl_size,
                             fwhm=fwhm)
     if test:
         print('after_blur')
-        visual_for_test(blured_mat)
+        visual_for_test(blured_mat,
+                        save=config['sim']['save_pic'],
+                        name=jn(config['sim']['pic_path'], 'after_blur'))
     sq_deriv_tensor = loss_fun(derivate(blured_mat, n_angles), alf)
     if test:
         print('loss_fun')
-        visual_for_test(sq_deriv_tensor)
+        visual_for_test(sq_deriv_tensor,
+                        save=config['sim']['save_pic'],
+                        name=jn(config['sim']['pic_path'], 'loss_fun'))
     sum_tensor = sum_losses(sq_deriv_tensor)
     if test:
         print('sum_loss')
-        visual_for_test(sum_tensor, fun='plt')
+        visual_for_test(sum_tensor,
+                        fun='plt',
+                        save=config['sim']['save_pic'],
+                        name=jn(config['sim']['pic_path'], 'sum_loss'))
     std = phys['reletive_nose']
     delt = phys['nose']
-    signal = tf.random.normal((n_images, n, n_angles), mean=1,
-                              stddev=std) * sum_tensor + tf.random.normal(
-                                  (n_images, n, n_angles), mean=0, stddev=delt)
+    signal = tf.random.normal(
+        (n_images * m, n, n_angles), mean=1,
+        stddev=std) * sum_tensor + tf.random.normal(
+            (n_images * m, n, n_angles), mean=0, stddev=delt)
     if test:
         print('signal')
-        visual_for_test(signal, fun='plt')
+        visual_for_test(signal,
+                        fun='plt',
+                        save=config['sim']['save_pic'],
+                        name=jn(config['sim']['pic_path'], 'signal'))
     return signal, pressure_tensor
 
 
 def sim_on_gpu(mas, test_size, batch_size, config, seed):
+    np.random.seed(config['random_seed'])
+    seeds = np.random.randint(0, 2**32, size=2)
+
+    if config['sim']['test_mod']:
+        config2 = config
+        config2['sim']['random_rot'] = 1
+        input1, output1 = fiber_real_sim(mas[0:1], config2, seeds[0])
+        return input1, output1, np.array([]), np.array([])
+
     n_del = config['env']['sen_geometry']['n_spl']
     dataset = tf.data.Dataset.from_tensor_slices(mas[0:-test_size])
     batches = dataset.batch(batch_size, drop_remainder=False)
@@ -287,7 +312,7 @@ def sim_on_gpu(mas, test_size, batch_size, config, seed):
     input = []
     output = []
     for batch in batches:
-        input1, output1 = fiber_real_sim(batch, config, seed)
+        input1, output1 = fiber_real_sim(batch, config, seeds[0])
         input1 = input1[:, ::n_del, :]
         input1 = tf.tile(input1, [1, n_del, 1])
         input.append(input1)
@@ -297,8 +322,10 @@ def sim_on_gpu(mas, test_size, batch_size, config, seed):
 
     input_test = []
     output_test = []
+    config2 = config
+    config2['sim']['random_rot'] = 1
     for batch in batches_test:
-        input_test1, output_test1 = fiber_real_sim(batch, config, seed)
+        input_test1, output_test1 = fiber_real_sim(batch, config, seeds[1])
         input_test1 = input_test1[:, ::n_del, :]
         input_test1 = tf.tile(input_test1, [1, n_del, 1])
         input_test.append(input_test1)

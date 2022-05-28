@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd
+from os.path import join as jn
 
 
 def show(mas, points, size=5):
@@ -19,7 +20,7 @@ def show(mas, points, size=5):
     plt.show()
 
 
-def show_gerd(dic, fun, text_dic={}, size=(5, 5)):
+def show_gerd(dic, fun, text_dic={}, size=(5, 5), save=False, name='pic'):
 
     def key_fun(x):
         if type(x) == type(''):
@@ -60,6 +61,8 @@ def show_gerd(dic, fun, text_dic={}, size=(5, 5)):
                 axes[coord].set_title(str(key) + ' ' + title)
     fig.set_figwidth(size[0] * Y)
     fig.set_figheight(size[1] * X * A)
+    if save:
+        fig.savefig(name + '.png')
     plt.show()
 
 
@@ -131,3 +134,8 @@ def get_dic(n_ga_mas, n_fi_mas, path_true, path_pred, l=100000, interval=None):
             dic[(n_ga, 'loss', n_fi)] = loss(mt, mto)
             dic[(n_ga, 'pic', n_fi)] = [mo[i] for i in range(mo.shape[0])]
     return dic
+
+
+# def get_dic2(path_true, path_pred):
+#     mas = np.load(path_true)
+#     mo = np.load(path_pred)
