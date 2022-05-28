@@ -24,7 +24,7 @@ env:
 dataset:
     pic_path: 'data/presure/pic'
     # video_path: 'data/presure/pic' for future
-    n_sampels: 15
+    n_sampels: 200
 
 sim:
     pic_path: 'data/fiber_loss/pic'
