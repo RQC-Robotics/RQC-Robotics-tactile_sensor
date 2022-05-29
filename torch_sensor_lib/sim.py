@@ -10,14 +10,14 @@ from torch_sensor_lib.visual import visual_picture
 
 class FiberSimulator():
 
-    def __init__(self, config, device='cpu', seed=42):
+    def __init__(self, config, device='cpu', signal_noise_seed=42):
 
         self.device = device
         self.dtype = np.float32
         self.derivative_kernel = torch.from_numpy(
             np.expand_dims([1, -2, 1], (0, 1, 3)).astype(self.dtype)).to(device)
         self.config = config
-        np.random.seed(seed)
+        torch.manual_seed(signal_noise_seed)
         geom = self.config['env']['sen_geometry']
         self.phys = self.config['env']['phys']
         self.alpha = self.phys['kof']
