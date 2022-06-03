@@ -7,3 +7,5 @@
 *.virtual_documents
 /models
 /predicts
+.pylintrc
+.vscode

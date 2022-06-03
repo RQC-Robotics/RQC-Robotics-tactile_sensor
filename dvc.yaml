@@ -1,0 +1,30 @@
+stages:
+  simulate:
+    cmd: python dvc_sim_runner.py
+    
+    params:
+      - dataset.signal_path
+      - dataset.pic_path
+      - random_seed
+      - env.sen_geometry
+      - env.phys
+    deps:
+      - dvc_sim_runner.py
+      # - data/pressure/pic  
+    # outs:
+    #   - data/sensor_signal
+
+  learning:
+    cmd: python dvc_model_learning.py
+
+    # deps:
+    #   - data/sensor_signal
+    #   - data/pressure/pic  
+    #   - dvc_model_learning.py
+    outs:
+      - models
+
+  # evaluate:
+
+  # deps:
+

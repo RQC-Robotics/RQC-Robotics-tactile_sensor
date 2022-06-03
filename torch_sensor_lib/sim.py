@@ -7,17 +7,25 @@ import numpy as np
 from torch_sensor_lib.visual import visual_picture
 # import torch_sensor_lib.vi as ds
 
+'''
+Param requirements:
+
+random_seed
+env.sen_geometry
+env.phys
+
+'''
 
 class FiberSimulator():
 
-    def __init__(self, config, device='cpu', signal_noise_seed=42):
+    def __init__(self, config, device='cpu'):
 
         self.device = device
         self.dtype = np.float32
         self.derivative_kernel = torch.from_numpy(
             np.expand_dims([1, -2, 1], (0, 1, 3)).astype(self.dtype)).to(device)
         self.config = config
-        torch.manual_seed(signal_noise_seed)
+        torch.manual_seed(config['random_seed'])
         geom = self.config['env']['sen_geometry']
         self.phys = self.config['env']['phys']
         self.alpha = self.phys['kof']
@@ -38,19 +46,19 @@ class FiberSimulator():
 
         self.test = self.config['sim']['test_mod']
 
-    def second_derivative(self, input):
+    def _second_derivative(self, input):
         return F.conv2d(input, self.derivative_kernel)
 
-    def trans_fun(self, input):
+    def _trans_fun(self, input):
         """Reproduces experimental transmission curve"""
         return 1 - torch.sin(self.alpha * torch.minimum(
-            torch.square(self.second_derivative(input)),
+            torch.square(self._second_derivative(input)),
             torch.Tensor([2.467401]).to(self.device)))
 
-    def sum_fiber_losses(self, input):
-        return 1 - torch.prod(self.trans_fun(input), dim=-2)
+    def _sum_fiber_losses(self, input):
+        return 1 - torch.prod(self._trans_fun(input), dim=-2)
 
-    def rotate(self, input):
+    def _rotate(self, input):
         return torch.concat([
             torch_rotate(input.unsqueeze(1),
                          180 / self.n_angles * i,
@@ -68,8 +76,10 @@ class FiberSimulator():
         Result:
         torch.Tensor : sensor outputs [batch_size, n_angles, W]
         """
+        if not isinstance(pressure_mat, torch.Tensor):
+            pressure_mat = torch.Tensor(pressure_mat, device=self.device)
 
-        rot_tensor = self.rotate(pressure_mat)
+        rot_tensor = self._rotate(pressure_mat)
 
         blurred_mat = F.conv2d(rot_tensor, self.gauss_kernel, padding='same')
 
@@ -79,7 +89,7 @@ class FiberSimulator():
             print("After blur")
             visual_picture(blurred_mat, self.n_angles)
 
-        loss_tensor = self.sum_fiber_losses(blurred_mat).view(
+        loss_tensor = self._sum_fiber_losses(blurred_mat).view(
             -1, self.n_angles, blurred_mat.shape[-1])
 
         std = self.phys['relative_noise']
@@ -91,7 +101,7 @@ class FiberSimulator():
             std=delt)
         if self.test:
             print("Loss in fiber")
-            visual_picture(1 - self.trans_fun(rot_tensor), self.n_angles)
+            visual_picture(1 - self._trans_fun(rot_tensor), self.n_angles)
             print("Loss sums")
             visual_picture(loss_tensor, self.n_angles, dim=1)
             print("Signal")

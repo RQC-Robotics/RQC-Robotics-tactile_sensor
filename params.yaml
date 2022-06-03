@@ -11,7 +11,7 @@ env:
         x_len: 64 # in pixels
         y_len: 64 # in pixels    
         n_angles: 4
-        n_spl: 1 # show  
+        n_spl: 1 # number of pictures to show in testing mode  
     
     phys:
         fiber_sensibility : 
@@ -23,6 +23,7 @@ env:
     
 dataset:
     pic_path: 'data/pressure/pic'
+    signal_path: 'data/sensor_signal'
     # video_path: 'data/pressure/pic' for future
     n_samples: 150
 
@@ -33,13 +34,14 @@ sim:
     batch_size: 128
     test_size: 'None'
     max_possible_size: 20000
-    test_mod: True # verbose mod for testing sim
+    test_mod: False # verbose mod for testing sim
 
 train:
     models_path: 'models'
     batch_size: 128
     learning_rate: 0.0001
-    n_epochs: 20
+    n_epochs: 2
+    model_name: 'TorchSensorNN'
 
 evaluate:
     reports_path: 'reports'     

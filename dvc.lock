@@ -1,0 +1,33 @@
+schema: '2.0'
+stages:
+  simulate:
+    cmd: python dvc_sim_runner.py
+    deps:
+    - path: dvc_sim_runner.py
+      md5: eda23ddd879ed67a3f85368e42fdd06a
+      size: 885
+    params:
+      params.yaml:
+        dataset.pic_path: data/pressure/pic
+        dataset.signal_path: data/sensor_signal
+        env.phys:
+          fiber_sensibility:
+            value: 0.6
+            accuracy: 4
+          kof: 1
+          relative_noise: 0.01
+          noise: 0.01
+        env.sen_geometry:
+          distance: 0.5
+          x_len: 64
+          y_len: 64
+          n_angles: 4
+          n_spl: 1
+        random_seed: 4732
+  learning:
+    cmd: python dvc_model_learning.py
+    outs:
+    - path: models
+      md5: fef806532dc8eea10a7ab97c96e258b5.dir
+      size: 13352655
+      nfiles: 1
