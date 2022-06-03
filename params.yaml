@@ -37,8 +37,8 @@ sim:
     test_mod: False # verbose mod for testing sim
 
 train:
-    models_path: 'models'
-    batch_size: 128
+    models_path: 'data/model'
+    batch_size: 128     # doesn't work in torch nets
     learning_rate: 0.0001
     n_epochs: 2
     model_name: 'TorchSensorNN'

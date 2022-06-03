@@ -16,6 +16,7 @@ with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
 
 # %%
+torch.manual_seed(config['random_seed'])
 np.random.seed(config['random_seed'])
 seeds = np.random.randint(0, 2**31, size=3)
 

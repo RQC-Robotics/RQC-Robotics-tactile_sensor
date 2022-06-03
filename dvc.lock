@@ -3,9 +3,13 @@ stages:
   simulate:
     cmd: python dvc_sim_runner.py
     deps:
+    - path: data/pressure/pic
+      md5: 3b0c1e5969643d856f8c1d68710572e3.dir
+      size: 84382976
+      nfiles: 42
     - path: dvc_sim_runner.py
-      md5: eda23ddd879ed67a3f85368e42fdd06a
-      size: 885
+      md5: bc889f134e926c836e7e833a0f77bb57
+      size: 1181
     params:
       params.yaml:
         dataset.pic_path: data/pressure/pic
@@ -24,10 +28,42 @@ stages:
           n_angles: 4
           n_spl: 1
         random_seed: 4732
+        sim:
+          pic_path: data/fiber_loss/pic
+          random_rot: 1
+          batch_size: 128
+          test_size: None
+          max_possible_size: 20000
+          test_mod: false
+    outs:
+    - path: data/sensor_signal
+      md5: 748006259d0220b30e69963c35303379.dir
+      size: 5278976
+      nfiles: 42
   learning:
     cmd: python dvc_model_learning.py
+    deps:
+    - path: data/pressure/pic
+      md5: 3b0c1e5969643d856f8c1d68710572e3.dir
+      size: 84382976
+      nfiles: 42
+    - path: data/sensor_signal
+      md5: 748006259d0220b30e69963c35303379.dir
+      size: 5278976
+      nfiles: 42
+    - path: dvc_model_learning.py
+      md5: 71e516c36ca06c95a4a81a8e5261e8e8
+      size: 6119
+    params:
+      params.yaml:
+        train:
+          models_path: data/model
+          batch_size: 128
+          learning_rate: 0.0001
+          n_epochs: 2
+          model_name: TorchSensorNN
     outs:
-    - path: models
-      md5: fef806532dc8eea10a7ab97c96e258b5.dir
+    - path: data/model
+      md5: a0a1d02b0d883e0468460081b31f9879.dir
       size: 13352655
       nfiles: 1
