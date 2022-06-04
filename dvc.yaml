@@ -27,6 +27,8 @@ stages:
       - dvc_model_learning.py
     outs:
       - data/model
+    plots:
+      - reports/learning_curve.csv
 
   # evaluate:
 

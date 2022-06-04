@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from os.path import join as jn
+import pandas as pd
 import yaml
 import torch_sensor_lib as tsl
 
@@ -10,6 +11,7 @@ from torchsummary import summary
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 import os
+import json
 
 # %%
 with open('params.yaml') as conf_file:
@@ -148,7 +150,7 @@ def iter_train(train_loader, test_loader, model, epochs, batch_size, optimizer,
     #                           shuffle=True)
     # test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
-    for epoch in tqdm(range(epochs)):
+    for epoch in tqdm(range(epochs), desc="Learning", unit='epoch'):
         train_loss = fit_epoch(model, train_loader, criterion, optimizer)
         # print("loss", f"{train_loss:.3f}")
 
@@ -178,6 +180,20 @@ for i, h in iter_train(train_dataloader,
     #     plt.xlabel("epochs")
     #     plt.ylabel("loss")
     #     plt.show()
+
+train_loss, test_loss = zip(*history)
+df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
+if not os.path.exists(config['evaluate']['reports_path']):
+    os.makedirs(config['evaluate']['reports_path'])
+df.to_csv(jn(config['evaluate']['reports_path'], 'learning_curve.csv'),
+          index=False)
+res = {'train': {'loss': train_loss[-1]}, 'test': {'loss': test_loss[-1]}}
+with open(jn(config['evaluate']['reports_path'], "summary.json"), "w") as f:
+    json.dump(res, f)
+# %%
+with open(jn(config['evaluate']['reports_path'], "arc.txt"), 'w') as file:
+    print(summary(model, (1, *next(iter(train_dataloader))[0].shape[1:])),
+          file=file)
 
 # %%
 # train_loss, test_loss = zip(*history)

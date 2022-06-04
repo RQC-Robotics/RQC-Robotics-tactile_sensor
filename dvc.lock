@@ -52,8 +52,8 @@ stages:
       size: 5278976
       nfiles: 42
     - path: dvc_model_learning.py
-      md5: 71e516c36ca06c95a4a81a8e5261e8e8
-      size: 6119
+      md5: b3a168d34ec110d97c8a754b342a504d
+      size: 6847
     params:
       params.yaml:
         train:
@@ -67,3 +67,6 @@ stages:
       md5: a0a1d02b0d883e0468460081b31f9879.dir
       size: 13352655
       nfiles: 1
+    - path: reports/learning_curve.csv
+      md5: 96fadb73b3bbaf110e1b56833351b81d
+      size: 101
