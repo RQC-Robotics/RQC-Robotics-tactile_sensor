@@ -52,5 +52,6 @@ stages:
     cmd: dvc plots show reports/learning_curve.csv --x-label "epochs" --y-label "loss"
 
     outs:
-    - dvc_plots/index.html
+    - dvc_plots/index.html:
+        cache: false
 
