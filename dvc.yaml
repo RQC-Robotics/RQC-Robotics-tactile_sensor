@@ -29,7 +29,9 @@ stages:
       - data/model
       
     plots:
-      - reports/learning_curve.csv
+      - reports/learning_curve.csv:
+          cache: false
+
     metrics:
       - reports/summary.json:
           cache: false
