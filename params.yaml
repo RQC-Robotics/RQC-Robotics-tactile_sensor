@@ -1,48 +1,46 @@
 random_seed: 4732
 
 env:
-    pressure_profile:
-        n_gauses: 10
-        size_kof: 5
-        g_param_path: 'data/gaus_param.npy'
+  pressure_profile:
+    n_gauses: 10
+    size_kof: 5
+    g_param_path: data/gaus_param.npy
 
-    sen_geometry:
-        distance: 0.5 # between fibers in mm
-        x_len: 64 # in pixels
-        y_len: 64 # in pixels    
-        n_angles: 4
-        n_spl: 1 # number of pictures to show in testing mode  
-    
-    phys:
-        fiber_sensibility : 
-            value: 0.6 # width of fiber in mm
-            accuracy: 4 # it is (size of kernel)/value 
-        kof: 1 # between apply force and loss in grams 
-        relative_noise: 0.01 # in fiber transmission detection
-        noise: 0.01 #  in fiber transmission detection
-    
+  sen_geometry:
+    distance: 0.5     # between fibers in mm
+    x_len: 64     # in pixels
+    y_len: 64     # in pixels    
+    n_angles: 4
+    n_spl: 1     # number of pictures to show in testing mode  
+  phys:
+    fiber_sensibility:
+      value: 0.6       # width of fiber in mm
+      accuracy: 4       # it is (size of kernel)/value 
+    kof: 1     # between apply force and loss in grams 
+    relative_noise: 0.01     # in fiber transmission detection
+    noise: 0.01     #  in fiber transmission detection
 dataset:
-    pic_path: 'data/pressure/pic'
-    signal_path: 'data/sensor_signal'
+  pic_path: data/pressure/pic
+  signal_path: data/sensor_signal
     # video_path: 'data/pressure/pic' for future
-    n_samples: 150
+  n_samples: 150
 
 sim:
-    pic_path: 'data/fiber_loss/pic'
+  pic_path: data/fiber_loss/pic
     # video_path: 'data/fiber_loss/video' for future
-    random_rot: 1
-    batch_size: 128
-    test_size: 'None'
-    max_possible_size: 20000
-    test_mod: False # verbose mod for testing sim
+  random_rot: 1
+  batch_size: 128
+  test_size: None
+  max_possible_size: 20000
+  test_mod: false   # verbose mod for testing sim
 
 train:
-    models_path: 'data/model'
-    batch_size: 128     # doesn't work in torch nets
-    learning_rate: 0.0001
-    n_epochs: 2
-    model_name: 'TorchSensorNN'
+  models_path: data/model
+  batch_size: 128       # doesn't work in torch nets
+  learning_rate: 0.0001
+  n_epochs: 5
+  model_name: TorchSensorNN
 
 evaluate:
-    reports_path: 'reports'     
-    pred_path: 'predicts'
+  reports_path: reports
+  pred_path: predicts

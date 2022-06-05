@@ -1,4 +1,4 @@
 outs:
-- md5: 31183464897eb52c6ecc1c87f7f6e6f3
-  size: 3128
+- md5: d7d87547b2040171d1858ccf0b2ca204
+  size: 30128
   path: gaus_param.npy
