@@ -18,4 +18,6 @@ TorchSensorNN(
 )
 
 ```
-![l_curve](l_curve.png)
+![learning curve](l_curve.png)
+## Examples of predictions
+![examples](predict_examples.png)

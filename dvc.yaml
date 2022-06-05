@@ -27,10 +27,30 @@ stages:
       - dvc_model_learning.py
     outs:
       - data/model
+      
     plots:
       - reports/learning_curve.csv
+    metrics:
+      - reports/summary.json:
+          cache: false
 
-  # evaluate:
+  evaluate:
+    cmd: python dvc_evaluate_model.py
 
-  # deps:
+    deps:
+    - data/model
+
+    outs:
+    - reports/report.md:
+        cache: false
+    - reports/l_curve.png:
+        cache: false
+    - reports/predict_examples.png:
+        cache: false
+
+  make_plot:
+    cmd: dvc plots show reports/learning_curve.csv --x-label "epochs" --y-label "loss"
+
+    outs:
+    - dvc_plots/index.html
 

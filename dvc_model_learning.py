@@ -190,10 +190,6 @@ df.to_csv(jn(config['evaluate']['reports_path'], 'learning_curve.csv'),
 res = {'train': {'loss': train_loss[-1]}, 'test': {'loss': test_loss[-1]}}
 with open(jn(config['evaluate']['reports_path'], "summary.json"), "w") as f:
     json.dump(res, f)
-# %%
-with open(jn(config['evaluate']['reports_path'], "arc.txt"), 'w') as file:
-    print(summary(model, (1, *next(iter(train_dataloader))[0].shape[1:])),
-          file=file)
 
 # %%
 # train_loss, test_loss = zip(*history)
