@@ -1,4 +1,21 @@
 stages:
+  profile_generation:
+    cmd: python dvc_pressure_map_gen.py
+    deps:
+      - dvc_pressure_map_gen.py
+    params:
+      - gengaus
+      - random_seed
+      - dataset.n_samples
+      - dataset.pic_path
+      - env.sen_geometry.x_len
+      - env.sen_geometry.y_len
+      - env.pressure_profile
+      
+    # outs:
+    #   - data/gaus_param.npy
+      # - data/pressure/pic
+
   simulate:
     cmd: python dvc_sim_runner.py
     
@@ -11,7 +28,7 @@ stages:
       - sim
     deps:
       - dvc_sim_runner.py
-      - data/pressure/pic  
+      # - data/pressure/pic  
     outs:
       - data/sensor_signal
 
@@ -23,7 +40,7 @@ stages:
 
     deps:
       - data/sensor_signal
-      - data/pressure/pic  
+      # - data/pressure/pic  
       - dvc_model_learning.py
     outs:
       - data/model
