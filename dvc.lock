@@ -102,7 +102,7 @@ stages:
       size: 1976
     params:
       params.yaml:
-        dataset.n_samples: 300
+        dataset.n_samples: 500000
         dataset.pic_path: data/pressure/pic
         env.pressure_profile:
           n_gauses: 10
@@ -111,14 +111,14 @@ stages:
         env.sen_geometry.x_len: 64
         env.sen_geometry.y_len: 64
         gengaus:
-          batch_size: 100
+          batch_size: 1000
           save_batch_size: None
         random_seed: 4732
     outs:
     - path: data/pressure/pic
-      md5: 562b4a9ee0461a9549adeca94720061c.dir
-      size: 4915584
-      nfiles: 3
+      md5: b906099f553c1bb9a1844c3e76a57aac.dir
+      size: 8192064000
+      nfiles: 500
   batch_splitting:
     cmd: python3 dvc_sim_batch_split.py
     deps:
