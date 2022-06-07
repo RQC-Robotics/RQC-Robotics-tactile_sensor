@@ -77,7 +77,7 @@ class FiberSimulator():
         torch.Tensor : sensor outputs [batch_size, n_angles, W]
         """
         if not isinstance(pressure_mat, torch.Tensor):
-            pressure_mat = torch.Tensor(pressure_mat, device=self.device)
+            pressure_mat = torch.tensor(pressure_mat, device=self.device)
 
         rot_tensor = self._rotate(pressure_mat)
 
