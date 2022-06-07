@@ -54,7 +54,7 @@ class DataSet():
 
 
 input_path = config['dataset']['signal_path']
-output_path = config['dataset']['pic_path']
+output_path = config['sim']['pic_path']
 
 test_dataloader = DataSet(jn(input_path, 'test'), output_path)
 train_dataloader = DataSet(jn(input_path, 'train'), output_path)
@@ -70,7 +70,7 @@ print('input batch shape: ',
 # %%
 
 if not torch.cuda.is_available():
-    print('CUDA is not available.  Training on CPU ...')
+    print('CUDA is NOT available.  Training on CPU ...')
 else:
     print('CUDA is available!  Training on GPU ...')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -143,8 +143,7 @@ def predict(model, test_loader):
     return torch.cat(result).numpy()
 
 
-def iter_train(train_loader, test_loader, model, epochs, batch_size, optimizer,
-               criterion):
+def iter_train(train_loader, test_loader, model, epochs, optimizer, criterion):
     # train_loader = DataLoader(train_dataset,
     #                           batch_size=batch_size,
     #                           shuffle=True)
@@ -166,7 +165,6 @@ for i, h in iter_train(train_dataloader,
                        test_dataloader,
                        model=model,
                        epochs=tr['n_epochs'],
-                       batch_size=tr['batch_size'],
                        optimizer=optim,
                        criterion=loss_fn):
     history.append(h)

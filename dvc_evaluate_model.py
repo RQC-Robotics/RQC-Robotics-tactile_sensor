@@ -58,13 +58,13 @@ class DataSet():
 
 
 input_path = config['dataset']['signal_path']
-output_path = config['dataset']['pic_path']
+output_path = config['sim']['pic_path']
 
 test_dataloader = DataSet(jn(input_path, 'test'), output_path)
 
 # %%
 if not torch.cuda.is_available():
-    print('CUDA is not available.  Training on CPU ...')
+    print('CUDA is NOT available.  Training on CPU ...')
 else:
     print('CUDA is available!  Training on GPU ...')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'

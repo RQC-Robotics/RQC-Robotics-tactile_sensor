@@ -10,7 +10,7 @@ import os
 Requirements:
 
 dataset.signal_path
-dataset.pic_path
+sim.pic_path
 random_seed
 
 env.sen_geometry
@@ -29,7 +29,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 sim = tsl.FiberSimulator(config, device=device)
 
 # %%
-pic_path = config['dataset']['pic_path']
+pic_path = config['sim']['pic_path']
 signal_path = config['dataset']['signal_path']
 if not os.path.exists(signal_path):
     os.makedirs(jn(signal_path, 'test'))

@@ -1,6 +1,6 @@
 stages:
   profile_generation:
-    cmd: python dvc_pressure_map_gen.py
+    cmd: python3 dvc_pressure_map_gen.py
     deps:
       - dvc_pressure_map_gen.py
     params:
@@ -12,9 +12,21 @@ stages:
       - env.sen_geometry.y_len
       - env.pressure_profile
       
-    # outs:
+    outs:
+      - data/pressure/pic
     #   - data/gaus_param.npy
-      # - data/pressure/pic
+  
+  batch_splitting:
+    cmd: python3 dvc_sim_batch_split.py
+    deps:
+      - data/pressure/pic
+      - dvc_sim_batch_split.py
+    params:
+      - sim.batch_size
+      - sim.pic_path
+      - dataset.pic_path
+    outs:
+      - data/pressure/batched_pic  
 
   simulate:
     cmd: python dvc_sim_runner.py
@@ -28,19 +40,19 @@ stages:
       - sim
     deps:
       - dvc_sim_runner.py
-      # - data/pressure/pic  
+      - data/pressure/batched_pic  
     outs:
       - data/sensor_signal
 
   learning:
-    cmd: python dvc_model_learning.py
+    cmd: python3 dvc_model_learning.py
 
     params:
       - train
 
     deps:
       - data/sensor_signal
-      # - data/pressure/pic  
+      - data/pressure/batched_pic  
       - dvc_model_learning.py
     outs:
       - data/model
@@ -54,7 +66,7 @@ stages:
           cache: false
 
   evaluate:
-    cmd: python dvc_evaluate_model.py
+    cmd: python3 dvc_evaluate_model.py
 
     deps:
     - data/model

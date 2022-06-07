@@ -2,11 +2,17 @@ import sensor_lib as sl
 import tensorflow as tf
 import numpy as np
 import sys
+import os
 from os.path import join as jn
 import yaml
+from tqdm import tqdm
 
 with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
+
+if not os.path.exists(config['dataset']['pic_path']):
+    os.makedirs(config['dataset']['pic_path'])
+
 geo = config['env']['sen_geometry']
 x = geo['x_len']
 y = geo['y_len']
@@ -26,17 +32,19 @@ with open(config['env']['pressure_profile']['g_param_path'], 'wb+') as f:
     np.save(f, gaus_data)
 
 bs_gpu = config['gengaus']['batch_size']
-bs_save = config['gengaus']['save_bath_size']
+bs_save = config['gengaus']['save_batch_size']
+if bs_save == "None":
+    bs_save = bs_gpu
+    
 dataset = tf.data.Dataset.from_tensor_slices(gaus_data)
 batches = dataset.batch(bs_gpu, drop_remainder=False)
 
 i = 0
 n = int(bs_save / bs_gpu)
 pictures = []
-for batch in batches:
+for batch in tqdm(batches, unit='batch'):
     picture = sl.generate_pictures(batch, vec_mat)
     pictures.append(picture)
-    print('generated batch:', i)
     i += 1
     if i % n == 0:
         pictures = tf.concat(pictures, axis=0)
