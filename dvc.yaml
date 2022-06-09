@@ -28,7 +28,7 @@ stages:
     outs:
       - data/pressure/batched_pic  
 
-  simulate:
+  simulation:
     cmd: python dvc_sim_runner.py
     
     params:
@@ -54,6 +54,7 @@ stages:
       - data/sensor_signal
       - data/pressure/batched_pic  
       - dvc_model_learning.py
+      # - torch_sensor_lib/nets.py
     outs:
       - data/model
       
@@ -65,7 +66,7 @@ stages:
       - reports/summary.json:
           cache: false
 
-  evaluate:
+  evaluation:
     cmd: python3 dvc_evaluate_model.py
 
     deps:

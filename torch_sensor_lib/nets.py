@@ -16,3 +16,11 @@ class TorchSensorNN(nn.Module):
 
     def forward(self, x):
         return self.sequential(x)
+
+class SensorNN5S_norm_deep(nn.Module):
+
+    def __init__(self, input_shape, output_shape):
+        super(SensorNN5S_norm_deep, self).__init__()
+
+    def forward(self, x):
+        pass

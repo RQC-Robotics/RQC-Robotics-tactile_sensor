@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 import os
+from tqdm import tqdm
 import yaml
 import math
 
@@ -22,7 +23,7 @@ if n == 'None':
     n = int(config['gengaus']['batch_size'] /
             config["env"]['sen_geometry']['n_angles'] / 2)
 i = 0
-for file_name in big_files:
+for file_name in tqdm(big_files, unit='batch'):
     pic = np.load(os.path.join(pic_path, file_name))
     # signal = np.load(jn(signal_path))
     for di in range(math.ceil(pic.shape[0] / n)):
