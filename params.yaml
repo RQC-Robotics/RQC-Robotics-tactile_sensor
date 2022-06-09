@@ -1,8 +1,8 @@
 random_seed: 4732
 
 gengaus:
-    batch_size: 1000
-    save_batch_size: None # should be divisible by batch_size
+  batch_size: 100
+  save_batch_size: None   # should be divisible by batch_size
 
 env:
   pressure_profile:
@@ -23,12 +23,11 @@ env:
     kof: 1     # between apply force and loss in grams 
     relative_noise: 0.01     # in fiber transmission detection
     noise: 0.01     #  in fiber transmission detection
-    
 dataset:
   pic_path: data/pressure/pic
   signal_path: data/sensor_signal
     # video_path: 'data/pressure/pic' for future
-  n_samples: 500_000
+  n_samples: 1_000
 
 sim:
   pic_path: data/pressure/batched_pic
@@ -43,8 +42,8 @@ train:
   models_path: data/model
   # batch_size: 128       # in torch nets sim.batch_size is used
   learning_rate: 0.0001
-  n_epochs: 200
-  model_name: TorchSensorNN
+  n_epochs: 20
+  model_name: TorchSensorNN5S_norm_deep
 
 evaluate:
   reports_path: reports

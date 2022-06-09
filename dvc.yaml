@@ -1,6 +1,6 @@
 stages:
   profile_generation:
-    cmd: python3 dvc_pressure_map_gen.py
+    cmd: python dvc_pressure_map_gen.py
     deps:
       - dvc_pressure_map_gen.py
     params:
@@ -17,7 +17,7 @@ stages:
     #   - data/gaus_param.npy
   
   batch_splitting:
-    cmd: python3 dvc_sim_batch_split.py
+    cmd: python dvc_sim_batch_split.py
     deps:
       - data/pressure/pic
       - dvc_sim_batch_split.py
@@ -45,7 +45,7 @@ stages:
       - data/sensor_signal
 
   learning:
-    cmd: python3 dvc_model_learning.py
+    cmd: python dvc_model_learning.py
 
     params:
       - train
@@ -67,7 +67,7 @@ stages:
           cache: false
 
   evaluation:
-    cmd: python3 dvc_evaluate_model.py
+    cmd: python dvc_evaluate_model.py
 
     deps:
     - data/model
