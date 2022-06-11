@@ -54,7 +54,7 @@ stages:
       - data/sensor_signal
       - data/pressure/batched_pic  
       - dvc_model_learning.py
-      # - torch_sensor_lib/nets.py
+      - torch_sensor_lib/nets.py
     outs:
       - data/model
       
