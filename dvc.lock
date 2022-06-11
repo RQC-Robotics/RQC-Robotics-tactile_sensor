@@ -54,8 +54,8 @@ stages:
       md5: 64242eb559a35293c09ee544a2c31cce
       size: 6575
     - path: torch_sensor_lib/nets.py
-      md5: 9aac7e620109b05e8ede6c17ed9ec57c
-      size: 2812
+      md5: 0c933083c978340c0ece1f894b3b93d4
+      size: 2818
     params:
       params.yaml:
         train:
@@ -65,15 +65,15 @@ stages:
           model_name: TorchSensorNN5S_norm_deep
     outs:
     - path: data/model
-      md5: 751263eee6503ea20991f8e2f8f2de2e.dir
-      size: 16201443
+      md5: d5b9b100b124a2c48f3f85428a0cded2.dir
+      size: 16197237
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 77bdf71744e8234c6556341dc36cc881
-      size: 3918
+      md5: 95c4a48a6a4b4a5c12417652ccfa1734
+      size: 3865
     - path: reports/summary.json
-      md5: 2b3ca6f9f4a6f5a4d952509fef6b65db
-      size: 79
+      md5: 945e1d278ef8324694cf98beb4d1554e
+      size: 77
   make_plot:
     cmd: dvc plots show reports/learning_curve.csv --x-label "epochs" --y-label "loss"
     outs:
@@ -185,16 +185,16 @@ stages:
     cmd: python3 dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 751263eee6503ea20991f8e2f8f2de2e.dir
-      size: 16201443
+      md5: d5b9b100b124a2c48f3f85428a0cded2.dir
+      size: 16197237
       nfiles: 1
     outs:
     - path: reports/l_curve.png
-      md5: 103f9b59277eb33611c538faec11b6ab
-      size: 53299
+      md5: dcff7bd1c1abbc0269811b58d85ae9f6
+      size: 60546
     - path: reports/predict_examples.png
-      md5: cb74355be6c6af72b061478fb9671d87
-      size: 502029
+      md5: e980191ae93eecb7fa2cee3657c01821
+      size: 451960
     - path: reports/report.md
-      md5: fccf2d544b4fb36a284c74c0ef88a63f
-      size: 1755
+      md5: 8a841d2ddb37d473eeeadc5d6f85c810
+      size: 1476

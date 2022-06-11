@@ -31,11 +31,11 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         
         self.block1 = nn.Sequential(
             nn.MaxPool2d((2, 1)),
-            nn.InstanceNorm2d(8, affine=True),
+            # nn.InstanceNorm2d(8, affine=True),
             nn.Conv2d(8, 64, (3, 1), padding='same'),
             nn.ReLU(),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
-            nn.InstanceNorm2d(64, affine=True)
+            # nn.InstanceNorm2d(64, affine=True)
         )
         self.pool1 = nn.MaxPool2d((4, 1), stride=(4, 1))
 
@@ -43,7 +43,7 @@ class TorchSensorNN5S_norm_deep(nn.Module):
             nn.Conv2d(72, 128, (3, 1), padding='same'),
             nn.ReLU(),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
-            nn.InstanceNorm2d(128, affine=True),
+            # nn.InstanceNorm2d(128, affine=True),
             nn.Conv2d(128, 128, (3, 1), padding='same'),
             nn.MaxPool2d((2, 1))
         )
