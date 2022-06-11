@@ -34,7 +34,7 @@ sim:
   pic_path: data/pressure/batched_pic
     # video_path: 'data/fiber_loss/video' for future
   random_rot: 1
-  batch_size: 100  # is None - gengaus.batchsize/n_angles/2
+  batch_size: 10  # is None - gengaus.batchsize/n_angles/2
   test_size: None
   # max_possible_size: 20000
   test_mod: false   # verbose mod for testing sim
@@ -43,7 +43,7 @@ train:
   models_path: data/model
   # batch_size: 128       # in torch nets sim.batch_size is used
   learning_rate: 0.0001
-  n_epochs: 50
+  n_epochs: 10
   model_name: TorchSensorNN5S_norm_deep
 
 evaluate:

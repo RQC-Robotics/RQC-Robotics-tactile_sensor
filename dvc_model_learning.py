@@ -81,7 +81,7 @@ model_name = tr['model_name']
 model = eval(
     f"tsl.{model_name}(next(iter(train_dataloader))[0].shape[1:], next(iter(train_dataloader))[1].shape[1:]).to(device)"
 )
-summary(model, next(iter(train_dataloader))[0].shape[1:])
+summary(model, next(iter(train_dataloader))[0].shape[1:], device=device)
 # print(model)
 optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()
@@ -148,13 +148,14 @@ def iter_train(train_loader, test_loader, model, epochs, optimizer, criterion):
     #                           batch_size=batch_size,
     #                           shuffle=True)
     # test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-    for epoch in tqdm(range(epochs), desc="Learning", unit='epoch'):
-        train_loss = fit_epoch(model, train_loader, criterion, optimizer)
-        # print("loss", f"{train_loss:.3f}")
-
-        test_loss = eval_epoch(model, test_loader, criterion)
-        yield epoch, (train_loss, test_loss)
+    with tqdm(total=epochs, desc="Learning", unit='epochs') as pbar:
+        for epoch in range(epochs):
+            train_loss = fit_epoch(model, train_loader, criterion, optimizer)
+            test_loss = eval_epoch(model, test_loader, criterion)
+            # print("loss", f"{train_loss:.3f}")
+            pbar.set_postfix(train_loss=train_loss, test_loss=test_loss)
+            pbar.update(1)
+            yield epoch, (train_loss, test_loss)
 
 
 # %%
@@ -178,7 +179,7 @@ for i, h in iter_train(train_dataloader,
     #     plt.xlabel("epochs")
     #     plt.ylabel("loss")
     #     plt.show()
-
+# %%
 train_loss, test_loss = zip(*history)
 df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
 if not os.path.exists(config['evaluate']['reports_path']):
