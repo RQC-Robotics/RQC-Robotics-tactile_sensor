@@ -5,7 +5,7 @@ numpy
 trimesh==3.12.3
 matplotlib==3.5.2
 torch
-torchsummary
+torchinfo
 tqdm
 torchvision
 jupyter

@@ -2,41 +2,50 @@
 ## Architecture summary
 ```
 
-TorchSensorNN5S_norm_deep(
-  (conv1): Sequential(
-    (0): Conv2d(1, 8, kernel_size=(3, 1), stride=(1, 1), padding=same)
-    (1): ReLU()
-  )
-  (block1): Sequential(
-    (0): MaxPool2d(kernel_size=(2, 1), stride=(2, 1), padding=0, dilation=1, ceil_mode=False)
-    (1): InstanceNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    (2): Conv2d(8, 64, kernel_size=(3, 1), stride=(1, 1), padding=same)
-    (3): ReLU()
-    (4): MaxPool2d(kernel_size=(2, 1), stride=(2, 1), padding=0, dilation=1, ceil_mode=False)
-    (5): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-  )
-  (pool1): MaxPool2d(kernel_size=(4, 1), stride=(4, 1), padding=0, dilation=1, ceil_mode=False)
-  (block2): Sequential(
-    (0): Conv2d(72, 128, kernel_size=(3, 1), stride=(1, 1), padding=same)
-    (1): ReLU()
-    (2): MaxPool2d(kernel_size=(2, 1), stride=(2, 1), padding=0, dilation=1, ceil_mode=False)
-    (3): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    (4): Conv2d(128, 128, kernel_size=(3, 1), stride=(1, 1), padding=same)
-    (5): MaxPool2d(kernel_size=(2, 1), stride=(2, 1), padding=0, dilation=1, ceil_mode=False)
-  )
-  (conv2): Sequential(
-    (0): Conv2d(200, 64, kernel_size=(1, 4), stride=(1, 1))
-    (1): ReLU()
-  )
-  (linear): Sequential(
-    (0): Linear(in_features=256, out_features=195, bias=True)
-    (1): ReLU()
-    (2): Linear(in_features=195, out_features=900, bias=True)
-    (3): ReLU()
-    (4): Linear(in_features=900, out_features=4096, bias=True)
-    (5): ReLU()
-  )
-)
+============================================================================================================================================
+Layer (type:depth-idx)                   Input Shape               Output Shape              Param #                   Kernel Shape
+============================================================================================================================================
+TorchSensorNN5S_norm_deep                [100, 4, 64]              [100, 64, 64]             --                        --
+├─Sequential: 1-1                        [100, 1, 64, 4]           [100, 8, 64, 4]           --                        --
+│    └─Conv2d: 2-1                       [100, 1, 64, 4]           [100, 8, 64, 4]           32                        [3, 1]
+│    └─ReLU: 2-2                         [100, 8, 64, 4]           [100, 8, 64, 4]           --                        --
+├─Sequential: 1-2                        [100, 8, 64, 4]           [100, 64, 16, 4]          --                        --
+│    └─MaxPool2d: 2-3                    [100, 8, 64, 4]           [100, 8, 32, 4]           --                        [2, 1]
+│    └─InstanceNorm2d: 2-4               [100, 8, 32, 4]           [100, 8, 32, 4]           16                        --
+│    └─Conv2d: 2-5                       [100, 8, 32, 4]           [100, 64, 32, 4]          1,600                     [3, 1]
+│    └─ReLU: 2-6                         [100, 64, 32, 4]          [100, 64, 32, 4]          --                        --
+│    └─MaxPool2d: 2-7                    [100, 64, 32, 4]          [100, 64, 16, 4]          --                        [2, 1]
+│    └─InstanceNorm2d: 2-8               [100, 64, 16, 4]          [100, 64, 16, 4]          128                       --
+├─MaxPool2d: 1-3                         [100, 8, 64, 4]           [100, 8, 16, 4]           --                        [4, 1]
+├─Sequential: 1-4                        [100, 72, 16, 4]          [100, 128, 4, 4]          --                        --
+│    └─Conv2d: 2-9                       [100, 72, 16, 4]          [100, 128, 16, 4]         27,776                    [3, 1]
+│    └─ReLU: 2-10                        [100, 128, 16, 4]         [100, 128, 16, 4]         --                        --
+│    └─MaxPool2d: 2-11                   [100, 128, 16, 4]         [100, 128, 8, 4]          --                        [2, 1]
+│    └─InstanceNorm2d: 2-12              [100, 128, 8, 4]          [100, 128, 8, 4]          256                       --
+│    └─Conv2d: 2-13                      [100, 128, 8, 4]          [100, 128, 8, 4]          49,280                    [3, 1]
+│    └─MaxPool2d: 2-14                   [100, 128, 8, 4]          [100, 128, 4, 4]          --                        [2, 1]
+├─MaxPool2d: 1-5                         [100, 72, 16, 4]          [100, 72, 4, 4]           --                        [4, 1]
+├─Sequential: 1-6                        [100, 200, 4, 4]          [100, 64, 4, 1]           --                        --
+│    └─Conv2d: 2-15                      [100, 200, 4, 4]          [100, 64, 4, 1]           51,264                    [1, 4]
+│    └─ReLU: 2-16                        [100, 64, 4, 1]           [100, 64, 4, 1]           --                        --
+├─Sequential: 1-7                        [100, 256]                [100, 4096]               --                        --
+│    └─Linear: 2-17                      [100, 256]                [100, 195]                50,115                    --
+│    └─ReLU: 2-18                        [100, 195]                [100, 195]                --                        --
+│    └─Linear: 2-19                      [100, 195]                [100, 900]                176,400                   --
+│    └─ReLU: 2-20                        [100, 900]                [100, 900]                --                        --
+│    └─Linear: 2-21                      [100, 900]                [100, 4096]               3,690,496                 --
+│    └─ReLU: 2-22                        [100, 4096]               [100, 4096]               --                        --
+============================================================================================================================================
+Total params: 4,047,363
+Trainable params: 4,047,363
+Non-trainable params: 0
+Total mult-adds (M): 769.01
+============================================================================================================================================
+Input size (MB): 0.10
+Forward/backward pass size (MB): 29.75
+Params size (MB): 16.19
+Estimated Total Size (MB): 46.04
+============================================================================================================================================
 
 ```
 ![learning curve](l_curve.png)

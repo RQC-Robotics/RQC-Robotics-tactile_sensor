@@ -6,7 +6,7 @@ import yaml
 import torch_sensor_lib as tsl
 
 import torch
-from torchsummary import summary
+from torchinfo import summary
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 import os
@@ -18,7 +18,7 @@ with open('params.yaml') as conf_file:
 
 torch.manual_seed(config['random_seed'])
 np.random.seed(config['random_seed'])
-seeds = np.random.randint(0, 2**31, size=3)
+device = 'cpu'
 model = torch.load(
     jn(config['train']['models_path'], config['train']['model_name'] + '.pt'))
 model.eval()
@@ -63,18 +63,17 @@ output_path = config['sim']['pic_path']
 test_dataloader = DataSet(jn(input_path, 'test'), output_path)
 
 # %%
-if not torch.cuda.is_available():
-    print('CUDA is NOT available.  Training on CPU ...')
-else:
-    print('CUDA is available!  Training on GPU ...')
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-# %%
-report = open(jn(out_path, 'report.md'), 'w')
+report = open(jn(out_path, 'report.md'), 'w', encoding="utf-8")
 print(f"# Report about training model **{config['train']['model_name']}**",
       file=report)
 print(f"## Architecture summary\n```\n", file=report)
-print(model, file=report)
+print(summary(
+    model,
+    next(iter(test_dataloader))[0].shape,
+    device='cpu',
+    col_names=["input_size", "output_size", "num_params", "kernel_size"],
+    verbose=0),
+      file=report)
 print('\n```', file=report)
 
 # %%
@@ -163,3 +162,5 @@ print("![examples](predict_examples.png)", file=report)
 
 # %%
 report.close()
+
+# %%
