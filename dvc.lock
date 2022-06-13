@@ -51,35 +51,39 @@ stages:
       size: 103680000
       nfiles: 10000
     - path: dvc_model_learning.py
-      md5: 226380cca567d1ef2bd0476ea3b6d97e
-      size: 6744
+      md5: 076299381679c6b604f930f3639b5ed1
+      size: 6746
     - path: torch_sensor_lib/nets.py
-      md5: bb033cd4bac5bc9d965c1f885f77e451
-      size: 2779
+      md5: 1eaf9962b6e6de2e8730644778ea79d9
+      size: 2781
     params:
       params.yaml:
         train:
           models_path: data/model
           learning_rate: 0.0001
-          n_epochs: 10
+          n_epochs: 15
           model_name: TorchSensorNN5S_norm_deep
     outs:
     - path: data/model
-      md5: d9b124cab12e27e3d09eb4136e067151.dir
-      size: 16205512
+      md5: 5daa848222ebf683b7059f542f023c3a.dir
+      size: 16205384
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 105b8c173feed9e2086e7d783de22db5
-      size: 417
+      md5: 90a9e8eadc6876b58644c1d35299481d
+      size: 612
     - path: reports/summary.json
-      md5: a7a5e1d5eced96d15004d075de507802
-      size: 77
+      md5: fd94a5ddff8c69f2dd8f4745230b8860
+      size: 78
   make_plot:
-    cmd: dvc plots show reports/learning_curve.csv --x-label "epochs" --y-label "loss"
+    cmd: dvc plots diff 140e9b --x-label "epochs" --y-label "loss"
+    deps:
+    - path: reports/learning_curve.csv
+      md5: 90a9e8eadc6876b58644c1d35299481d
+      size: 612
     outs:
     - path: dvc_plots/index.html
-      md5: 6bd0e262d7855334c03f7b938923dd66
-      size: 6061
+      md5: df2162495a901a27849b2051614cdfa1
+      size: 8997
   evaluate:
     cmd: python3 dvc_evaluate_model.py
     deps:
@@ -185,16 +189,16 @@ stages:
     cmd: python3 dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: d9b124cab12e27e3d09eb4136e067151.dir
-      size: 16205512
+      md5: 5daa848222ebf683b7059f542f023c3a.dir
+      size: 16205384
       nfiles: 1
     outs:
     - path: reports/l_curve.png
-      md5: 8969121956b56bcef8d39777b22ab475
-      size: 64369
+      md5: c7ba887e35c28b2fbfb2a1af5e702eb0
+      size: 67392
     - path: reports/predict_examples.png
-      md5: 3a0ccc36b29609bfe0fd91ed9b26a81a
-      size: 398857
+      md5: 52b07da7a725724da5a6dbfe7fcc31c1
+      size: 337209
     - path: reports/report.md
-      md5: b9c3352ed45f3f88405f803cc83ade9e
-      size: 1752
+      md5: 5e7a45f54e1dd0fd4370d00726c171d7
+      size: 1736

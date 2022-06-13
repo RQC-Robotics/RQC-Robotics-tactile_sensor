@@ -81,7 +81,7 @@ model_name = tr['model_name']
 model = eval(
     f"tsl.{model_name}(next(iter(train_dataloader))[0].shape[1:], next(iter(train_dataloader))[1].shape[1:]).to(device)"
 )
-summary(model, next(iter(train_dataloader))[0].shape[1:], device=device)
+# summary(model, next(iter(train_dataloader))[0].shape[1:], device=device)
 # print(model)
 optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()

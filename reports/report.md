@@ -34,7 +34,6 @@ TorchSensorNN5S_norm_deep(
     (2): Linear(in_features=195, out_features=900, bias=True)
     (3): ReLU()
     (4): Linear(in_features=900, out_features=4096, bias=True)
-    (5): ReLU()
   )
 )
 
