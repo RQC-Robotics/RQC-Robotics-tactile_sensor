@@ -41,7 +41,7 @@ test_size = config["sim"]["test_size"]
 if test_size == 'None':
     test_size = len(os.listdir(pic_path)) // 10
 # %%
-for i, file_name in tqdm(enumerate(os.listdir(pic_path))):
+for i, file_name in enumerate(tqdm(os.listdir(pic_path))):
     pic = np.load(jn(pic_path, file_name))
     signal = sim.fiber_real_sim(pic).cpu().numpy()
     if i < test_size:

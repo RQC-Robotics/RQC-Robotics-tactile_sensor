@@ -9,7 +9,6 @@ import torch_sensor_lib as tsl
 import torch
 from torchinfo import summary
 from tqdm import tqdm
-from torch.utils.data import DataLoader
 import os
 import json
 
@@ -25,47 +24,67 @@ seeds = np.random.randint(0, 2**31, size=3)
 # %%
 
 
-class DataSet():
+class DataLoader():
 
-    def __init__(self, input_path, output_path):
+    def __init__(self, input_path, output_path, batch_size=None):
         self.input_path = input_path
         self.output_path = output_path
         self.file_names = os.listdir(input_path)
+        if batch_size is None:
+            self.batch_size = np.load(jn(self.input_path,
+                                         self.file_names[0])).shape[0]
+        else:
+            self.batch_size = batch_size
         self.i = 0
+        self.loaded_in = []
+        self.loaded_out = []
+        self.loaded_len = 0
 
     def __iter__(self):
         self.i = 0
+        self.loaded_in = []
+        self.loaded_out = []
+        self.loaded_len = 0
         return self
 
     def __next__(self):
-        if self.i >= len(self.file_names):
+        while (self.i < len(self.file_names)
+               and self.loaded_len < self.batch_size):
+            self.loaded_in.append(
+                np.load(jn(self.input_path, self.file_names[self.i])))
+            self.loaded_out.append(
+                np.load(jn(output_path, self.file_names[self.i])))
+            self.loaded_len += self.loaded_in[-1].shape[0]
+            self.i += 1
+
+        if self.i >= len(self.file_names) and self.loaded_len <= 0:
             raise StopIteration
         else:
-            res = torch.from_numpy(np.load(jn(self.input_path,
-                             self.file_names[self.i]))), \
-                  torch.from_numpy(np.load(jn(output_path,
-                             self.file_names[self.i])))
-            self.i += 1
-            return res
+            input_data = np.concatenate(self.loaded_in)
+            output_data = np.concatenate(self.loaded_out)
+            self.loaded_len -= min(self.batch_size, input_data.shape[0])
+            self.loaded_out = [output_data[self.batch_size:]]
+            self.loaded_in = [input_data[self.batch_size:]]
 
-    def __getitem__(self, index):
-        return np.load(jn(self.input_path, self.file_names[index])), np.load(
-            jn(output_path, self.file_names[index]))
+            return torch.from_numpy(input_data[:self.batch_size]), \
+                    torch.from_numpy(output_data[:self.batch_size])
 
 
 input_path = config['dataset']['signal_path']
 output_path = config['sim']['pic_path']
-
-test_dataloader = DataSet(jn(input_path, 'test'), output_path)
-train_dataloader = DataSet(jn(input_path, 'train'), output_path)
+batchsize = config['train']['batch_size']
+test_dataloader = DataLoader(jn(input_path, 'test'), output_path)
+train_dataloader = DataLoader(jn(input_path, 'train'),
+                              output_path,
+                              batch_size=batchsize)
 
 # %% [markdown]
 # # defining and fitting torch net
 
 # %%
 print('input batch shape: ',
-      next(iter(test_dataloader))[0].shape, '\noutput batch shape: ',
-      next(iter(test_dataloader))[1].shape)
+      next(iter(train_dataloader))[0].shape, '\noutput batch shape: ',
+      next(iter(train_dataloader))[1].shape)
 
 # %%
 
@@ -81,7 +100,7 @@ model_name = tr['model_name']
 model = eval(
     f"tsl.{model_name}(next(iter(train_dataloader))[0].shape[1:], next(iter(train_dataloader))[1].shape[1:]).to(device)"
 )
-summary(model, next(iter(train_dataloader))[0].shape, device=device)
+# summary(model, next(iter(train_dataloader))[0].shape, device=device)
 # print(model)
 optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()
@@ -129,11 +148,9 @@ def eval_epoch(model, test_loader, criterion):
 
 
 def predict(model, test_loader):
+
     with torch.no_grad():
         result = []
-        # test_loader = DataLoader(test_dataset,
-        #                          batch_size=batch_size,
-        #                          shuffle=False)
         for inputs, _ in test_loader:
             inputs = inputs.to(device)
             model.eval()
@@ -144,10 +161,7 @@ def predict(model, test_loader):
 
 
 def iter_train(train_loader, test_loader, model, epochs, optimizer, criterion):
-    # train_loader = DataLoader(train_dataset,
-    #                           batch_size=batch_size,
-    #                           shuffle=True)
-    # test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
     with tqdm(total=epochs, desc="Learning", unit='epochs') as pbar:
         for epoch in range(epochs):
             train_loss = fit_epoch(model, train_loader, criterion, optimizer)

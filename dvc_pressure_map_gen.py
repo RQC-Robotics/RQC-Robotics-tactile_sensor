@@ -34,8 +34,8 @@ with open(config['env']['pressure_profile']['g_param_path'], 'wb+') as f:
 bs_gpu = config['gengaus']['batch_size']
 bs_save = config['gengaus']['save_batch_size']
 if bs_save == "None":
-    bs_save = bs_gpu
-    
+    bs_save = config['dataset']['n_samples']
+
 dataset = tf.data.Dataset.from_tensor_slices(gaus_data)
 batches = dataset.batch(bs_gpu, drop_remainder=False)
 

@@ -2,7 +2,8 @@ random_seed: 4732
 
 gengaus:
   batch_size: 100
-  save_batch_size: None   # should be divisible by batch_size
+  save_batch_size: None   # should be divisible by batch_size; 
+  # dataset.n_samples by default
 
 env:
   pressure_profile:
@@ -33,14 +34,14 @@ sim:
   pic_path: data/pressure/batched_pic
     # video_path: 'data/fiber_loss/video' for future
   random_rot: 1
-  batch_size: 1000  # is None - gengaus.batchsize/n_angles/2
+  batch_size: 100  # is None - gengaus.batchsize/n_angles/2
   test_size: None
   # max_possible_size: 20000
   test_mod: false   # verbose mod for testing sim
 
 train:
   models_path: data/model
-  # batch_size: 128       # in torch nets sim.batch_size is used
+  batch_size: 7  
   learning_rate: 0.0001
   n_epochs: 20
   model_name: TorchSensorNN5S_norm_deep
