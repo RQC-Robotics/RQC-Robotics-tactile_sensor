@@ -6,6 +6,7 @@ import yaml
 import torch_sensor_lib as tsl
 
 import torch
+from torch.utils.tensorboard import SummaryWriter
 from torchinfo import summary
 from tqdm import tqdm
 from torch.utils.data import DataLoader
@@ -76,6 +77,8 @@ print(summary(
       file=report)
 print('\n```', file=report)
 
+writer=SummaryWriter('logsdir')
+writer.add_graph(model, next(iter(test_dataloader))[0])
 # %%
 curve = pd.read_csv(jn(out_path, 'learning_curve.csv'))
 curve.plot()

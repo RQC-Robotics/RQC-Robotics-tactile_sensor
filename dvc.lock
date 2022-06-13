@@ -62,21 +62,21 @@ stages:
           model_name: TorchSensorNN5S_norm_deep
     outs:
     - path: data/model
-      md5: 7f6dab86f4ee4f7cc85ec731c8cc16fd.dir
-      size: 16205512
+      md5: b5989ceaff1ed3dc8ed54b6e715b3e49.dir
+      size: 16205704
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: f72ee4bb9c2c49d7b6e17d29ce49d43c
-      size: 830
+      md5: 1567e92c77848c2cad1e2bdcc5a41740
+      size: 835
     - path: reports/summary.json
-      md5: d0a084cac38b974008130eeb31f64b76
-      size: 78
+      md5: 051478b670bd98ad9e023b3f38da459f
+      size: 79
   make_plot:
     cmd: dvc plots show reports/learning_curve.csv --x-label "epochs" --y-label "loss"
     outs:
     - path: dvc_plots/index.html
-      md5: 16db048174f1ee2c54feea89d64ddf6c
-      size: 5073
+      md5: 4a62d09c25944366f299f99389f59b38
+      size: 8347
   evaluate:
     cmd: python3 dvc_evaluate_model.py
     deps:
@@ -182,16 +182,19 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 7f6dab86f4ee4f7cc85ec731c8cc16fd.dir
-      size: 16205512
+      md5: b5989ceaff1ed3dc8ed54b6e715b3e49.dir
+      size: 16205704
       nfiles: 1
+    - path: dvc_evaluate_model.py
+      md5: 20d3a531b220234708acdfc04e7700d2
+      size: 5013
     outs:
     - path: reports/l_curve.png
-      md5: 7fa9254a988cc9176859e8b6f0089843
-      size: 62300
+      md5: a6c4b57c90004e37757567debf9e12ed
+      size: 62366
     - path: reports/predict_examples.png
-      md5: 17c965ceeaa87e6dfbd544e8a2708aa9
-      size: 342286
+      md5: 1cd92396020d1956333402ea03a45d67
+      size: 342318
     - path: reports/report.md
       md5: 9606923c839e9454c879607c84aef0d4
       size: 5162

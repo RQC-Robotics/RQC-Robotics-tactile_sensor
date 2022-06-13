@@ -71,7 +71,7 @@ stages:
 
     deps:
     - data/model
-
+    - dvc_evaluate_model.py
     outs:
     - reports/report.md:
         cache: false
@@ -79,6 +79,7 @@ stages:
         cache: false
     - reports/predict_examples.png:
         cache: false
+    - logdir
 
   make_plot:
     cmd: dvc plots show reports/learning_curve.csv --x-label "epochs" --y-label "loss"
