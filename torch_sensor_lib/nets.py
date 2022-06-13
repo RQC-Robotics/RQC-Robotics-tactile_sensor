@@ -38,6 +38,7 @@ class TorchSensorNN5S_norm_deep(nn.Module):
             nn.LazyInstanceNorm2d()
         )
         self.pool1 = nn.MaxPool2d((4, 1), stride=(4, 1))
+        self.pool2 = nn.MaxPool2d((4, 1), stride=(4, 1))
 
         self.block2 = nn.Sequential(
             nn.Conv2d(72, 128, (3, 1), padding='same'),
@@ -74,7 +75,7 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         
         checkpoint2 = x
         x = self.block2(x)
-        checkpoint2 = self.pool1(checkpoint2)
+        checkpoint2 = self.pool2(checkpoint2)
         x = torch.cat([x, checkpoint2], 1)
 
         x = self.conv2(x)
