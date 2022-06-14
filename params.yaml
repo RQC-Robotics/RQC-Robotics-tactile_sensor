@@ -44,7 +44,7 @@ train:
   # batch_size: 128       # in torch nets sim.batch_size is used
   learning_rate: 0.0001
   n_epochs: 15
-  model_name: TorchSensorNN
+  model_name: TorchSensorNN5S_norm_deep
 
 evaluate:
   reports_path: reports

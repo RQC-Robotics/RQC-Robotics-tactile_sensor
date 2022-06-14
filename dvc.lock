@@ -54,36 +54,36 @@ stages:
       md5: 076299381679c6b604f930f3639b5ed1
       size: 6746
     - path: torch_sensor_lib/nets.py
-      md5: 1eaf9962b6e6de2e8730644778ea79d9
-      size: 2781
+      md5: d76cb204d0082adc4d0608412978bbc6
+      size: 2788
     params:
       params.yaml:
         train:
           models_path: data/model
           learning_rate: 0.0001
           n_epochs: 15
-          model_name: TorchSensorNN
+          model_name: TorchSensorNN5S_norm_deep
     outs:
     - path: data/model
-      md5: e9e639ad75d9010914d3c154e865a090.dir
-      size: 13352783
+      md5: 84e83df792fd9ff6af8d7c6bbd059e93.dir
+      size: 16205576
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 9094a6eee8f57f375ee7d802f70a33ca
-      size: 608
+      md5: 3688a6f19ef0c3414706f8c80ae6a799
+      size: 611
     - path: reports/summary.json
-      md5: ab9bb221322ba139382f4f441ec29714
-      size: 78
+      md5: 00945ae298070baae03f64cf8e49c580
+      size: 79
   make_plot:
     cmd: dvc plots diff 140e9b --x-label "epochs" --y-label "loss"
     deps:
     - path: reports/learning_curve.csv
-      md5: 9094a6eee8f57f375ee7d802f70a33ca
-      size: 608
+      md5: 3688a6f19ef0c3414706f8c80ae6a799
+      size: 611
     outs:
     - path: dvc_plots/index.html
-      md5: 40559c6065299807f46f81ac130de57b
-      size: 8993
+      md5: cd84327f936a1bab85a3ed2aaebf3ecb
+      size: 8996
   evaluate:
     cmd: python3 dvc_evaluate_model.py
     deps:
@@ -189,16 +189,16 @@ stages:
     cmd: python3 dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: e9e639ad75d9010914d3c154e865a090.dir
-      size: 13352783
+      md5: 84e83df792fd9ff6af8d7c6bbd059e93.dir
+      size: 16205576
       nfiles: 1
     outs:
     - path: reports/l_curve.png
-      md5: 58188a52137ee96595266e397dba4fed
-      size: 65206
+      md5: f340733d1474aad8e9787d2b7a4687a1
+      size: 68036
     - path: reports/predict_examples.png
-      md5: 5a3edcb3c5319147706e2af3fab2250a
-      size: 430872
+      md5: 401c93a19e79cc5417c71172bae0a452
+      size: 331252
     - path: reports/report.md
-      md5: 4deb09523db60548c3e1abfdc5dd0cf8
-      size: 643
+      md5: 4e57c3c8498d323b9a097f72ec16b72b
+      size: 1776
