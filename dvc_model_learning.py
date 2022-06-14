@@ -199,7 +199,7 @@ if not os.path.exists(config['evaluate']['reports_path']):
     os.makedirs(config['evaluate']['reports_path'])
 df.to_csv(jn(config['evaluate']['reports_path'], 'learning_curve.csv'),
           index=False)
-res = {'train': {'loss': train_loss[-1]}, 'test': {'loss': test_loss[-1]}}
+res = {'train': {'loss': train_loss[-1]}, 'test': {'loss': min(test_loss)}}
 with open(jn(config['evaluate']['reports_path'], "summary.json"), "w") as f:
     json.dump(res, f)
 

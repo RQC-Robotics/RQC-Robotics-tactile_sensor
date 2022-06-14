@@ -77,7 +77,7 @@ print(summary(
       file=report)
 print('\n```', file=report)
 
-writer=SummaryWriter('logsdir')
+writer = SummaryWriter('logsdir')
 writer.add_graph(model, next(iter(test_dataloader))[0])
 writer.close()
 # %%
@@ -119,6 +119,44 @@ losses, pred_pic = picturewise_loss_and_predict(
 pred_pic.shape, losses.shape
 
 # %%
+import torch_sensor_lib as tsl
+
+
+def create_examples_mesh(indecies, sample_titles):
+    '''
+    plots mesh of pictures, by indecies
+    '''
+    y_titles = ["true", "predict", "signal"]
+    s = tsl.FiberSimulator(config, device='cpu')
+    config['env']['phys']['noise'] = 0
+    config['env']['phys']['relative_noise'] = 0
+
+    data = []
+    for ind in indecies:
+        data.append([])
+        double_ind = np.unravel_index(
+            ind, (len(test_dataloader), len(losses) // len(test_dataloader)))
+        signal, pic = test_dataloader[double_ind[0]]
+        signal, pic = signal[double_ind[1]], pic[double_ind[1]]
+        data[-1].append(pic)
+        data[-1].append(pred_pic[ind])
+        true_signal = signal[0]
+        pred_signal = s._sum_fiber_losses(
+            torch.from_numpy(pred_pic[ind:ind + 1]))[0].numpy()
+        data[-1].append(
+            np.concatenate(
+                [true_signal.reshape(-1, 1),
+                 pred_signal.reshape(-1, 1)],
+                axis=1))
+
+    visual_func = [lambda ax, pic: ax.imshow(pic)] * 2 + [
+        lambda ax, pic:
+        (ax.plot(pic, label=['received', 'predict']), ax.legend(loc="best"))
+    ]
+    tsl.visual_table_of_pictures(data, sample_titles, y_titles, visual_func)
+
+
+# %%
 best_ind = losses.argmin()
 worst_ind = losses.argmax()
 rand_ind1 = np.random.randint(len(losses))
@@ -127,38 +165,43 @@ indexes = [best_ind, rand_ind1, rand_ind2, worst_ind]
 sample_titles = ["best", "random", "random", "worst"]
 y_titles = ["true", "predict", "signal"]
 
-# %%
-import torch_sensor_lib as tsl
+create_examples_mesh(indexes, sample_titles)
 
-# %%
-s = tsl.FiberSimulator(config, device='cpu')
-config['env']['phys']['noise'] = 0
-config['env']['phys']['relative_noise'] = 0
-# TODO remove signal noise here
-data = []
-for ind in indexes:
-    data.append([])
-    double_ind = np.unravel_index(
-        ind, (len(test_dataloader), len(losses) // len(test_dataloader)))
-    signal, pic = test_dataloader[double_ind[0]]
-    signal, pic = signal[double_ind[1]], pic[double_ind[1]]
-    data[-1].append(pic)
-    data[-1].append(pred_pic[ind])
-    true_signal = signal[0]
-    pred_signal = s._sum_fiber_losses(torch.from_numpy(pred_pic[ind:ind +
-                                                                1]))[0].numpy()
-    data[-1].append(
-        np.concatenate([true_signal.reshape(-1, 1),
-                        pred_signal.reshape(-1, 1)],
-                       axis=1))
+# s = tsl.FiberSimulator(config, device='cpu')
+# config['env']['phys']['noise'] = 0
+# config['env']['phys']['relative_noise'] = 0
 
-# %%
-visual_func = [lambda ax, pic: ax.imshow(pic)] * 2 + [
-    lambda ax, pic:
-    (ax.plot(pic, label=['received', 'predict']), ax.legend(loc="best"))
-]
-tsl.visual_table_of_pictures(data, sample_titles, y_titles, visual_func)
+# data = []
+# for ind in indexes:
+#     data.append([])
+#     double_ind = np.unravel_index(
+#         ind, (len(test_dataloader), len(losses) // len(test_dataloader)))
+#     signal, pic = test_dataloader[double_ind[0]]
+#     signal, pic = signal[double_ind[1]], pic[double_ind[1]]
+#     data[-1].append(pic)
+#     data[-1].append(pred_pic[ind])
+#     true_signal = signal[0]
+#     pred_signal = s._sum_fiber_losses(torch.from_numpy(pred_pic[ind:ind +
+#                                                                 1]))[0].numpy()
+#     data[-1].append(
+#         np.concatenate([true_signal.reshape(-1, 1),
+#                         pred_signal.reshape(-1, 1)],
+#                        axis=1))
+
+# # %%
+# visual_func = [lambda ax, pic: ax.imshow(pic)] * 2 + [
+#     lambda ax, pic:
+#     (ax.plot(pic, label=['received', 'predict']), ax.legend(loc="best"))
+# ]
+# tsl.visual_table_of_pictures(data, sample_titles, y_titles, visual_func)
 plt.savefig(jn(out_path, 'predict_examples.png'), dpi=50)
+
+# more random predict examples
+n = 6
+indexes = np.random.randint(len(losses), size=n)
+sample_titles = ["random"] * n
+create_examples_mesh(indexes, sample_titles)
+plt.savefig(jn(out_path, 'rand_examples.png'), dpi=100)
 
 # %%
 print("## Examples of predictions", file=report)
