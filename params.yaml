@@ -21,8 +21,8 @@ env:
       value: 0.6       # width of fiber in mm
       accuracy: 4       # it is (size of kernel)/value 
     kof: 1     # between apply force and loss in grams 
-    relative_noise: 0.01     # in fiber transmission detection
-    noise: 0.01     #  in fiber transmission detection
+    relative_noise: 0.00     # in fiber transmission detection
+    noise: 0.00     #  in fiber transmission detection
     
 dataset:
   pic_path: data/pressure/pic

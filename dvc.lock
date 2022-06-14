@@ -47,7 +47,7 @@ stages:
       size: 1639680000
       nfiles: 10000
     - path: data/sensor_signal
-      md5: f4d9e438552ca19101ef7d9025337b4d.dir
+      md5: 0563f616d71d8da9777574ecf7583499.dir
       size: 103680000
       nfiles: 10000
     - path: dvc_model_learning.py
@@ -65,25 +65,25 @@ stages:
           model_name: TorchSensorNN5S_norm_deep
     outs:
     - path: data/model
-      md5: 84e83df792fd9ff6af8d7c6bbd059e93.dir
+      md5: ea7fc0feeb8a0106a6f66300da201df5.dir
       size: 16205576
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 3688a6f19ef0c3414706f8c80ae6a799
-      size: 611
+      md5: d1a268477fe57d1a28e993092ab49ed2
+      size: 612
     - path: reports/summary.json
-      md5: 00945ae298070baae03f64cf8e49c580
-      size: 79
+      md5: a6117210b220d696a82e8a168772a0f6
+      size: 78
   make_plot:
-    cmd: dvc plots diff 140e9b --x-label "epochs" --y-label "loss"
+    cmd: dvc plots diff 973a7c --x-label "epochs" --y-label "loss"
     deps:
     - path: reports/learning_curve.csv
-      md5: 3688a6f19ef0c3414706f8c80ae6a799
-      size: 611
+      md5: d1a268477fe57d1a28e993092ab49ed2
+      size: 612
     outs:
     - path: dvc_plots/index.html
-      md5: cd84327f936a1bab85a3ed2aaebf3ecb
-      size: 8996
+      md5: e9f5c70953b321f73b2ff918b65b01d0
+      size: 9972
   evaluate:
     cmd: python3 dvc_evaluate_model.py
     deps:
@@ -165,8 +165,8 @@ stages:
             value: 0.6
             accuracy: 4
           kof: 1
-          relative_noise: 0.01
-          noise: 0.01
+          relative_noise: 0.0
+          noise: 0.0
         env.sen_geometry:
           distance: 0.5
           x_len: 64
@@ -182,23 +182,23 @@ stages:
           test_mod: false
     outs:
     - path: data/sensor_signal
-      md5: f4d9e438552ca19101ef7d9025337b4d.dir
+      md5: 0563f616d71d8da9777574ecf7583499.dir
       size: 103680000
       nfiles: 10000
   evaluation:
     cmd: python3 dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 84e83df792fd9ff6af8d7c6bbd059e93.dir
+      md5: ea7fc0feeb8a0106a6f66300da201df5.dir
       size: 16205576
       nfiles: 1
     outs:
     - path: reports/l_curve.png
-      md5: f340733d1474aad8e9787d2b7a4687a1
-      size: 68036
+      md5: 7da9e69c332f6763096c17f1527b6539
+      size: 67584
     - path: reports/predict_examples.png
-      md5: 401c93a19e79cc5417c71172bae0a452
-      size: 331252
+      md5: 86c27d8c7e8d4c50a19b9bc35a7a9110
+      size: 338198
     - path: reports/report.md
       md5: 4e57c3c8498d323b9a097f72ec16b72b
       size: 1776
