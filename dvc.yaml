@@ -54,7 +54,7 @@ stages:
       - data/sensor_signal
       - data/pressure/batched_pic  
       - dvc_model_learning.py
-      # - torch_sensor_lib/nets.py
+      - torch_sensor_lib/nets.py
     outs:
       - data/model
       
@@ -82,8 +82,10 @@ stages:
     - logsdir
 
   make_plot:
-    cmd: dvc plots show reports/learning_curve.csv --x-label "epochs" --y-label "loss"
+    cmd: dvc plots diff 973a7c --x-label "epochs" --y-label "loss"
 
+    deps:
+    - reports/learning_curve.csv
     outs:
     - dvc_plots/index.html:
         cache: false

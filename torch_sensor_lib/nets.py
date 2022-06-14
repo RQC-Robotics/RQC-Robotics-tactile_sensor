@@ -60,7 +60,7 @@ class TorchSensorNN5S_norm_deep(nn.Module):
             nn.Linear(15*13, 30*30),
             nn.ReLU(),
             nn.Linear(30*30, output_shape[-1]*output_shape[-2]),
-            nn.ReLU()
+            nn.LeakyReLU(0.01)
         )
 
     def forward(self, x):

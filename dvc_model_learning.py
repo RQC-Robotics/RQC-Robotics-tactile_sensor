@@ -161,7 +161,6 @@ def predict(model, test_loader):
 
 
 def iter_train(train_loader, test_loader, model, epochs, optimizer, criterion):
-
     with tqdm(total=epochs, desc="Learning", unit='epochs') as pbar:
         for epoch in range(epochs):
             train_loss = fit_epoch(model, train_loader, criterion, optimizer)
@@ -193,7 +192,7 @@ for i, h in iter_train(train_dataloader,
     #     plt.xlabel("epochs")
     #     plt.ylabel("loss")
     #     plt.show()
-
+# %%
 train_loss, test_loss = zip(*history)
 df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
 if not os.path.exists(config['evaluate']['reports_path']):

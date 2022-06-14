@@ -7,7 +7,7 @@ gengaus:
 
 env:
   pressure_profile:
-    n_gauses: 10
+    n_gauses: 30
     size_kof: 5
     g_param_path: data/gaus_param.npy
 
@@ -20,10 +20,11 @@ env:
   phys:
     fiber_sensibility:
       value: 0.6       # width of fiber in mm
-      accuracy: 5       # it is (size of kernel)/value 
+      accuracy: 4       # it is (size of kernel)/value 
     kof: 1     # between apply force and loss in grams 
-    relative_noise: 0.01     # in fiber transmission detection
-    noise: 0.01     #  in fiber transmission detection
+    relative_noise: 0.00     # in fiber transmission detection
+    noise: 0.00     #  in fiber transmission detection
+    
 dataset:
   pic_path: data/pressure/pic
   signal_path: data/sensor_signal
@@ -43,7 +44,7 @@ train:
   models_path: data/model
   batch_size: 7  
   learning_rate: 0.0001
-  n_epochs: 20
+  n_epochs: 15
   model_name: TorchSensorNN5S_norm_deep
 
 evaluate:
