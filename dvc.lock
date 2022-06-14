@@ -47,43 +47,42 @@ stages:
       size: 16385280
       nfiles: 10
     - path: data/sensor_signal
-      md5: 8b9808de7ca71db2f8c773aa547413ea.dir
+      md5: 5ac7df3c31b85a7478077fd276c58445.dir
       size: 1025280
       nfiles: 10
     - path: dvc_model_learning.py
-      md5: 7891c2ac26cde58be5a14063403f4dca
-      size: 7264
+      md5: bdc201facc70ec700b373892ba516aad
+      size: 7350
     - path: torch_sensor_lib/nets.py
       md5: 8a697ab7b311e5cff0bf440686caedb6
       size: 2845
     params:
       params.yaml:
         train:
-          models_path: data/model
           batch_size: 7
           learning_rate: 0.0001
           n_epochs: 2
           model_name: TorchSensorNN5S_norm_deep
     outs:
     - path: data/model
-      md5: 5b996b047658c4f3e89cee9dbceabad3.dir
+      md5: e96292393a944b132578981e327fbec0.dir
       size: 16205320
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: be59baf1fb2e7ee06ee658669c168112
+      md5: 6cfab9e1185789491b9e699eb5fa8264
       size: 101
     - path: reports/summary.json
-      md5: 538c01401aba074eab42e08f3f1adb44
+      md5: 7e11353bbb46410dd8bf93405864b73b
       size: 79
   make_plot:
     cmd: dvc plots diff 973a7c --x-label "epochs" --y-label "loss"
     deps:
     - path: reports/learning_curve.csv
-      md5: be59baf1fb2e7ee06ee658669c168112
+      md5: 6cfab9e1185789491b9e699eb5fa8264
       size: 101
     outs:
     - path: dvc_plots/index.html
-      md5: 1860abf0888e0d2f963f4c411902099b
+      md5: 08134b998ac305f6cd55db3bdfbfa339
       size: 7402
   evaluate:
     cmd: python3 dvc_evaluate_model.py
@@ -106,16 +105,14 @@ stages:
     cmd: python dvc_pressure_map_gen.py
     deps:
     - path: dvc_pressure_map_gen.py
-      md5: b8fe255d50411abdaabf156ca2477885
-      size: 1996
+      md5: b964ef9c36d196d477e7583716bcd78d
+      size: 2076
     params:
       params.yaml:
         dataset.n_samples: 1000
-        dataset.pic_path: data/pressure/pic
         env.pressure_profile:
           n_gauses: 10
           size_kof: 5
-          g_param_path: data/gaus_param.npy
         env.sen_geometry.x_len: 64
         env.sen_geometry.y_len: 64
         gengaus:
@@ -135,13 +132,11 @@ stages:
       size: 16384128
       nfiles: 1
     - path: dvc_sim_batch_split.py
-      md5: dae4a56be158e37f0f39f0f554e0abd7
-      size: 954
+      md5: a7dae22c596ce5e964b94a946010c059
+      size: 1048
     params:
       params.yaml:
-        dataset.pic_path: data/pressure/pic
         sim.batch_size: 100
-        sim.pic_path: data/pressure/batched_pic
     outs:
     - path: data/pressure/batched_pic
       md5: 4d557bccde08a3283a58293c0b1a782f.dir
@@ -155,16 +150,14 @@ stages:
       size: 16385280
       nfiles: 10
     - path: dvc_sim_runner.py
-      md5: 69e09714290d8bdcdb872ea451e88cc2
-      size: 1201
+      md5: 2674d770ae96b55de028f29614016501
+      size: 1292
     params:
       params.yaml:
-        dataset.pic_path: data/pressure/pic
-        dataset.signal_path: data/sensor_signal
         env.phys:
           fiber_sensibility:
             value: 0.6
-            accuracy: 4
+            accuracy: 5
           kof: 1
           relative_noise: 0.0
           noise: 0.0
@@ -176,37 +169,36 @@ stages:
           n_spl: 1
         random_seed: 4732
         sim:
-          pic_path: data/pressure/batched_pic
           random_rot: 1
           batch_size: 100
           test_size: None
           test_mod: false
     outs:
     - path: data/sensor_signal
-      md5: 8b9808de7ca71db2f8c773aa547413ea.dir
+      md5: 5ac7df3c31b85a7478077fd276c58445.dir
       size: 1025280
       nfiles: 10
   evaluation:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 5b996b047658c4f3e89cee9dbceabad3.dir
+      md5: e96292393a944b132578981e327fbec0.dir
       size: 16205320
       nfiles: 1
     - path: dvc_evaluate_model.py
-      md5: 27cb47794104be970a6231efe3dc57c4
-      size: 6342
+      md5: 916431fb051319a08b7d58125030a0a3
+      size: 6421
     outs:
     - path: logsdir
-      md5: 2b232d878cc41b5c6061ab82a7eb9b32.dir
+      md5: f2aa5ed632b2b51d497ee3ec804cbef2.dir
       size: 29992
       nfiles: 1
     - path: reports/l_curve.png
-      md5: 544f7b0d5071bfb76f5dbd9c04674f90
-      size: 32315
+      md5: f358ff2c7cccc2796e487e6ab1f68aac
+      size: 29933
     - path: reports/predict_examples.png
-      md5: 5578604acc2e4e0138b1538dcae0eedd
-      size: 214830
+      md5: 054d2dce8ce5e372ef77c736d5f132fa
+      size: 214544
     - path: reports/report.md
       md5: 177f54d0721c91da4db7ac885c8ea364
       size: 5109

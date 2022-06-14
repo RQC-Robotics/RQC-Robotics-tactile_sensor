@@ -9,10 +9,12 @@ import math
 
 with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
+with open('pathes.yaml') as conf_file:
+    path_config = yaml.safe_load(conf_file)
 
-batch_path = config['sim']['pic_path']
-pic_path = config['dataset']['pic_path']
-# signal_path = config['dataset']['signal_path']
+batch_path = path_config['batched_pic_path']
+pic_path = path_config['generated_pic_path']
+# signal_path = path_config['sensor_signal_path']
 if not os.path.exists(batch_path):
     os.makedirs(batch_path)
 

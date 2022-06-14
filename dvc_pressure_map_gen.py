@@ -9,9 +9,11 @@ from tqdm import tqdm
 
 with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
+with open('pathes.yaml') as conf_file:
+    path_config = yaml.safe_load(conf_file)
 
-if not os.path.exists(config['dataset']['pic_path']):
-    os.makedirs(config['dataset']['pic_path'])
+if not os.path.exists(path_config['generated_pic_path']):
+    os.makedirs(path_config['generated_pic_path'])
 
 geo = config['env']['sen_geometry']
 x = geo['x_len']
@@ -28,7 +30,7 @@ vec_mat = tf.reshape(vec_mat, [-1, 2])
 gaus_data = sl.gen_rand_cof(n_gaus * n_pic, x, y, size_kof,
                             seed=seeds[0])    # use random inside
 gaus_data = tf.reshape(gaus_data, [n_pic, n_gaus, 5])
-with open(config['env']['pressure_profile']['g_param_path'], 'wb+') as f:
+with open(path_config['gaus_param_path'], 'wb+') as f:
     np.save(f, gaus_data)
 
 bs_gpu = config['gengaus']['batch_size']
@@ -49,7 +51,7 @@ for batch in tqdm(batches, unit='batch'):
     if i % n == 0:
         pictures = tf.concat(pictures, axis=0)
         pictures = tf.reshape(pictures, [-1, x, y])
-        with open(jn(config['dataset']['pic_path'],
+        with open(jn(path_config['generated_pic_path'],
                      str(i//n - 1) + '.npy'), 'wb+') as f:
             np.save(f, pictures)
         pictures = []
@@ -57,6 +59,6 @@ for batch in tqdm(batches, unit='batch'):
 if len(pictures) > 0:
     pictures = tf.concat(pictures, axis=0)
     pictures = tf.reshape(pictures, [-1, x, y])
-    with open(jn(config['dataset']['pic_path'],
+    with open(jn(path_config['generated_pic_path'],
                  str(i // n) + '.npy'), 'wb+') as f:
         np.save(f, pictures)

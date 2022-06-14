@@ -16,14 +16,17 @@ import pandas as pd
 # %%
 with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
+with open('pathes.yaml') as conf_file:
+    path_config = yaml.safe_load(conf_file)
+
 
 torch.manual_seed(config['random_seed'])
 np.random.seed(config['random_seed'])
 device = 'cpu'
 model = torch.load(
-    jn(config['train']['models_path'], config['train']['model_name'] + '.pt'))
+    jn(path_config['model_path'], config['train']['model_name'] + '.pt'))
 model.eval()
-out_path = config['evaluate']['reports_path']
+out_path = path_config['reports_path']
 
 
 # %%
@@ -58,8 +61,8 @@ class DataSet():
             jn(output_path, self.file_names[index]))
 
 
-input_path = config['dataset']['signal_path']
-output_path = config['sim']['pic_path']
+input_path = path_config['sensor_signal_path']
+output_path = path_config['batched_pic_path']
 
 test_dataloader = DataSet(jn(input_path, 'test'), output_path)
 

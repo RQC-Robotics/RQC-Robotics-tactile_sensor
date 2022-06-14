@@ -23,6 +23,9 @@ dataset.signal_path, dataset.pic_path, random_seed, env.sen_geometry, env.phys
 # %%
 with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
+with open('pathes.yaml') as conf_file:
+    path_config = yaml.safe_load(conf_file)
+
 seed = np.random.seed(config['random_seed'])
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -30,8 +33,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 sim = tsl.FiberSimulator(config, device=device)
 
 # %%
-pic_path = config['sim']['pic_path']
-signal_path = config['dataset']['signal_path']
+pic_path = path_config['batched_pic_path']
+signal_path = path_config['sensor_signal_path']
 if not os.path.exists(signal_path):
     os.makedirs(jn(signal_path, 'test'))
     os.makedirs(jn(signal_path, 'train'))

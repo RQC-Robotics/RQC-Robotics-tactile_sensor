@@ -15,6 +15,8 @@ import json
 # %%
 with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
+with open('pathes.yaml') as conf_file:
+    path_config = yaml.safe_load(conf_file)
 
 # %%
 torch.manual_seed(config['random_seed'])
@@ -70,8 +72,8 @@ class DataLoader():
                     torch.from_numpy(output_data[:self.batch_size])
 
 
-input_path = config['dataset']['signal_path']
-output_path = config['sim']['pic_path']
+input_path = path_config['sensor_signal_path']
+output_path = path_config['batched_pic_path']
 batchsize = config['train']['batch_size']
 test_dataloader = DataLoader(jn(input_path, 'test'), output_path)
 train_dataloader = DataLoader(jn(input_path, 'train'),
@@ -195,12 +197,12 @@ for i, h in iter_train(train_dataloader,
 # %%
 train_loss, test_loss = zip(*history)
 df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
-if not os.path.exists(config['evaluate']['reports_path']):
-    os.makedirs(config['evaluate']['reports_path'])
-df.to_csv(jn(config['evaluate']['reports_path'], 'learning_curve.csv'),
+if not os.path.exists(path_config['reports_path']):
+    os.makedirs(path_config['reports_path'])
+df.to_csv(jn(path_config['reports_path'], 'learning_curve.csv'),
           index=False)
 res = {'train': {'loss': train_loss[-1]}, 'test': {'loss': min(test_loss)}}
-with open(jn(config['evaluate']['reports_path'], "summary.json"), "w") as f:
+with open(jn(path_config['reports_path'], "summary.json"), "w") as f:
     json.dump(res, f)
 
 # %%
@@ -214,14 +216,14 @@ with open(jn(config['evaluate']['reports_path'], "summary.json"), "w") as f:
 # plt.show()
 
 # %%
-os.makedirs(tr['models_path'])
-torch.save(model, jn(tr['models_path'], model_name + '.pt'))
+os.makedirs(path_config['model_path'])
+torch.save(model, jn(path_config['model_path'], model_name + '.pt'))
 
 # %% [markdown]
 # # evaluate model on don't seen data
 
     # # %%
-    # model = torch.load(jn(tr['models_path'], model_name + '.pt'))
+    # model = torch.load(jn(path_config['model_path'], model_name + '.pt'))
     # model.eval()
     # # %%
     # predictions = predict(model, test_dataloader)
