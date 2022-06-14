@@ -79,13 +79,14 @@ print('\n```', file=report)
 
 writer=SummaryWriter('logsdir')
 writer.add_graph(model, next(iter(test_dataloader))[0])
+writer.close()
 # %%
 curve = pd.read_csv(jn(out_path, 'learning_curve.csv'))
 curve.plot()
 plt.title("Learning Curve")
 plt.xlabel("epochs")
 plt.ylabel("MSE loss")
-plt.savefig(jn(out_path, 'l_curve.png'), dpi=200)
+plt.savefig(jn(out_path, 'l_curve.png'), dpi=100)
 print("![learning curve](l_curve.png)", file=report)
 
 # %% [markdown]
@@ -157,7 +158,7 @@ visual_func = [lambda ax, pic: ax.imshow(pic)] * 2 + [
     (ax.plot(pic, label=['received', 'predict']), ax.legend(loc="best"))
 ]
 tsl.visual_table_of_pictures(data, sample_titles, y_titles, visual_func)
-plt.savefig(jn(out_path, 'predict_examples.png'), dpi=200)
+plt.savefig(jn(out_path, 'predict_examples.png'), dpi=50)
 
 # %%
 print("## Examples of predictions", file=report)
@@ -165,5 +166,3 @@ print("![examples](predict_examples.png)", file=report)
 
 # %%
 report.close()
-
-# %%

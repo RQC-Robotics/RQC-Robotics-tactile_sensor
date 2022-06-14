@@ -7,7 +7,7 @@ gengaus:
 
 env:
   pressure_profile:
-    n_gauses: 30
+    n_gauses: 10
     size_kof: 5
     g_param_path: data/gaus_param.npy
 
