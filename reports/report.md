@@ -34,7 +34,7 @@ TorchSensorNN5S_norm_deep                [100, 4, 64]              [100, 64, 64]
 │    └─Linear: 2-19                      [100, 195]                [100, 900]                176,400                   --
 │    └─ReLU: 2-20                        [100, 900]                [100, 900]                --                        --
 │    └─Linear: 2-21                      [100, 900]                [100, 4096]               3,690,496                 --
-│    └─LeakyReLU: 2-22                   [100, 4096]               [100, 4096]               --                        --
+│    └─ReLU: 2-22                        [100, 4096]               [100, 4096]               --                        --
 ============================================================================================================================================
 Total params: 4,047,363
 Trainable params: 4,047,363
@@ -50,4 +50,4 @@ Estimated Total Size (MB): 46.04
 ```
 ![learning curve](l_curve.png)
 ## Examples of predictions
-![examples](predict_examples.png)
+![examples](predict_examples.jpg)

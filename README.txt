@@ -10,7 +10,11 @@ pretty well even for very big sensor size (and numbers of pixel as well).
 As physical profile we used superposition of several gauss (15 and 30). 
 And try to predict this profile by the outputs of our sensor, using a neural network.
 
+Prediction visualisation can be found in [reports\report.md](reports\report.md) file
 
+Pretty good result for 30 gausses is on the 46c92265c2eb15eaa74491cf3580919414ff53cf commit.
+
+Table for comparing results and quality of prediction is [here](https://studio.iterative.ai/user/korbash1/views/RQC-Robotics-tactile_sensor-vvk6t1pklh?mode=full)
 
 install
 

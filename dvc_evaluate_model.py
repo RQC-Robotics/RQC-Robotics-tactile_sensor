@@ -197,18 +197,18 @@ create_examples_mesh(indexes, sample_titles)
 #     (ax.plot(pic, label=['received', 'predict']), ax.legend(loc="best"))
 # ]
 # tsl.visual_table_of_pictures(data, sample_titles, y_titles, visual_func)
-plt.savefig(jn(out_path, 'predict_examples.png'), dpi=50)
+plt.savefig(jn(out_path, 'predict_examples.jpg'), dpi=50)
 
 # more random predict examples
 n = 6
 indexes = np.random.randint(len(losses), size=n)
 sample_titles = ["random"] * n
 create_examples_mesh(indexes, sample_titles)
-plt.savefig(jn(out_path, 'rand_examples.png'), dpi=100)
+plt.savefig(jn(out_path, 'rand_examples.jpg'), dpi=100)
 
 # %%
 print("## Examples of predictions", file=report)
-print("![examples](predict_examples.png)", file=report)
+print("![examples](predict_examples.jpg)", file=report)
 
 # %%
 report.close()
