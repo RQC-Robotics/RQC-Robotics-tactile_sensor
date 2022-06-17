@@ -61,29 +61,29 @@ stages:
         train:
           batch_size: 20
           learning_rate: 0.0001
-          n_epochs: 17
-          model_name: TorchSensorNN5S_norm_deep
+          n_epochs: 25
+          model_name: TorchSensorNN
     outs:
     - path: data/model
-      md5: da7d67a062e076b70907523464c93d65.dir
-      size: 16119752
+      md5: 9e1ca86c609e63e6654c0b634495bf0f.dir
+      size: 13352783
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: bb0b593942b7648b003cea9d4df4606c
-      size: 722
+      md5: b7996bb2480483172b081df9923ffdd2
+      size: 1042
     - path: reports/summary.json
-      md5: 2b422505d188eaea19b6e5956fdc9209
-      size: 80
+      md5: 351f9b2f7b9231edfe6ffb1ca45c9a57
+      size: 81
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
     - path: reports/learning_curve.csv
-      md5: bb0b593942b7648b003cea9d4df4606c
-      size: 722
+      md5: b7996bb2480483172b081df9923ffdd2
+      size: 1042
     outs:
     - path: dvc_plots/index.html
-      md5: 5158ef3f06929b50186abc24aaf17253
-      size: 10412
+      md5: 350601c0eb9f649a83282b3c876abbaf
+      size: 12004
   evaluate:
     cmd: python3 dvc_evaluate_model.py
     deps:
@@ -183,23 +183,23 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: da7d67a062e076b70907523464c93d65.dir
-      size: 16119752
+      md5: 9e1ca86c609e63e6654c0b634495bf0f.dir
+      size: 13352783
       nfiles: 1
     - path: dvc_evaluate_model.py
-      md5: b728a597e5d572f0ce4880ab2499725a
-      size: 6448
+      md5: cc28c11bbf3904e68d6374ac62f3a60e
+      size: 6450
     outs:
     - path: logsdir
-      md5: 67909c18957d5cf2682ee03fb0ab10f9.dir
-      size: 26350
+      md5: b1394e115726dd4e130faac7cc5619d6.dir
+      size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: 3f5047ac69b29720149eb9abdc16c58c
-      size: 33352
+      md5: 286936eb84ac42e48f3a32c101f56950
+      size: 30949
     - path: reports/predict_examples.jpg
-      md5: c3db0952c14cc88403d910ece9172750
-      size: 56365
+      md5: 0505349104a02db173e0c4df2b6f7e87
+      size: 55826
     - path: reports/report.md
-      md5: 39e95027779f93723a454318e033aaa7
-      size: 5109
+      md5: 45fef2b9bea820264a8749ef680c9e96
+      size: 2759

@@ -80,7 +80,7 @@ print(summary(
 print('\n```', file=report)
 
 writer = SummaryWriter('logsdir')
-writer.add_graph(model, next(iter(test_dataloader))[0])
+# writer.add_graph(model, next(iter(test_dataloader))[0])
 writer.close()
 # %%
 curve = pd.read_csv(jn(out_path, 'learning_curve.csv'))
