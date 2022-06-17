@@ -51,39 +51,39 @@ stages:
       size: 102412800
       nfiles: 100
     - path: dvc_model_learning.py
-      md5: bdc201facc70ec700b373892ba516aad
-      size: 7350
+      md5: 4c2909baac8f2167492f7129cccc148a
+      size: 7579
     - path: torch_sensor_lib/nets.py
-      md5: 8a697ab7b311e5cff0bf440686caedb6
-      size: 2845
+      md5: 267fb39e95ecaec7ff39871b319fe741
+      size: 2964
     params:
       params.yaml:
         train:
           batch_size: 20
           learning_rate: 0.0001
-          n_epochs: 15
+          n_epochs: 17
           model_name: TorchSensorNN5S_norm_deep
     outs:
     - path: data/model
-      md5: f39a6c0e7a72e38c0ed5ad493b43d9e2.dir
-      size: 16205768
+      md5: da7d67a062e076b70907523464c93d65.dir
+      size: 16119752
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 41520aba64ea74624290bebeeaa4bde6
-      size: 639
+      md5: bb0b593942b7648b003cea9d4df4606c
+      size: 722
     - path: reports/summary.json
-      md5: e6ae3f99e4ec88f8aff76d85375fe56d
+      md5: 2b422505d188eaea19b6e5956fdc9209
       size: 80
   make_plot:
-    cmd: dvc plots diff 973a7c --x-label "epochs" --y-label "loss"
+    cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
     - path: reports/learning_curve.csv
-      md5: 41520aba64ea74624290bebeeaa4bde6
-      size: 639
+      md5: bb0b593942b7648b003cea9d4df4606c
+      size: 722
     outs:
     - path: dvc_plots/index.html
-      md5: 0347126a97c9f2ed8ae28e4629f1c68f
-      size: 9999
+      md5: 5158ef3f06929b50186abc24aaf17253
+      size: 10412
   evaluate:
     cmd: python3 dvc_evaluate_model.py
     deps:
@@ -183,23 +183,23 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: f39a6c0e7a72e38c0ed5ad493b43d9e2.dir
-      size: 16205768
+      md5: da7d67a062e076b70907523464c93d65.dir
+      size: 16119752
       nfiles: 1
     - path: dvc_evaluate_model.py
-      md5: d2d2f05f9e618159b53f6137bc99dd5a
-      size: 6421
+      md5: b728a597e5d572f0ce4880ab2499725a
+      size: 6448
     outs:
     - path: logsdir
-      md5: 3900e4fc196e3345031b878a31a74e1e.dir
-      size: 30024
+      md5: 67909c18957d5cf2682ee03fb0ab10f9.dir
+      size: 26350
       nfiles: 1
     - path: reports/l_curve.png
-      md5: adc5914ac15cf67ab47d0d238192bf60
-      size: 32175
+      md5: 3f5047ac69b29720149eb9abdc16c58c
+      size: 33352
     - path: reports/predict_examples.jpg
-      md5: 38ec3582e10f8e3e56cd1202b812e25c
-      size: 53936
+      md5: c3db0952c14cc88403d910ece9172750
+      size: 56365
     - path: reports/report.md
-      md5: 4a54da932f0f96a9b5a994952226d15d
+      md5: 39e95027779f93723a454318e033aaa7
       size: 5109

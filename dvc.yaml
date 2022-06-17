@@ -2,63 +2,64 @@ stages:
   profile_generation:
     cmd: python dvc_pressure_map_gen.py
     deps:
-      - dvc_pressure_map_gen.py
+    - dvc_pressure_map_gen.py
     params:
-      - gengaus
-      - random_seed
-      - dataset.n_samples
-      - env.sen_geometry.x_len
-      - env.sen_geometry.y_len
-      - env.pressure_profile
-      
+    - gengaus
+    - random_seed
+    - dataset.n_samples
+    - env.sen_geometry.x_len
+    - env.sen_geometry.y_len
+    - env.pressure_profile
+
     outs:
-      - data/pressure/pic
+    - data/pressure/pic
     #   - data/gaus_param.npy
-  
   batch_splitting:
     cmd: python dvc_sim_batch_split.py
     deps:
-      - data/pressure/pic
-      - dvc_sim_batch_split.py
+    - data/pressure/pic
+    - dvc_sim_batch_split.py
     params:
-      - sim.batch_size
+    - sim.batch_size
     outs:
-      - data/pressure/batched_pic  
+    - data/pressure/batched_pic
 
   simulation:
     cmd: python dvc_sim_runner.py
-    
+
     params:
-      - random_seed
-      - env.sen_geometry
-      - env.phys
-      - sim
+    - random_seed
+    - env.sen_geometry
+    - env.phys
+    - sim
     deps:
-      - dvc_sim_runner.py
-      - data/pressure/batched_pic  
+    - dvc_sim_runner.py
+    - data/pressure/batched_pic
     outs:
-      - data/sensor_signal
+    - data/sensor_signal
 
   learning:
     cmd: python dvc_model_learning.py
 
     params:
-      - train
+    - train
 
     deps:
-      - data/sensor_signal
-      - data/pressure/batched_pic  
-      - dvc_model_learning.py
-      - torch_sensor_lib/nets.py
+    - data/pressure/batched_pic
+    - data/sensor_signal
+    - dvc_model_learning.py
+    - torch_sensor_lib/nets.py
     outs:
-      - data/model
-      
+    - data/model
+
     plots:
-      - reports/learning_curve.csv:
-          cache: false
+    - reports/learning_curve.csv:
+        cache: false
+        x_label: epochs
+        y_label: loss
     metrics:
-      - reports/summary.json:
-          cache: false
+    - reports/summary.json:
+        cache: false
 
   evaluation:
     cmd: python dvc_evaluate_model.py
@@ -76,7 +77,7 @@ stages:
     - logsdir
 
   make_plot:
-    cmd: dvc plots diff 973a7c --x-label "epochs" --y-label "loss"
+    cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
 
     deps:
     - reports/learning_curve.csv
