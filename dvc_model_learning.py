@@ -28,7 +28,7 @@ seeds = np.random.randint(0, 2**31, size=3)
 # %%
 
 
-class DataLoader():
+class MyDataLoader():
 
     def __init__(self, input_path, output_path, batch_size=None):
         self.input_path = input_path
@@ -43,12 +43,14 @@ class DataLoader():
         self.loaded_in = []
         self.loaded_out = []
         self.loaded_len = 0
+        self.first_mass_beginning = 0
 
     def __iter__(self):
         self.i = 0
         self.loaded_in = []
         self.loaded_out = []
         self.loaded_len = 0
+        self.first_mass_beginning = 0
         return self
 
     def __next__(self):
@@ -66,7 +68,7 @@ class DataLoader():
         else:
             input_data = np.concatenate(self.loaded_in)
             output_data = np.concatenate(self.loaded_out)
-            self.loaded_len -= min(self.batch_size, input_data.shape[0])
+            self.loaded_len -= min(self.batch_size, input_data.shape[0]-self.first_mass_beginning)
             self.loaded_out = [output_data[self.batch_size:]]
             self.loaded_in = [input_data[self.batch_size:]]
 
@@ -77,8 +79,8 @@ class DataLoader():
 input_path = path_config['sensor_signal_path']
 output_path = path_config['batched_pic_path']
 batchsize = config['train']['batch_size']
-test_dataloader = DataLoader(jn(input_path, 'test'), output_path)
-train_dataloader = DataLoader(jn(input_path, 'train'),
+test_dataloader = MyDataLoader(jn(input_path, 'test'), output_path)
+train_dataloader = MyDataLoader(jn(input_path, 'train'),
                               output_path,
                               batch_size=batchsize)
 
@@ -116,7 +118,7 @@ loss_fn = torch.nn.MSELoss()
 def fit_epoch(model, train_loader, criterion, optimizer):
     running_loss = 0.0
     processed_data = 0
-    for inputs, labels in train_loader:
+    for inputs, labels in tqdm(train_loader, unit='batch'):
         inputs = inputs.to(device)
         labels = labels.to(device)
         optimizer.zero_grad()
@@ -199,7 +201,7 @@ for i, h in iter_train(train_dataloader,
     np.savetxt(jn(path_config['reports_path'], 'learning_curve.csv'), 
     [['train_loss', 'test_loss']] + history,
      delimiter=',', fmt='%s')
-    os.system('dvc plots diff gausses_exp --x-label "epochs" --y-label "loss" -q')
+    os.system('dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss" -q')
 # %%
 train_loss, test_loss = zip(*history)
 df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
