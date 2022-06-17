@@ -18,6 +18,8 @@ with open('params.yaml') as conf_file:
 with open('pathes.yaml') as conf_file:
     path_config = yaml.safe_load(conf_file)
 
+if not os.path.exists(path_config['reports_path']):
+    os.makedirs(path_config['reports_path'])
 # %%
 torch.manual_seed(config['random_seed'])
 np.random.seed(config['random_seed'])
@@ -194,11 +196,13 @@ for i, h in iter_train(train_dataloader,
     #     plt.xlabel("epochs")
     #     plt.ylabel("loss")
     #     plt.show()
+    np.savetxt(jn(path_config['reports_path'], 'learning_curve.csv'), 
+    [['train_loss', 'test_loss']] + history,
+     delimiter=',', fmt='%s')
+    os.system('dvc plots diff gausses_exp --x-label "epochs" --y-label "loss" -q')
 # %%
 train_loss, test_loss = zip(*history)
 df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
-if not os.path.exists(path_config['reports_path']):
-    os.makedirs(path_config['reports_path'])
 df.to_csv(jn(path_config['reports_path'], 'learning_curve.csv'),
           index=False)
 res = {'train': {'loss': train_loss[-1]}, 'test': {'loss': min(test_loss)}}

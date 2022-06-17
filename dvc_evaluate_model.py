@@ -19,7 +19,6 @@ with open('params.yaml') as conf_file:
 with open('pathes.yaml') as conf_file:
     path_config = yaml.safe_load(conf_file)
 
-
 torch.manual_seed(config['random_seed'])
 np.random.seed(config['random_seed'])
 device = 'cpu'
@@ -202,7 +201,7 @@ plt.savefig(jn(out_path, 'predict_examples.jpg'), dpi=50)
 # more random predict examples
 n = 6
 indexes = np.random.randint(len(losses), size=n)
-sample_titles = ["random"] * n
+sample_titles = [f"loss={losses[i]:.3f}" for i in indexes]
 create_examples_mesh(indexes, sample_titles)
 plt.savefig(jn(out_path, 'rand_examples.jpg'), dpi=100)
 
