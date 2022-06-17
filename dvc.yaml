@@ -56,7 +56,6 @@ stages:
     plots:
       - reports/learning_curve.csv:
           cache: false
-
     metrics:
       - reports/summary.json:
           cache: false
@@ -72,7 +71,7 @@ stages:
         cache: false
     - reports/l_curve.png:
         cache: false
-    - reports/predict_examples.png:
+    - reports/predict_examples.jpg:
         cache: false
     - logsdir
 

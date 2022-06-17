@@ -1,14 +1,14 @@
 random_seed: 4732
 
 gengaus:
-  batch_size: 100
-  save_batch_size: None   # should be divisible by batch_size; 
-  # dataset.n_samples by default
+    batch_size: 1000
+    save_batch_size: None # should be divisible by batch_size
 
 env:
   pressure_profile:
-    n_gauses: 10
+    n_gauses: 7
     size_kof: 5
+    g_param_path: data/gaus_param.npy
 
   sen_geometry:
     distance: 0.5     # between fibers in mm
@@ -25,17 +25,17 @@ env:
     noise: 0.00     #  in fiber transmission detection
     
 dataset:
-  n_samples: 1_000
+  n_samples: 100_000
 
 sim:
   random_rot: 1
-  batch_size: 100  # if None - gengaus.batchsize/n_angles/2
-  test_size: None
+  batch_size: 1000  # if None - gengaus.batchsize/n_angles/2
+  test_size: 1  # in batches
   # max_possible_size: 20000
   test_mod: false   # verbose mod for testing sim
 
 train:
-  batch_size: 7  
+  batch_size: 20  
   learning_rate: 0.0001
-  n_epochs: 2
+  n_epochs: 15
   model_name: TorchSensorNN5S_norm_deep
