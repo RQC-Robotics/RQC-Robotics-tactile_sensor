@@ -42,17 +42,13 @@ stages:
   learning:
     cmd: python dvc_model_learning.py
     deps:
-    - path: data/pressure/batched_pic
-      md5: b5acb9420942f1e22ab90c6589f61a5f.dir
-      size: 8192128000
-      nfiles: 1000
     - path: data/sensor_signal
-      md5: 20740c84f55ad3c8c679d54b7591d8d3.dir
-      size: 512128000
-      nfiles: 1000
+      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
+      size: 51200128
+      nfiles: 1
     - path: dvc_model_learning.py
-      md5: 25228b4586a01ae676be1f7daa990f22
-      size: 7701
+      md5: 3891ea1776e81cc5b466f56b94097005
+      size: 6962
     - path: torch_sensor_lib/nets.py
       md5: 267fb39e95ecaec7ff39871b319fe741
       size: 2964
@@ -61,19 +57,20 @@ stages:
         train:
           batch_size: 20
           learning_rate: 0.0001
-          n_epochs: 10
+          n_epochs: 15
           model_name: TorchSensorNN5S_norm_deep
+          test_size: None
     outs:
     - path: data/model
-      md5: dad2c4780c0dc22d31a80835e60e0c30.dir
+      md5: 4e678e8238482aded26a9405fdb00d83.dir
       size: 16119752
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: c1f278427cadc43854281079818e4aed
-      size: 432
+      md5: 2bc1cc81150fdc7dc638c64208b54d73
+      size: 635
     - path: reports/summary.json
-      md5: 535d525a99bc21aa6d16f43b29d39b46
-      size: 80
+      md5: d3670f260b8453833b4996449118aaa7
+      size: 79
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
@@ -109,7 +106,7 @@ stages:
       size: 2076
     params:
       params.yaml:
-        dataset.n_samples: 500000
+        dataset.n_samples: 50000
         env.pressure_profile:
           n_gauses: 7
           size_kof: 5
@@ -122,8 +119,8 @@ stages:
         random_seed: 4732
     outs:
     - path: data/pressure/pic
-      md5: 4bd5ea81862423ca05d28572b69fd5ba.dir
-      size: 8192000128
+      md5: 0ae3dc23824fcd588ba59a2ce1281678.dir
+      size: 819200128
       nfiles: 1
   batch_splitting:
     cmd: python dvc_sim_batch_split.py
@@ -147,8 +144,8 @@ stages:
     cmd: python dvc_sim_runner.py
     deps:
     - path: data/pressure/pic
-      md5: 4bd5ea81862423ca05d28572b69fd5ba.dir
-      size: 8192000128
+      md5: 0ae3dc23824fcd588ba59a2ce1281678.dir
+      size: 819200128
       nfiles: 1
     - path: dvc_sim_runner.py
       md5: 543643a646a1fa10e1437351b7535f0c
@@ -176,30 +173,30 @@ stages:
           test_mod: false
     outs:
     - path: data/sensor_signal
-      md5: 42bf8096911a480bf52786abf8439755.dir
-      size: 512000128
+      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
+      size: 51200128
       nfiles: 1
   evaluation:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: dad2c4780c0dc22d31a80835e60e0c30.dir
+      md5: 4e678e8238482aded26a9405fdb00d83.dir
       size: 16119752
       nfiles: 1
     - path: dvc_evaluate_model.py
-      md5: cc28c11bbf3904e68d6374ac62f3a60e
-      size: 6450
+      md5: c98b6de01b0569483ae8aef0ab721543
+      size: 5297
     outs:
     - path: logsdir
-      md5: 5835f291f2c891f22364e9635269feb9.dir
+      md5: 5cb5e57b8b7918f4f93741017b9dcb17.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: 21e6b8978b75abacb202651cd3073094
-      size: 30869
+      md5: 744c1d07f641d2308d3f5efe6104d993
+      size: 34466
     - path: reports/predict_examples.jpg
-      md5: 1875f452ef0bf2a1dbd000f313d2f3dd
-      size: 54121
+      md5: 730f2e720e4dffc92bc4bb83fe2d8f95
+      size: 54168
     - path: reports/report.md
-      md5: 747104016c6f18587936ced040c14e36
+      md5: 535db40467eb2ed93102d50563df7231
       size: 5109

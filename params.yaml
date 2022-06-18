@@ -25,7 +25,7 @@ env:
     noise: 0.00     #  in fiber transmission detection
     
 dataset:
-  n_samples: 500_000
+  n_samples: 50_000
 
 sim:
   random_rot: 1
@@ -37,7 +37,7 @@ sim:
 train:
   batch_size: 20  
   learning_rate: 0.0001
-  n_epochs: 3
+  n_epochs: 15
   model_name: TorchSensorNN5S_norm_deep
   test_size: None   # if None, 1/20 fraction of dataset 
 commit_to_compare: 2f8ef6e
