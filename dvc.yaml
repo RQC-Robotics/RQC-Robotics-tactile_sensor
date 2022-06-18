@@ -14,15 +14,7 @@ stages:
     outs:
     - data/pressure/pic
     #   - data/gaus_param.npy
-  batch_splitting:
-    cmd: python dvc_sim_batch_split.py
-    deps:
-    - data/pressure/pic
-    - dvc_sim_batch_split.py
-    params:
-    - sim.batch_size
-    outs:
-    - data/pressure/batched_pic
+  
 
   simulation:
     cmd: python dvc_sim_runner.py
@@ -33,8 +25,8 @@ stages:
     - env.phys
     - sim
     deps:
-    - dvc_sim_runner.py
-    - data/pressure/batched_pic
+      - dvc_sim_runner.py
+      - data/pressure/pic  
     outs:
     - data/sensor_signal
 
@@ -45,10 +37,9 @@ stages:
     - train
 
     deps:
-    - data/pressure/batched_pic
-    - data/sensor_signal
-    - dvc_model_learning.py
-    - torch_sensor_lib/nets.py
+      - data/sensor_signal
+      - dvc_model_learning.py
+      - torch_sensor_lib/nets.py
     outs:
     - data/model
 

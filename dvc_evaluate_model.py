@@ -9,7 +9,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from torchinfo import summary
 from tqdm import tqdm
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 import os
 import pandas as pd
 
@@ -29,41 +29,38 @@ out_path = path_config['reports_path']
 
 
 # %%
-class DataSet():
+class MyDataSet(Dataset):
 
-    def __init__(self, input_path, output_path):
-        self.input_path = input_path
-        self.output_path = output_path
-        self.file_names = os.listdir(input_path)
-        self.i = 0
-
-    def __iter__(self):
-        self.i = 0
-        return self
+    def __init__(self, inputs: np.array, outputs: np.array):
+        self.inputs = inputs
+        self.outputs = outputs
 
     def __len__(self):
-        return self.file_names.__len__()
+        return self.inputs.shape[0]
 
-    def __next__(self):
-        if self.i >= len(self.file_names):
-            raise StopIteration
-        else:
-            res = torch.from_numpy(np.load(jn(self.input_path,
-                             self.file_names[self.i]))), \
-                  torch.from_numpy(np.load(jn(output_path,
-                             self.file_names[self.i])))
-            self.i += 1
-            return res
-
-    def __getitem__(self, index):
-        return np.load(jn(self.input_path, self.file_names[index])), np.load(
-            jn(output_path, self.file_names[index]))
+    def __getitem__(self, idx):
+        return self.inputs[idx], self.outputs[idx]
 
 
 input_path = path_config['sensor_signal_path']
-output_path = path_config['batched_pic_path']
+output_path = path_config['generated_pic_path']
+file_name = os.listdir(input_path)[0]
+inputs = np.load(jn(input_path, file_name))
+outputs = np.load(jn(output_path, file_name))
+test_size = config['train']['test_size']
+if test_size == 'None':
+    test_size = inputs.shape[0] // 20
 
-test_dataloader = DataSet(jn(input_path, 'test'), output_path)
+# batchsize = config['train']['batch_size']
+# train_dataloader = DataLoader(MyDataSet(inputs[:-test_size],
+#                                         outputs[:-test_size]),
+#                               batch_size=batchsize,
+#                               shuffle=True)
+test_dataset = MyDataSet(inputs[-test_size:],
+                                       outputs[-test_size:])
+test_dataloader = DataLoader(MyDataSet(inputs[-test_size:],
+                                       outputs[-test_size:]),
+                             batch_size=100)
 
 # %%
 report = open(jn(out_path, 'report.md'), 'w', encoding="utf-8")
@@ -136,10 +133,7 @@ def create_examples_mesh(indecies, sample_titles):
     data = []
     for ind in indecies:
         data.append([])
-        double_ind = np.unravel_index(
-            ind, (len(test_dataloader), len(losses) // len(test_dataloader)))
-        signal, pic = test_dataloader[double_ind[0]]
-        signal, pic = signal[double_ind[1]], pic[double_ind[1]]
+        signal, pic = test_dataset[ind]
         data[-1].append(pic)
         data[-1].append(pred_pic[ind])
         true_signal = signal[0]
@@ -169,33 +163,6 @@ y_titles = ["true", "predict", "signal"]
 
 create_examples_mesh(indexes, sample_titles)
 
-# s = tsl.FiberSimulator(config, device='cpu')
-# config['env']['phys']['noise'] = 0
-# config['env']['phys']['relative_noise'] = 0
-
-# data = []
-# for ind in indexes:
-#     data.append([])
-#     double_ind = np.unravel_index(
-#         ind, (len(test_dataloader), len(losses) // len(test_dataloader)))
-#     signal, pic = test_dataloader[double_ind[0]]
-#     signal, pic = signal[double_ind[1]], pic[double_ind[1]]
-#     data[-1].append(pic)
-#     data[-1].append(pred_pic[ind])
-#     true_signal = signal[0]
-#     pred_signal = s._sum_fiber_losses(torch.from_numpy(pred_pic[ind:ind +
-#                                                                 1]))[0].numpy()
-#     data[-1].append(
-#         np.concatenate([true_signal.reshape(-1, 1),
-#                         pred_signal.reshape(-1, 1)],
-#                        axis=1))
-
-# # %%
-# visual_func = [lambda ax, pic: ax.imshow(pic)] * 2 + [
-#     lambda ax, pic:
-#     (ax.plot(pic, label=['received', 'predict']), ax.legend(loc="best"))
-# ]
-# tsl.visual_table_of_pictures(data, sample_titles, y_titles, visual_func)
 plt.savefig(jn(out_path, 'predict_examples.jpg'), dpi=50)
 
 # more random predict examples
