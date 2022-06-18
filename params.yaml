@@ -1,8 +1,8 @@
 random_seed: 4732
 
 gengaus:
-    batch_size: 1000
-    save_batch_size: None # should be divisible by batch_size
+  batch_size: 1000
+  save_batch_size: None   # should be divisible by batch_size
 
 env:
   pressure_profile:
@@ -23,7 +23,6 @@ env:
     kof: 1     # between apply force and loss in grams 
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
-    
 dataset:
   n_samples: 50_000
 
@@ -35,9 +34,9 @@ sim:
   test_mod: false   # verbose mod for testing sim
 
 train:
-  batch_size: 20  
+  batch_size: 500
   learning_rate: 0.0001
-  n_epochs: 15
+  n_epochs: 50
   model_name: TorchSensorNN5S_norm_deep
   test_size: None   # if None, 1/20 fraction of dataset 
 commit_to_compare: 2f8ef6e
