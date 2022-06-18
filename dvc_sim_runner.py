@@ -1,6 +1,7 @@
 # %%
 from tqdm import tqdm
 import torch_sensor_lib as tsl
+from torch.utils.data import DataLoader
 
 import numpy as np
 from os.path import join as jn
@@ -33,23 +34,25 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 sim = tsl.FiberSimulator(config, device=device)
 
 # %%
-pic_path = path_config['batched_pic_path']
+pic_path = path_config['generated_pic_path']
 signal_path = path_config['sensor_signal_path']
 if not os.path.exists(signal_path):
-    os.makedirs(jn(signal_path, 'test'))
-    os.makedirs(jn(signal_path, 'train'))
+    os.makedirs(signal_path)
 
 # %%
-test_size = config["sim"]["test_size"]
-if test_size == 'None':
-    test_size = len(os.listdir(pic_path)) // 10
+files = os.listdir(pic_path)
+if len(files) > 1:
+    print(f"WARNING! In dataset more then 1 file({len(files)}) found.",
+            f"Only '{files[0]}' will be loaded!")
+file_name = files[0]
 # %%
-for i, file_name in enumerate(tqdm(os.listdir(pic_path))):
-    pic = np.load(jn(pic_path, file_name))
-    signal = sim.fiber_real_sim(pic).cpu().numpy()
-    if i < test_size:
-        np.save(jn(signal_path, 'test', file_name), signal)
-    else:
-        np.save(jn(signal_path, 'train', file_name), signal)
+pic = np.load(jn(pic_path, file_name))
+dataloader = DataLoader(pic, batch_size=config['sim']['batch_size'])
+signals = []
+for batch in tqdm(dataloader):
+    signal = sim.fiber_real_sim(batch.to(device)).cpu().numpy()
+    signals.append(signal)
+    
+# %%
+np.save(jn(signal_path, file_name), np.concatenate(signals))
 
-# %%
