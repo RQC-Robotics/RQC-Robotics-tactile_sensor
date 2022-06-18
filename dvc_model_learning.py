@@ -89,10 +89,12 @@ loss_fn = torch.nn.MSELoss()
 # training functions
 
 
-def fit_epoch(model, train_loader, criterion, optimizer):
+def fit_epoch(model, train_loader, criterion, optimizer, pbar=None):
     running_loss = 0.0
     processed_data = 0
-    for inputs, labels in tqdm(train_loader, unit='batch'):
+    for inputs, labels in train_loader:
+        if pbar is not None:
+            pbar.update(1)
         inputs = inputs.to(device)
         labels = labels.to(device)
         optimizer.zero_grad()
@@ -108,12 +110,14 @@ def fit_epoch(model, train_loader, criterion, optimizer):
     return train_loss
 
 
-def eval_epoch(model, test_loader, criterion):
+def eval_epoch(model, test_loader, criterion, pbar=None):
     model.eval()
     running_loss = 0.0
     processed_size = 0
 
     for inputs, labels in test_loader:
+        if pbar is not None:
+            pbar.update(1)
         inputs = inputs.to(device)
         labels = labels.to(device)
 
@@ -141,13 +145,18 @@ def predict(model, test_loader):
 
 
 def iter_train(train_loader, test_loader, model, epochs, optimizer, criterion):
-    with tqdm(total=epochs, desc="Learning", unit='epochs') as pbar:
+    with tqdm(total=epochs * (len(train_dataloader) + len(test_dataloader)),
+              desc="Learning",
+              unit='batch') as pbar:
         for epoch in range(epochs):
-            train_loss = fit_epoch(model, train_loader, criterion, optimizer)
-            test_loss = eval_epoch(model, test_loader, criterion)
+            train_loss = fit_epoch(model,
+                                   train_loader,
+                                   criterion,
+                                   optimizer,
+                                   pbar=pbar)
+            test_loss = eval_epoch(model, test_loader, criterion, pbar=pbar)
             # print("loss", f"{train_loss:.3f}")
             pbar.set_postfix(train_loss=train_loss, test_loss=test_loss)
-            pbar.update(1)
             yield epoch, (train_loss, test_loss)
 
 
