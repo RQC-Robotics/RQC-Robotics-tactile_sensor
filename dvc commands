@@ -1,3 +1,0 @@
-dvc plots diff gausses_exp --x-label "epochs" --y-label "loss"
-dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
-dvc exp show --only-changed
