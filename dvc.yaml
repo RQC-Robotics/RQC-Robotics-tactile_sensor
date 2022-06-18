@@ -67,12 +67,12 @@ stages:
         cache: false
     - logsdir
 
-  make_plot:
-    cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
+  # make_plot:
+  #   cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
 
-    deps:
-    - reports/learning_curve.csv
-    outs:
-    - dvc_plots/index.html:
-        cache: false
+  #   deps:
+  #   - reports/learning_curve.csv
+  #   outs:
+  #   - dvc_plots/index.html:
+  #       cache: false
 
