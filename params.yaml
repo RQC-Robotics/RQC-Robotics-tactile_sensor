@@ -35,9 +35,9 @@ sim:
   test_mod: false   # verbose mod for testing sim
 
 train:
-  batch_size: 20  
+  batch_size: 200  
   learning_rate: 0.0001
-  n_epochs: 3
+  n_epochs: 100
   model_name: TorchSensorNN5S_norm_deep
   test_size: None   # if None, 1/20 fraction of dataset 
 commit_to_compare: 2f8ef6e
