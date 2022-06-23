@@ -21,8 +21,8 @@ env:
       value: 0.6       # width of fiber in mm
       accuracy: 5       # it is (size of kernel)/value 
     kof: 1     # between apply force and loss in grams 
-    relative_noise: 0.01     # in fiber transmission detection
-    noise: 0.01     #  in fiber transmission detection
+    relative_noise: 0.00     # in fiber transmission detection
+    noise: 0.00     #  in fiber transmission detection
 dataset:
   n_samples: 50_000
 
@@ -37,6 +37,6 @@ train:
   batch_size: 200
   learning_rate: 0.0001
   n_epochs: 100
-  model_name: TorchSensorNN5S_norm_deep
+  model_name: UpSampleNet
   test_size: None   # if None, 1/20 fraction of dataset 
 commit_to_compare: b2599b
