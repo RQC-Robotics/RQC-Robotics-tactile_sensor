@@ -8,5 +8,7 @@ generated_pic_path: data/pressure/pic
 sensor_signal_path: data/sensor_signal
 gaus_param_path: data/gaus_param.npy
 
+commit_to_compare: f3e270b0a7193eaeeb4aadc8234430618c64fe06
+
 # with open('pathes.yaml') as conf_file:
 #     path_config = yaml.safe_load(conf_file)

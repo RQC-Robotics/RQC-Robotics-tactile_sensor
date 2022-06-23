@@ -186,7 +186,7 @@ for i, h in iter_train(train_dataloader,
                delimiter=',',
                fmt='%s')
     os.system(
-        f'dvc plots diff {config["commit_to_compare"]} --x-label "epochs" --y-label "loss" -q')
+        f'dvc plots diff {path_config["commit_to_compare"]} --x-label "epochs" --y-label "loss" -q')
 # %%
 train_loss, test_loss = zip(*history)
 df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
