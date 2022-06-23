@@ -6,7 +6,6 @@ from torchvision.transforms import InterpolationMode
 import numpy as np
 from torch_sensor_lib.visual import visual_picture
 # import torch_sensor_lib.vi as ds
-
 '''
 Param requirements:
 
@@ -15,6 +14,7 @@ env.sen_geometry
 env.phys
 
 '''
+
 
 class FiberSimulator():
 
@@ -85,9 +85,9 @@ class FiberSimulator():
 
         if self.test:
             print("Rot tensors")
-            visual_picture(rot_tensor, self.n_angles)
+            visual_picture(rot_tensor, self.n_angles, size=(7, 5))
             print("After blur")
-            visual_picture(blurred_mat, self.n_angles)
+            visual_picture(blurred_mat, self.n_angles, size=(7, 5))
 
         loss_tensor = self._sum_fiber_losses(blurred_mat).view(
             -1, self.n_angles, blurred_mat.shape[-1])
@@ -101,7 +101,9 @@ class FiberSimulator():
             std=delt)
         if self.test:
             print("Loss in fiber")
-            visual_picture(1 - self._trans_fun(rot_tensor), self.n_angles)
+            visual_picture(1 - self._trans_fun(rot_tensor),
+                           self.n_angles,
+                           size=(7, 5))
             print("Loss sums")
             visual_picture(loss_tensor, self.n_angles, dim=1)
             print("Signal")

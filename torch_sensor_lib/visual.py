@@ -6,8 +6,7 @@ import pandas as pd
 from matplotlib import cm
 
 
-def visual_picture(tensor: torch.Tensor, n_pictures, dim=2):
-    size = 5
+def visual_picture(tensor: torch.Tensor, n_pictures, dim=2, size=(5, 5)):
     if dim == 2:
         pictures = tensor[:n_pictures, 0].cpu().numpy()
     else:
@@ -20,8 +19,8 @@ def visual_picture(tensor: torch.Tensor, n_pictures, dim=2):
             fig.colorbar(cm.ScalarMappable(), ax=axes[i])
         else:
             axes[i].plot(pictures[i])
-    fig.set_figwidth(size * X)
-    fig.set_figheight(size)
+    fig.set_figwidth(size[0] * X)
+    fig.set_figheight(size[1])
     plt.show()
 
 
