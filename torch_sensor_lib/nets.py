@@ -31,11 +31,11 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         
         self.block1 = nn.Sequential(
             nn.MaxPool2d((2, 1)),
-            nn.LazyInstanceNorm2d(),
+            nn.LazyBatchNorm2d(),
             nn.Conv2d(8, 64, (3, 1), padding='same'),
             nn.ReLU(),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
-            nn.LazyInstanceNorm2d()
+            nn.LazyBatchNorm2d()
         )
         self.pool1 = nn.MaxPool2d((4, 1), stride=(4, 1))
         self.pool2 = nn.MaxPool2d((4, 1), stride=(4, 1))
@@ -44,7 +44,7 @@ class TorchSensorNN5S_norm_deep(nn.Module):
             nn.Conv2d(64, 128, (3, 1), padding='same'),
             nn.ReLU(),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
-            nn.LazyInstanceNorm2d(),
+            nn.LazyBatchNorm2d(),
             nn.Conv2d(128, 128, (3, 1), padding='same'),
             nn.MaxPool2d((2, 1))
         )
@@ -82,6 +82,65 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         x = torch.flatten(x, start_dim=1)
         x = self.linear(x)
         x = x.view(-1, *self.output_shape)
+        return x
+
+
+class UpSampleNet(nn.Module):
+
+    def __init__(self, input_shape, output_shape):
+        input_shape = (input_shape[-1], input_shape[-2])
+        self.output_shape = output_shape[-2:]
+        super(UpSampleNet, self).__init__()
+
+        self.conv1 = nn.Sequential(nn.Conv2d(1, 8, (3, 1), padding='same'),
+                                   nn.ReLU())
+
+        self.block1 = nn.Sequential(nn.AvgPool2d((2, 1)),
+                                    nn.LazyInstanceNorm2d(),
+                                    nn.Conv2d(8, 64, (3, 1), padding='same'),
+                                    nn.ReLU(),
+                                    nn.AvgPool2d((2, 1), stride=(2, 1)),
+                                    nn.LazyInstanceNorm2d())
+        self.pool1 = nn.AvgPool2d((4, 1), stride=(4, 1))
+        self.pool2 = nn.AvgPool2d((4, 1), stride=(4, 1))
+
+        self.block2 = nn.Sequential(nn.Conv2d(64, 128, (3, 1), padding='same'),
+                                    nn.ReLU(),
+                                    nn.AvgPool2d((2, 1), stride=(2, 1)),
+                                    nn.LazyInstanceNorm2d(),
+                                    nn.Conv2d(128, 128, (3, 1), padding='same'),
+                                    nn.AvgPool2d((2, 1)))
+
+        self.conv2 = nn.Sequential(nn.Conv2d(128, 64, (1, input_shape[-1])),
+                                   nn.ReLU())
+
+        self.linear = nn.Sequential(nn.Linear(4 * input_shape[-2], 20 * 30),
+                                    nn.ReLU(), nn.Linear(20 * 30, 30 * 30),
+                                    nn.ReLU(), nn.Linear(30 * 30, 30 * 30),
+                                    nn.LeakyReLU(0.01))
+        self.upsample = nn.Upsample(size=self.output_shape, mode='bilinear')
+
+    def forward(self, x):
+        x = torch.unsqueeze(x, 1)
+        x = torch.swapdims(x, -1, -2)
+        x = self.conv1(x)
+
+        checkpoint1 = x
+        x = self.block1(x)
+        checkpoint1 = self.pool1(checkpoint1)
+        # x = torch.concat([x, checkpoint1], dim=1)
+
+        checkpoint2 = x
+        x = self.block2(x)
+        checkpoint2 = self.pool2(checkpoint2)
+        # x = torch.cat([x, checkpoint2], 1)
+
+        x = self.conv2(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.linear(x)
+        x = x.view(-1, 1, 30, 30)
+        x = self.upsample(x)
+        x = torch.squeeze(x, -3)
         return x
 
 
