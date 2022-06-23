@@ -41,7 +41,7 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         self.pool2 = nn.MaxPool2d((4, 1), stride=(4, 1))
 
         self.block2 = nn.Sequential(
-            nn.Conv2d(72, 128, (3, 1), padding='same'),
+            nn.Conv2d(64, 128, (3, 1), padding='same'),
             nn.ReLU(),
             nn.MaxPool2d((2, 1), stride=(2, 1)),
             nn.LazyInstanceNorm2d(),
@@ -50,7 +50,7 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(200, 64, (1, input_shape[-1])),
+            nn.Conv2d(128, 64, (1, input_shape[-1])),
             nn.ReLU()
         )
 
@@ -71,12 +71,12 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         checkpoint1 = x
         x = self.block1(x)
         checkpoint1 = self.pool1(checkpoint1)
-        x = torch.concat([x, checkpoint1], dim=1)
+        # x = torch.concat([x, checkpoint1], dim=1)
         
         checkpoint2 = x
         x = self.block2(x)
         checkpoint2 = self.pool2(checkpoint2)
-        x = torch.cat([x, checkpoint2], 1)
+        # x = torch.cat([x, checkpoint2], 1)
 
         x = self.conv2(x)
         x = torch.flatten(x, start_dim=1)
@@ -84,9 +84,13 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         x = x.view(-1, *self.output_shape)
         return x
 
-# from torchsummary import summary
 
-# model = TorchSensorNN5S_norm_deep((4, 64), (64, 64))
+if __name__ == "__main__":
+    from torchinfo import summary
 
-# print(model)
-# summary(model, (4, 64), device='cpu')
+    model = TorchSensorNN5S_norm_deep((4, 64), (64, 64))
+
+    summary(
+        model, (1, 4, 64),
+        device='cpu',
+        col_names=["input_size", "output_size", "num_params", "kernel_size"])

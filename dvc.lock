@@ -103,7 +103,7 @@ stages:
     deps:
     - path: dvc_pressure_map_gen.py
       md5: b964ef9c36d196d477e7583716bcd78d
-      size: 2140
+      size: 2076
     params:
       params.yaml:
         dataset.n_samples: 1000
@@ -115,10 +115,10 @@ stages:
         gengaus:
           batch_size: 100
           save_batch_size: None
-        random_seed: 4732
+        random_seed: 4733
     outs:
     - path: data/pressure/pic
-      md5: cda6ee6510eac6d7a9552a9053c6d39f.dir
+      md5: 26e33c34c02cbc329251a922d0ef2caf.dir
       size: 16384128
       nfiles: 1
   batch_splitting:
@@ -143,12 +143,12 @@ stages:
     cmd: python dvc_sim_runner.py
     deps:
     - path: data/pressure/pic
-      md5: cda6ee6510eac6d7a9552a9053c6d39f.dir
+      md5: 26e33c34c02cbc329251a922d0ef2caf.dir
       size: 16384128
       nfiles: 1
     - path: dvc_sim_runner.py
       md5: 543643a646a1fa10e1437351b7535f0c
-      size: 1421
+      size: 1363
     params:
       params.yaml:
         env.phys:
@@ -164,7 +164,7 @@ stages:
           y_len: 64
           n_angles: 4
           n_spl: 1
-        random_seed: 4732
+        random_seed: 4733
         sim:
           random_rot: 1
           batch_size: 100
@@ -172,7 +172,7 @@ stages:
           test_mod: false
     outs:
     - path: data/sensor_signal
-      md5: 79bf8bd89eda5db6b3b2a6f448448b6a.dir
+      md5: c7e3348d8bb1dcbdd6fdb532e85b6895.dir
       size: 1024128
       nfiles: 1
   evaluation:

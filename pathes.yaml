@@ -2,11 +2,14 @@
 
 reports_path: reports
 model_path: data/model
-# video_path: 'data/fiber_loss/video' for future
 batched_pic_path: data/pressure/batched_pic
 generated_pic_path: data/pressure/pic
 sensor_signal_path: data/sensor_signal
 gaus_param_path: data/gaus_param.npy
+
+p_video_path: 'data/video/pressure' 
+s_video_path: 'data/video/signal'
+base_model_path: data/base_model/TorchSensorNN5S_norm_deep.pt
 
 # with open('pathes.yaml') as conf_file:
 #     path_config = yaml.safe_load(conf_file)
