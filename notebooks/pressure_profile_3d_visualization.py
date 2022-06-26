@@ -4,10 +4,11 @@ import numpy as np
 
 from avi_r import AVIReader
 from PIL import Image
+import os
+os.chdir('../')
 
 video = AVIReader('data/videos_from_isaac/0/force.avi')
 plt.rcParams["figure.figsize"] = (8, 6)
-
 # %%
 n = 0
 for x in video:
@@ -32,19 +33,21 @@ res = []
 #         plt.show()
 #         # break
 # %%
-# # конверитаци в numpy
-# for i, pic in enumerate(video):
+# конверитаци в numpy
+res = []
 
-#     image = Image.fromarray(pic.numpy()[:, :, 0]).resize((64, 64))
-#     res.append(np.array(image, dtype=np.float32)[np.newaxis, :, :])
-#     # if i == 2:
-#         # break
+for i, pic in enumerate(video):
 
-# # plt.imshow(pic.numpy())
-# video.close()
+    image = Image.fromarray(pic.numpy()[:, :, 0]).resize((64, 64))
+    res.append(np.array(image, dtype=np.float32)[np.newaxis, :, :])
+    # if i == 2:
+        # break
 
-# res = np.concatenate(res)
-# np.save('data/pressure/pic/0.npy', res)
+# plt.imshow(pic.numpy())
+video.close()
+
+res = np.concatenate(res)
+np.save('data/video/pressure/0.npy', res)
 # # # %%
 # # plt.plot(np.arange(1, 10, 0.1))
 # # plt.show()
