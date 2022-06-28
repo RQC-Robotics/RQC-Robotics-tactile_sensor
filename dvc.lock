@@ -43,8 +43,8 @@ stages:
     cmd: python dvc_model_learning.py
     deps:
     - path: data/sensor_signal
-      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
-      size: 51200128
+      md5: 39ad7cf660271e5e57951c9260e962e5.dir
+      size: 204800128
       nfiles: 1
     - path: dvc_model_learning.py
       md5: 3891ea1776e81cc5b466f56b94097005
@@ -62,14 +62,14 @@ stages:
           test_size: None
     outs:
     - path: data/model
-      md5: 83a270ae26f430052a56afdfbd6997d1.dir
-      size: 4674120
+      md5: f7312d064136afc30431f2969d45ae70.dir
+      size: 5067336
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 1a4a1907c0a942134c899b742b4f0b24
-      size: 4136
+      md5: 256abcd6a07accf7380e514dd4f54ea8
+      size: 4145
     - path: reports/summary.json
-      md5: 012c29c885b7a17dcb038a2d7f3be15f
+      md5: cd2f3ed2d7c43c3d2f9b9edf65e7aa6e
       size: 81
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
@@ -163,7 +163,7 @@ stages:
           distance: 0.5
           x_len: 64
           y_len: 64
-          n_angles: 4
+          n_angles: 16
           n_spl: 1
         random_seed: 4732
         sim:
@@ -173,30 +173,33 @@ stages:
           test_mod: false
     outs:
     - path: data/sensor_signal
-      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
-      size: 51200128
+      md5: 39ad7cf660271e5e57951c9260e962e5.dir
+      size: 204800128
       nfiles: 1
   evaluation:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 83a270ae26f430052a56afdfbd6997d1.dir
-      size: 4674120
+      md5: f7312d064136afc30431f2969d45ae70.dir
+      size: 5067336
       nfiles: 1
     - path: dvc_evaluate_model.py
       md5: c98b6de01b0569483ae8aef0ab721543
       size: 5297
     outs:
     - path: logsdir
-      md5: 0e02fd9a7cac3c96b074fcc3e6dd0bb1.dir
+      md5: 5e04d1f95302454a9ec115b7486fddf7.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: b56fec9505738947845148a079ee4341
-      size: 27709
+      md5: a7e1500be6b4ff22985c2e362e31c01d
+      size: 27627
     - path: reports/predict_examples.jpg
-      md5: 219b5229c3993f17d21e907127ad88d0
-      size: 52079
+      md5: 3c8f37f0feaf009eb7faaf8c9418c39b
+      size: 52361
+    - path: reports/rand_examples.jpg
+      md5: 977f83d153ebf4ade21aadbfca76b937
+      size: 235262
     - path: reports/report.md
-      md5: a367631d7c0a738b92d80c22f758d7d5
-      size: 5220
+      md5: 236772cad135b99f16417cf96513a12b
+      size: 5221
