@@ -43,8 +43,8 @@ stages:
     cmd: python dvc_model_learning.py
     deps:
     - path: data/sensor_signal
-      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
-      size: 51200128
+      md5: 227e4980e985f99bda15479e01c02d50.dir
+      size: 25600128
       nfiles: 1
     - path: dvc_model_learning.py
       md5: 3891ea1776e81cc5b466f56b94097005
@@ -62,15 +62,15 @@ stages:
           test_size: None
     outs:
     - path: data/model
-      md5: 83a270ae26f430052a56afdfbd6997d1.dir
-      size: 4674120
+      md5: a9f7d07f8df176f961c7529b6891146c.dir
+      size: 4608584
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 1a4a1907c0a942134c899b742b4f0b24
-      size: 4136
+      md5: b0f07a8172eff9fa05af9c58a296f9d8
+      size: 4072
     - path: reports/summary.json
-      md5: 012c29c885b7a17dcb038a2d7f3be15f
-      size: 81
+      md5: 43d0d104b48ca78ea02bf3e0afd5c00b
+      size: 79
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
@@ -163,7 +163,7 @@ stages:
           distance: 0.5
           x_len: 64
           y_len: 64
-          n_angles: 4
+          n_angles: 2
           n_spl: 1
         random_seed: 4732
         sim:
@@ -173,30 +173,33 @@ stages:
           test_mod: false
     outs:
     - path: data/sensor_signal
-      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
-      size: 51200128
+      md5: 227e4980e985f99bda15479e01c02d50.dir
+      size: 25600128
       nfiles: 1
   evaluation:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 83a270ae26f430052a56afdfbd6997d1.dir
-      size: 4674120
+      md5: a9f7d07f8df176f961c7529b6891146c.dir
+      size: 4608584
       nfiles: 1
     - path: dvc_evaluate_model.py
       md5: c98b6de01b0569483ae8aef0ab721543
       size: 5297
     outs:
     - path: logsdir
-      md5: 0e02fd9a7cac3c96b074fcc3e6dd0bb1.dir
+      md5: 3bea0db967d408a2adca7ae2d6489f7f.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: b56fec9505738947845148a079ee4341
-      size: 27709
+      md5: 26171f1a6ccf3e6b0efa2cebdc78795e
+      size: 27543
     - path: reports/predict_examples.jpg
-      md5: 219b5229c3993f17d21e907127ad88d0
-      size: 52079
+      md5: 75ead5bd95df9ba9930d0df5ee99977b
+      size: 52799
+    - path: reports/rand_examples.jpg
+      md5: 1984d1ac1bd7f34bed70ab335181883c
+      size: 238552
     - path: reports/report.md
-      md5: a367631d7c0a738b92d80c22f758d7d5
+      md5: 5dfceea16de210e571050b0716a84eda
       size: 5220
