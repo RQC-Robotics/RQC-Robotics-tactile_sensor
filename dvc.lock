@@ -188,7 +188,7 @@ stages:
       size: 5297
     outs:
     - path: logsdir
-      md5: 0e02fd9a7cac3c96b074fcc3e6dd0bb1.dir
+      md5: b5135e0dc9f5eee220e75256e85f77cf.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
@@ -197,6 +197,9 @@ stages:
     - path: reports/predict_examples.jpg
       md5: 219b5229c3993f17d21e907127ad88d0
       size: 52079
+    - path: reports/rand_examples.jpg
+      md5: 57311a627f279c61470697aaad175a32
+      size: 236757
     - path: reports/report.md
       md5: a367631d7c0a738b92d80c22f758d7d5
       size: 5220
