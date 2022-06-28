@@ -9,6 +9,7 @@ gaus_param_path: data/gaus_param.npy
 
 p_video_path: 'data/video/pressure' 
 s_video_path: 'data/video/signal'
+test_s_video_path: 'data/video/test/signal'
 base_model_path: data/base_model/TorchSensorNN5S_norm_deep.pt
 
 # with open('pathes.yaml') as conf_file:

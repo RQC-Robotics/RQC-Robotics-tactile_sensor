@@ -4,6 +4,8 @@ from torch.utils.data import DataLoader, Dataset
 import os
 from os.path import join as jn
 import numpy as np
+from tqdm import tqdm
+
 
 
 class Video_dataset(Dataset):
@@ -88,7 +90,7 @@ def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
     running_loss = 0.0
     processed_data = 0
 
-    for signal, pressure in chains_loader:
+    for signal, pressure in tqdm(chains_loader):
         signal = signal.to(device)
         pressure = pressure.to(device)
         optimizer.zero_grad()

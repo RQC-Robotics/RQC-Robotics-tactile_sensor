@@ -40,3 +40,10 @@ train:
   n_epochs: 2
   model_name: TorchSensorNN5S_norm_deep
   test_size: None   # if None, 1/20 fraction of dataset 
+
+video_train:
+  batch_size: 7  
+  chain_len: 30
+  learning_rate: 0.0001
+  n_epochs: 4
+  model_name: TestModel

@@ -74,4 +74,10 @@ stages:
     outs:
     - dvc_plots/index.html:
         cache: false
+  
+
+  video_learning:
+      cmd: python video_pipeline/learning.py
+      params:
+        - video_train
 
