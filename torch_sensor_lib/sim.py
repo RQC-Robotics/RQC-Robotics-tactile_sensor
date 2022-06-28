@@ -21,7 +21,7 @@ class FiberSimulator():
     def __init__(self, config, device='cpu'):
 
         self.device = device
-        self.dtype = np.float16
+        self.dtype = np.float32
         self.derivative_kernel = torch.from_numpy(
             np.expand_dims([1, -2, 1], (0, 1, 3)).astype(self.dtype)).to(device)
         self.config = config
@@ -60,7 +60,7 @@ class FiberSimulator():
 
     def _rotate(self, input):
         return torch.concat([
-            torch_rotate(input.unsqueeze(1),
+            torch_rotate(input.unsqueeze(-3),
                          180 / self.n_angles * i,
                          interpolation=InterpolationMode.BILINEAR)
             for i in range(self.n_angles)

@@ -30,8 +30,8 @@ class Video_dataset(Dataset):
 
     def __getitem__(self, index):
         ch = self.chains[index]
-        signal = np.load(jn(self.signal_path, ch[0]))
-        pressure = np.load(jn(self.pressure_path, ch[0]))
+        signal = np.load(jn(self.signal_path, ch[0])).astype(np.float32)
+        pressure = np.load(jn(self.pressure_path, ch[0])).astype(np.float32)
         return signal[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)], \
                 pressure[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)]
 
