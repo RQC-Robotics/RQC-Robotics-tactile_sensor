@@ -11,10 +11,16 @@ class Video_dataset(Dataset):
     def __init__(self, pressure_path, signal_path):
         self.pressure_path = pressure_path
         self.signal_path = signal_path
-        self.files = os.listdir(signal_path)
+        self.files = []
         self.file_lens = []
         self.chains = []
         self.chain_len = None
+        pic_path_len = len(os.path.normpath(signal_path)) + 1
+
+        for path, folders, files in os.walk(signal_path):
+            for file_name in files:
+                relative_path = path[pic_path_len:]
+                self.files.append(jn(relative_path, file_name))
 
         for name in self.files:
             self.file_lens.append(len(np.load(jn(signal_path, name))))
