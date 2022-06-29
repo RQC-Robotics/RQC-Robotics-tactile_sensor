@@ -15,6 +15,9 @@ import numpy as np
 from os.path import join as jn
 import yaml
 import torch
+
+import traceback
+import logging
 # %%
 with open('params.yaml') as conf_file:
     config = yaml.safe_load(conf_file)
@@ -41,7 +44,11 @@ for path, folders, files in tqdm(os.walk(pic_path), total=total):
         os.makedirs(new_path)
 
     for file_name in files:
-        pic = np.load(jn(path, file_name)).astype(np.float32)*50
+        try:
+            pic = np.load(jn(path, file_name)).astype(np.float32)*50
+        except Exception as e:
+            print("Can't load file "+jn(path, file_name))
+            logging.error(traceback.format_exc())
         dataloader = DataLoader(pic, batch_size=config['sim']['batch_size'])
         signals = []
         for batch in dataloader:

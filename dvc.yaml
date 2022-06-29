@@ -81,3 +81,9 @@ stages:
       params:
         - video_train
 
+      metrics:
+        - reports/v_summary.json
+      plots:
+        - reports/video_lc.csv
+      outs:
+      - data/v_model

@@ -2,6 +2,7 @@
 
 reports_path: reports
 model_path: data/model
+v_model_path: data/v_model
 batched_pic_path: data/pressure/batched_pic
 generated_pic_path: data/pressure/pic
 sensor_signal_path: data/sensor_signal

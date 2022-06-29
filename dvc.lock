@@ -199,3 +199,24 @@ stages:
     - path: reports/report.md
       md5: 1dbea1158658df87c4ce21af98f9c12b
       size: 5162
+  video_learning:
+    cmd: python video_pipeline/learning.py
+    params:
+      params.yaml:
+        video_train:
+          batch_size: 200
+          chain_len: 30
+          learning_rate: 0.0001
+          n_epochs: 100
+          model_name: TestModel
+    outs:
+    - path: data/v_model
+      md5: 7e14ec4b416144cd3dd0040b50894e28.dir
+      size: 25082119
+      nfiles: 1
+    - path: reports/v_summary.json
+      md5: 872be07a0108fc875421bf1976049249
+      size: 83
+    - path: reports/video_lc.csv
+      md5: 2abb5a9e30cf978589afd05c02e2280d
+      size: 4479
