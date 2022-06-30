@@ -5,6 +5,7 @@ import os
 from os.path import join as jn
 import numpy as np
 from tqdm import tqdm
+from PIL import Image
 
 
 class Dinamic_video_dataset(Dataset):
@@ -185,7 +186,45 @@ def predict(model, signals, device, initial_pressure=None) -> np.array:
     if initial_pressure is not None:
         initial_pressure = torch.tensor(initial_pressure, device=device)
     with torch.no_grad():
-        pressure = predict_chain_batch(model,
-                                       signal[None],
-                                       initial_pressure=initial_pressure)[0]
+        pressure = predict_chain_batch(
+            model, signal[None], initial_pressure=initial_pressure[None])[0]
     return pressure.numpy()
+
+
+# unfortunately doesn't work properly
+# 
+# def visual_chains(list_of_chains, outpath):
+#     '''
+#     Params:
+#     list_of_chains: List[np.array-s]
+#     outpath: (str) path for avi video 
+#     '''
+#     chains = np.concatenate(list_of_chains, -2)
+#     # norming
+#     chains = ((chains - chains.min()) * 255 /
+#               (chains.max() - chains.min())).astype(np.uint8)
+#     video = cv2.VideoWriter(outpath, 0, 10, chains.shape[-2:], 0)
+#     for i in range(len(chains)):
+#         video.write(cv2.cvtColor(chains[i], cv2.COLOR_RGB2GRAY))
+#         cv2.imshow('a', chains[i])
+#         #waits for user to press any key 
+#         #(this is necessary to avoid Python kernel form crashing)
+#         cv2.waitKey(0) 
+#     #closing all open windows 
+#     cv2.destroyAllWindows()     
+#     video.release()
+
+def visual_chains(list_of_chains, outpath):
+    '''
+    Params:
+    list_of_chains: List[np.array-s]
+    outpath: (str) path for gif video 
+    '''
+    chains = np.concatenate(list_of_chains, -1)
+    # norming
+    chains = ((chains - chains.min()) * 255 /
+              (chains.max() - chains.min())).astype(np.uint8)
+    images = []
+    for i in range(len(chains)):
+        images.append(Image.fromarray(chains[i]))
+    images[0].save(outpath+".gif", save_all=True, loop=0, duration=100, append_images=images[1:])
