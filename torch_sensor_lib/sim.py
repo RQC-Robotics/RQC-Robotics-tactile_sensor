@@ -40,7 +40,7 @@ class FiberSimulator():
         x = np.arange(0, gauss_kernel_size, 1, self.dtype)
         y = x[:, np.newaxis]
         x0 = y0 = gauss_kernel_size // 2
-        gauss = np.exp(-4 * np.log(2) * ((x - x0)**2 + (y - y0)**2) / fwhm**2)
+        gauss = np.exp(-2 * np.log(2) * ((x - x0)**2 + (y - y0)**2) / fwhm**2)
         self.gauss_kernel = torch.from_numpy(np.expand_dims(gauss, (0, 1))).to(
             self.device)
 

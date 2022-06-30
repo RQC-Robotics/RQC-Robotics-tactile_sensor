@@ -31,7 +31,7 @@ for path, folders, files in os.walk(pic_path):
         if file_name == 'force.npy':
             try:
                 pic = np.load(jn(path, file_name))
-                pic *= 50           # norming
+                pic *= 40           # norming
                 pic *= hat_func     # cutting borders
             except Exception as e:
                 print("Can't load file " + jn(path, file_name))
