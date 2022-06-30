@@ -2,6 +2,7 @@
 *.pyc
 *.ipynb_checkpoints
 *.npy
+*.gif
 *.nn
 *main_egnore.ipynb
 *.virtual_documents
@@ -11,3 +12,4 @@
 .vscode
 venv*
 /logdir
+*index.html
