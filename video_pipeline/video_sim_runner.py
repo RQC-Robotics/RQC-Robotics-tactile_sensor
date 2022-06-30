@@ -45,7 +45,7 @@ for path, folders, files in tqdm(os.walk(pic_path), total=total):
 
     for file_name in files:
         try:
-            pic = np.load(jn(path, file_name)).astype(np.float32)*50
+            pic = np.load(jn(path, file_name)).astype(np.float32)
         except Exception as e:
             print("Can't load file "+jn(path, file_name))
             logging.error(traceback.format_exc())
