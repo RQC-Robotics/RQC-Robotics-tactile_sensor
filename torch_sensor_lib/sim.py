@@ -110,3 +110,47 @@ class FiberSimulator():
             visual_picture(signal, self.n_angles, dim=1)
 
         return signal
+
+    def high_resolution_sim(self, pressure_mat, scale_factor: int):
+        '''works with picture that is scale_factor times bigger then standard
+        shape: (batch_size, x_len*scale_factor, y_len*scale_factor)'''
+        pressure_mat *= scale_factor**2    # to keep second derivative the same
+
+        # then reproduce fiber_real_sim
+        if not isinstance(pressure_mat, torch.Tensor):
+            pressure_mat = torch.tensor(pressure_mat, device=self.device)
+
+        rot_tensor = self._rotate(pressure_mat)
+
+        blurred_mat = F.conv2d(rot_tensor, self.gauss_kernel, padding='same')
+
+        if self.test:
+            print("Rot tensors")
+            visual_picture(rot_tensor, self.n_angles, size=(7, 5))
+            print("After blur")
+            visual_picture(blurred_mat, self.n_angles, size=(7, 5))
+
+        loss_tensor = (1 - torch.float_power(
+            torch.prod(self._trans_fun(blurred_mat), dim=-2),
+            1 / scale_factor)).view(-1, self.n_angles,
+                                    blurred_mat.shape[-1])[..., ::scale_factor]
+
+        std = self.phys['relative_noise']
+        delt = self.phys['noise']
+
+        # take 1/scale_factor power to compensate increase in number of multipliers
+        signal = torch.normal(
+            loss_tensor *
+            torch.normal(1, std, loss_tensor.shape).to(self.device),
+            std=delt)
+        if self.test:
+            print("Loss in fiber")
+            visual_picture(1 - self._trans_fun(rot_tensor),
+                           self.n_angles,
+                           size=(7, 5))
+            print("Loss sums")
+            visual_picture(loss_tensor, self.n_angles, dim=1)
+            print("Signal")
+            visual_picture(signal, self.n_angles, dim=1)
+
+        return signal
