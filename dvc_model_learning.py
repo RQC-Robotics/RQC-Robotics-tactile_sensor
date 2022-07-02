@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from os.path import join as jn
-import pandas as pd
 import yaml
 import torch_sensor_lib as tsl
 
@@ -23,7 +22,6 @@ if not os.path.exists(path_config['reports_path']):
 # %%
 torch.manual_seed(config['random_seed'])
 np.random.seed(config['random_seed'])
-seeds = np.random.randint(0, 2**31, size=3)
 
 # %%
 
@@ -186,11 +184,9 @@ for i, h in iter_train(train_dataloader,
                delimiter=',',
                fmt='%s')
     os.system(
-        'dvc plots diff gausses_exp --x-label "epochs" --y-label "loss" -q')
+        f'dvc plots diff {path_config["commit_to_compare"]} --x-label "epochs" --y-label "loss" -q')
 # %%
 train_loss, test_loss = zip(*history)
-df = pd.DataFrame({"train_loss": train_loss, 'test_loss': test_loss})
-df.to_csv(jn(path_config['reports_path'], 'learning_curve.csv'), index=False)
 res = {'train': {'loss': train_loss[-1]}, 'test': {'loss': min(test_loss)}}
 with open(jn(path_config['reports_path'], "summary.json"), "w") as f:
     json.dump(res, f)
