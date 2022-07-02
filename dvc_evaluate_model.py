@@ -166,7 +166,7 @@ create_examples_mesh(indexes, sample_titles)
 plt.savefig(jn(out_path, 'predict_examples.jpg'), dpi=50)
 
 # more random predict examples
-n = 6
+n = 10
 indexes = np.random.randint(len(losses), size=n)
 sample_titles = [f"loss={losses[i]:.3f}" for i in indexes]
 create_examples_mesh(indexes, sample_titles)

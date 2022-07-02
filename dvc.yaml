@@ -2,55 +2,55 @@ stages:
   profile_generation:
     cmd: python dvc_pressure_map_gen.py
     deps:
-    - dvc_pressure_map_gen.py
+      - dvc_pressure_map_gen.py
     params:
-    - gengaus
-    - random_seed
-    - dataset.n_samples
-    - env.sen_geometry.x_len
-    - env.sen_geometry.y_len
-    - env.pressure_profile
-
+      - gengaus
+      - random_seed
+      - dataset.n_samples
+      - env.sen_geometry.x_len
+      - env.sen_geometry.y_len
+      - env.pressure_profile
+      
     outs:
-    - data/pressure/pic
+      - data/pressure/pic
     #   - data/gaus_param.npy
   
 
   simulation:
     cmd: python dvc_sim_runner.py
-
+    
     params:
-    - random_seed
-    - env.sen_geometry
-    - env.phys
-    - sim
+      - random_seed
+      - env.sen_geometry
+      - env.phys
+      - sim
     deps:
       - dvc_sim_runner.py
       - data/pressure/pic  
     outs:
-    - data/sensor_signal
+      - data/sensor_signal
 
   learning:
     cmd: python dvc_model_learning.py
 
     params:
-    - train
+      - train
 
     deps:
       - data/sensor_signal
       - dvc_model_learning.py
       - torch_sensor_lib/nets.py
     outs:
-    - data/model
-
+      - data/model
+      
     plots:
     - reports/learning_curve.csv:
         cache: false
         x_label: epochs
         y_label: loss
     metrics:
-    - reports/summary.json:
-        cache: false
+      - reports/summary.json:
+          cache: false
 
   evaluation:
     cmd: python dvc_evaluate_model.py
@@ -65,6 +65,7 @@ stages:
         cache: false
     - reports/predict_examples.jpg:
         cache: false
+    - reports/rand_examples.jpg
     - logsdir
 
   # make_plot:
