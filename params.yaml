@@ -19,7 +19,7 @@ env:
   phys:
     fiber_sensibility:
       value: 0.5       # width of fiber in mm
-      accuracy: 5       # it is (size of kernel)/value 
+      accuracy: 5       # it is [size of kernel]/value 
     kof: 1     # between apply force and loss in grams 
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
@@ -43,7 +43,7 @@ train:
 
 video_train:
   batch_size: 200  
-  chain_len: 30
   learning_rate: 0.0001
-  n_epochs: 100
+  epochs: [[30, 20], [20, 2], [15, 5], [20, 20]]  
+  # list of (number epochs, chain_len) pairs
   model_name: TestModel

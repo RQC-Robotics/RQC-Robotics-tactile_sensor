@@ -84,6 +84,8 @@ stages:
       metrics:
         - reports/v_summary.json
       plots:
-        - reports/video_lc.csv
+        - reports/video_lc.csv:
+            y: test_loss
+            x_label: epoch
       outs:
       - data/v_model

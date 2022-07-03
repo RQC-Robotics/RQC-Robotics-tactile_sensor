@@ -208,15 +208,24 @@ stages:
           chain_len: 30
           learning_rate: 0.0001
           n_epochs: 100
+          epochs:
+          - - 3
+            - 20
+          - - 2
+            - 2
+          - - 1
+            - 5
+          - - 2
+            - 20
           model_name: TestModel
     outs:
     - path: data/v_model
-      md5: 7e14ec4b416144cd3dd0040b50894e28.dir
-      size: 25082119
+      md5: 8b774f8f8f5ee8f1d02792cf5f9a6c01.dir
+      size: 25081991
       nfiles: 1
     - path: reports/v_summary.json
-      md5: 872be07a0108fc875421bf1976049249
+      md5: 209844f4fa099b75e23dffb1c65376a6
       size: 83
     - path: reports/video_lc.csv
-      md5: 2abb5a9e30cf978589afd05c02e2280d
-      size: 4479
+      md5: 67fd10770bec98d1ce8e1a5205bb24cd
+      size: 366

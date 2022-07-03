@@ -52,9 +52,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # %%
 tr = config['video_train']
-chain_len = tr['chain_len']
-test_dataset.split_to_chains(chain_len)
-train_dataset.split_to_chains(chain_len)
+test_dataset.split_to_chains(1)
+train_dataset.split_to_chains(1)
 
 signal_shape, pressure_shape = (x.shape for x in train_dataset[0])
 
@@ -72,14 +71,10 @@ optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()
 
 # %%
-print('input chain shape: ', train_dataset[0][0].shape,
-      '\noutput chain shape: ', train_dataset[0][1].shape)
-
-# %%
 
 
-def iter_train(train_dataset, test_dataset, model, epochs, optimizer,
-               criterion):
+def iter_train(train_dataset, test_dataset, model, epochs, optimizer, criterion,
+               chain_len):
     for epoch in range(epochs):
         train_loss = fit_epoch(model, train_dataset, criterion, optimizer,
                                chain_len, tr['batch_size'], device)
@@ -94,21 +89,28 @@ def iter_train(train_dataset, test_dataset, model, epochs, optimizer,
 history = []
 
 # %%
-with tqdm(total=tr['n_epochs'], desc="Learning", unit='epoch',
-          ncols=100) as pbar:
-    for i, h in iter_train(train_dataset,
-                           test_dataset,
-                           model=model,
-                           epochs=tr['n_epochs'],
-                           optimizer=optim,
-                           criterion=loss_fn):
+epochs = config['video_train']['epochs']
+total_epochs = 0
+for n_epochs, chain_len in epochs:
+    total_epochs += n_epochs
+
+# %%
+i = 0
+for n_epochs, chain_len in epochs:
+    train_dataset.split_to_chains(chain_len)
+    test_dataset.split_to_chains(chain_len)
+    for _, h in iter_train(train_dataset, test_dataset, model, n_epochs, optim,
+                           loss_fn, chain_len):
         history.append(h)
-        print(f"Epoch {i+1}/{tr['n_epochs']}")
+        train_loss, test_loss = h
+        print(f"Epoch {i+1}/{total_epochs}",
+              f"train loss: {train_loss:.3f}, test_loss: {test_loss:.3f}")
         np.savetxt(jn(path_config['reports_path'], 'video_lc.csv'),
                    [['train_loss', 'test_loss']] + history,
                    delimiter=',',
                    fmt='%s')
         os.system('dvc plots show --x-label "epochs" --y-label "loss" -q')
+        i += 1
 # %%
 train_loss, test_loss = zip(*history)
 res = {
