@@ -31,9 +31,9 @@ class FiberSimulator():
         self.alpha = self.phys['kof']
         self.n_angles = geom['n_angles']
 
-        x = geom['distance']
-        fwhm = self.phys['fiber_sensibility']['value']
-        fwhm = fwhm / x
+        x = geom['distance']            # 0.5
+        fwhm = self.phys['fiber_sensibility']['value']  # 0.5
+        fwhm = fwhm / x     # 1
         gauss_kernel_size = self.phys['fiber_sensibility']['accuracy']
         # gauss_kernel_size = min(int(gauss_kernel_size * fwhm), image_size)
 
@@ -114,6 +114,15 @@ class FiberSimulator():
     def high_resolution_sim(self, pressure_mat, scale_factor: int):
         '''works with picture that is scale_factor times bigger then standard
         shape: (batch_size, x_len*scale_factor, y_len*scale_factor)'''
+        gauss_kernel_size = scale_factor*self.phys['fiber_sensibility']['accuracy']
+        
+        x = np.arange(0, gauss_kernel_size, 1, self.dtype)
+        y = x[:, np.newaxis]
+        x0 = y0 = gauss_kernel_size // 2
+        gauss = np.exp(-2 * np.log(2) * ((x - x0)**2 + (y - y0)**2)/scale_factor**2)
+        gauss_kernel = torch.from_numpy(np.expand_dims(gauss, (0, 1))).to(
+            self.device)
+        
         pressure_mat *= scale_factor**2    # to keep second derivative the same
 
         # then reproduce fiber_real_sim

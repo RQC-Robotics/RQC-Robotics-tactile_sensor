@@ -18,7 +18,7 @@ env:
     n_spl: 1     # number of pictures to show in testing mode  
   phys:
     fiber_sensibility:
-      value: 0.6       # width of fiber in mm
+      value: 0.5       # width of fiber in mm
       accuracy: 5       # it is (size of kernel)/value 
     kof: 1     # between apply force and loss in grams 
     relative_noise: 0.00     # in fiber transmission detection
