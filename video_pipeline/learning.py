@@ -104,7 +104,7 @@ for n_epochs, chain_len in epochs:
         history.append(h)
         train_loss, test_loss = h
         print(f"Epoch {i+1}/{total_epochs}",
-              f"train loss: {train_loss:.3f}, test_loss: {test_loss:.3f}")
+              f"train loss: {train_loss:.5f}, test_loss: {test_loss:.5f}")
         np.savetxt(jn(path_config['reports_path'], 'video_lc.csv'),
                    [['train_loss', 'test_loss']] + history,
                    delimiter=',',

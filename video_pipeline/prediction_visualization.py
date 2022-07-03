@@ -52,12 +52,18 @@ v_model = torch.load(v_model_path+'/'+config['video_train']['model_name']+'.pt',
     map_location=device)
 
 save_path = path_config['video_predict_vis_path']
-
-for pressure, signal, file_name in zip(test_dataset.pressure, 
-    test_dataset.signal, test_dataset.files):
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+i = 0
+step = 8
+for pressure, signal, file_name in tqdm(zip(test_dataset.pressure[::step], 
+    test_dataset.signal[::step], test_dataset.files[::step]), total=len(test_dataset.files)):
+    i += 1
     file_name = file_name[:-4]
     begin = 0
-    prediction = 50*predict(v_model, signal[begin:], device, initial_pressure=pressure[0+begin])
+    prediction = predict(v_model, signal[begin:], device, initial_pressure=pressure[0+begin])
     pressure = pressure[-prediction.shape[0]:]
     visual_chains([pressure, prediction], jn(save_path, file_name.replace('/', '_')))
+    if i == 128:
+        break
 

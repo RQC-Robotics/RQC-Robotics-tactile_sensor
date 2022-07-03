@@ -2,7 +2,8 @@ import os
 import numpy as np
 from os.path import join as jn
 import yaml
-import torch
+
+from tqdm import tqdm
 
 import traceback
 import logging
@@ -25,8 +26,12 @@ hat_func = np.array(hat_func)
 # %%
 pic_path = path_config['p_video_path']
 
+total = 0
 for path, folders, files in os.walk(pic_path):
+    total += 1
 
+for path, folders, files in tqdm(os.walk(pic_path), total=total):
+    
     for file_name in files:
         if file_name == 'force.npy':
             try:
@@ -37,5 +42,5 @@ for path, folders, files in os.walk(pic_path):
                 print("Can't load file " + jn(path, file_name))
                 logging.error(traceback.format_exc())
 
-            np.save(jn(path, 'cutted.npy'), pic)
-            os.remove(jn(path, file_name))
+            np.save(jn(path, 'prepared.npy'), pic)
+            # os.remove(jn(path, file_name))

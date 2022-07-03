@@ -188,7 +188,7 @@ def predict(model, signals, device, initial_pressure=None) -> np.array:
     with torch.no_grad():
         pressure = predict_chain_batch(
             model, signal[None], initial_pressure=initial_pressure[None])[0]
-    return pressure.numpy()
+    return pressure.cpu().numpy()
 
 
 # unfortunately doesn't work properly
@@ -227,4 +227,4 @@ def visual_chains(list_of_chains, outpath):
     images = []
     for i in range(len(chains)):
         images.append(Image.fromarray(chains[i]))
-    images[0].save(outpath+".gif", save_all=True, loop=0, duration=100, append_images=images[1:])
+    images[0].save(outpath+".gif", save_all=True, loop=0, duration=30, append_images=images[1:])

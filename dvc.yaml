@@ -75,6 +75,11 @@ stages:
     - dvc_plots/index.html:
         cache: false
   
+  prepare_dataset:
+    cmd: python video_pipeline/prepare_dataset.py
+  
+  video_sim:
+    cmd: python video_pipeline/video_sim_runner.py
 
   video_learning:
       cmd: python video_pipeline/learning.py
@@ -82,7 +87,8 @@ stages:
         - video_train
 
       metrics:
-        - reports/v_summary.json
+        - reports/v_summary.json:
+            cache: false
       plots:
         - reports/video_lc.csv:
             y: test_loss

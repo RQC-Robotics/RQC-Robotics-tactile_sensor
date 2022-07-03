@@ -12,7 +12,7 @@ def visual_picture(tensor: torch.Tensor, n_pictures, dim=2, size=(5, 5)):
     else:
         pictures = tensor[0].cpu().numpy()
     X = n_pictures
-    fig, axes = plt.subplots(1, X)
+    fig, axes = plt.subplots(1, X, sharey='all')
     for i in range(X):
         if dim == 2:
             axes[i].imshow(pictures[i])

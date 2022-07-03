@@ -205,27 +205,27 @@ stages:
       params.yaml:
         video_train:
           batch_size: 200
-          chain_len: 30
           learning_rate: 0.0001
-          n_epochs: 100
           epochs:
-          - - 3
+          - - 20
             - 20
-          - - 2
+          - - 10
             - 2
-          - - 1
+          - - 5
             - 5
-          - - 2
+          - - 18
             - 20
           model_name: TestModel
     outs:
     - path: data/v_model
-      md5: 8b774f8f8f5ee8f1d02792cf5f9a6c01.dir
-      size: 25081991
+      md5: 57345a59b18623752bdafbb9e87dccda.dir
+      size: 25082119
       nfiles: 1
     - path: reports/v_summary.json
-      md5: 209844f4fa099b75e23dffb1c65376a6
-      size: 83
+      md5: 35167baa6f6098c3362a496a82e43321
+      size: 82
     - path: reports/video_lc.csv
-      md5: 67fd10770bec98d1ce8e1a5205bb24cd
-      size: 366
+      md5: 85b3e7de4dc1b182917b95336684592e
+      size: 2313
+  video_sim:
+    cmd: python video_pipeline/video_sim_runner.py
