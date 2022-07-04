@@ -103,7 +103,7 @@ stages:
     deps:
     - path: dvc_pressure_map_gen.py
       md5: b964ef9c36d196d477e7583716bcd78d
-      size: 2140
+      size: 2076
     params:
       params.yaml:
         dataset.n_samples: 1000
@@ -118,9 +118,9 @@ stages:
         random_seed: 4732
     outs:
     - path: data/pressure/pic
-      md5: cda6ee6510eac6d7a9552a9053c6d39f.dir
-      size: 16384128
-      nfiles: 1
+      md5: d751713988987e9331980363e24189ce.dir
+      size: 0
+      nfiles: 0
   batch_splitting:
     cmd: python dvc_sim_batch_split.py
     deps:
@@ -143,12 +143,12 @@ stages:
     cmd: python dvc_sim_runner.py
     deps:
     - path: data/pressure/pic
-      md5: cda6ee6510eac6d7a9552a9053c6d39f.dir
-      size: 16384128
-      nfiles: 1
+      md5: d751713988987e9331980363e24189ce.dir
+      size: 0
+      nfiles: 0
     - path: dvc_sim_runner.py
       md5: 543643a646a1fa10e1437351b7535f0c
-      size: 1421
+      size: 1363
     params:
       params.yaml:
         env.phys:
