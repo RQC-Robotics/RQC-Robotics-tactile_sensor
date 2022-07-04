@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import pandas as pd
-from matplotlib import cm
+import matplotlib as mpl
 
 
 def visual_picture(tensor: torch.Tensor, n_pictures, dim=2, size=(5, 5)):
@@ -12,11 +12,12 @@ def visual_picture(tensor: torch.Tensor, n_pictures, dim=2, size=(5, 5)):
     else:
         pictures = tensor[0].cpu().numpy()
     X = n_pictures
-    fig, axes = plt.subplots(1, X)
+    fig, axes = plt.subplots(1, X, sharey='all')
     for i in range(X):
         if dim == 2:
             axes[i].imshow(pictures[i])
-            fig.colorbar(cm.ScalarMappable(), ax=axes[i])
+            norm = mpl.colors.Normalize(pictures[i].min(), pictures[i].max())
+            fig.colorbar(mpl.cm.ScalarMappable(norm), ax=axes[i])
         else:
             axes[i].plot(pictures[i])
     fig.set_figwidth(size[0] * X)

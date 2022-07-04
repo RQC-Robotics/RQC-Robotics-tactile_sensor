@@ -4,17 +4,26 @@ from torch.utils.data import DataLoader, Dataset
 import os
 from os.path import join as jn
 import numpy as np
+from tqdm import tqdm
+from PIL import Image
 
 
-class Video_dataset(Dataset):
+class Dinamic_video_dataset(Dataset):
+    '''for big datasets'''
 
     def __init__(self, pressure_path, signal_path):
         self.pressure_path = pressure_path
         self.signal_path = signal_path
-        self.files = os.listdir(signal_path)
+        self.files = []
         self.file_lens = []
         self.chains = []
         self.chain_len = None
+        pic_path_len = len(os.path.normpath(signal_path)) + 1
+
+        for path, folders, files in os.walk(signal_path):
+            for file_name in files:
+                relative_path = path[pic_path_len:]
+                self.files.append(jn(relative_path, file_name))
 
         for name in self.files:
             self.file_lens.append(len(np.load(jn(signal_path, name))))
@@ -24,8 +33,8 @@ class Video_dataset(Dataset):
 
     def __getitem__(self, index):
         ch = self.chains[index]
-        signal = np.load(jn(self.signal_path, ch[0]))
-        pressure = np.load(jn(self.pressure_path, ch[0]))
+        signal = np.load(jn(self.signal_path, ch[0])).astype(np.float32)
+        pressure = np.load(jn(self.pressure_path, ch[0])).astype(np.float32)
         return signal[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)], \
                 pressure[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)]
 
@@ -36,6 +45,51 @@ class Video_dataset(Dataset):
         for n, file in enumerate(self.files):
             self.chains.extend([
                 (file, i) for i in range(self.file_lens[n] // chain_len)
+            ])
+
+
+class Video_dataset(Dataset):
+
+    def __init__(self, pressure_path, signal_path):
+        self.pressure_path = pressure_path
+        self.signal_path = signal_path
+        self.files = []
+        self.pressure = []
+        self.signal = []
+        self.file_lens = []
+        self.chains = []
+        self.chain_len = None
+        pic_path_len = len(os.path.normpath(signal_path)) + 1
+
+        for path, folders, files in os.walk(signal_path):
+            for file_name in files:
+                relative_path = path[pic_path_len:]
+                self.files.append(jn(relative_path, file_name))
+
+        for name in self.files:
+            self.file_lens.append(len(np.load(jn(signal_path, name))))
+            self.signal.append(
+                np.load(jn(signal_path, name)).astype(np.float32))
+            self.pressure.append(
+                np.load(jn(pressure_path, name)).astype(np.float32))
+
+    def __len__(self):
+        return len(self.chains)
+
+    def __getitem__(self, index):
+        ch = self.chains[index]
+        signal = self.signal[ch[0]]
+        pressure = self.pressure[ch[0]]
+        return signal[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)], \
+                pressure[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)]
+
+    def split_to_chains(self, chain_len):
+        self.chain_len = chain_len
+        self.chains = []
+
+        for n, file in enumerate(self.files):
+            self.chains.extend([
+                (n, i) for i in range(self.file_lens[n] // chain_len)
             ])
 
 
@@ -82,7 +136,10 @@ def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
     running_loss = 0.0
     processed_data = 0
 
-    for signal, pressure in chains_loader:
+    for signal, pressure in tqdm(chains_loader,
+                                 ncols=100,
+                                 desc='fit_epoch',
+                                 unit='chain'):
         signal = signal.to(device)
         pressure = pressure.to(device)
         optimizer.zero_grad()
@@ -105,7 +162,10 @@ def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device):
     running_loss = 0.0
     processed_data = 0
 
-    for signal, pressure in chains_loader:
+    for signal, pressure in tqdm(chains_loader,
+                                 ncols=100,
+                                 desc='eval_epoch',
+                                 unit='chain'):
         signal = signal.to(device)
         pressure = pressure.to(device)
 
@@ -126,7 +186,45 @@ def predict(model, signals, device, initial_pressure=None) -> np.array:
     if initial_pressure is not None:
         initial_pressure = torch.tensor(initial_pressure, device=device)
     with torch.no_grad():
-        pressure = predict_chain_batch(model,
-                                       signal[None],
-                                       initial_pressure=initial_pressure)[0]
-    return pressure.numpy()
+        pressure = predict_chain_batch(
+            model, signal[None], initial_pressure=initial_pressure[None])[0]
+    return pressure.cpu().numpy()
+
+
+# unfortunately doesn't work properly
+# 
+# def visual_chains(list_of_chains, outpath):
+#     '''
+#     Params:
+#     list_of_chains: List[np.array-s]
+#     outpath: (str) path for avi video 
+#     '''
+#     chains = np.concatenate(list_of_chains, -2)
+#     # norming
+#     chains = ((chains - chains.min()) * 255 /
+#               (chains.max() - chains.min())).astype(np.uint8)
+#     video = cv2.VideoWriter(outpath, 0, 10, chains.shape[-2:], 0)
+#     for i in range(len(chains)):
+#         video.write(cv2.cvtColor(chains[i], cv2.COLOR_RGB2GRAY))
+#         cv2.imshow('a', chains[i])
+#         #waits for user to press any key 
+#         #(this is necessary to avoid Python kernel form crashing)
+#         cv2.waitKey(0) 
+#     #closing all open windows 
+#     cv2.destroyAllWindows()     
+#     video.release()
+
+def visual_chains(list_of_chains, outpath):
+    '''
+    Params:
+    list_of_chains: List[np.array-s]
+    outpath: (str) path for gif video 
+    '''
+    chains = np.concatenate(list_of_chains, -1)
+    # norming
+    chains = ((chains - chains.min()) * 255 /
+              (chains.max() - chains.min())).astype(np.uint8)
+    images = []
+    for i in range(len(chains)):
+        images.append(Image.fromarray(chains[i]))
+    images[0].save(outpath+".gif", save_all=True, loop=0, duration=30, append_images=images[1:])

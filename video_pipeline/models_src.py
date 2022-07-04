@@ -31,19 +31,23 @@ class TestModel(nn.Module):
                 pressure_shape[-1] * pressure_shape[-2] +
                 2 * signal_shape[-1] * signal_shape[-2], 600), nn.ReLU(),
             nn.Linear(600, 1000), nn.ReLU(), nn.Linear(1000, 1000), nn.ReLU(),
-            nn.Linear(1000, 600), nn.ReLU(),
-            nn.Linear(600, pressure_shape[-1] * pressure_shape[-2]))
+            nn.Linear(1000, 1000), nn.ReLU(),
+            nn.Linear(1000, 30*30))
+
+        self.upsample = nn.Upsample(size=self.pressure_shape[-2:], mode='bilinear')
 
     def forward(self, previous_pressure, previous_signal, current_signal):
-        y = torch.concat([
+        x = torch.concat([
             torch.flatten(previous_pressure, 1),
             torch.flatten(previous_signal, 1),
             torch.flatten(current_signal, 1)
         ],
                          dim=-1)
-        y = self.sequential(y)
-        y = y.view(-1, *self.pressure_shape)
-        return y
+        x = self.sequential(x)
+        x = x.view(-1, 1, 30, 30)
+        x = self.upsample(x)
+        x = torch.squeeze(x, -3)
+        return x
 
 
 if __name__ == "__main__":
