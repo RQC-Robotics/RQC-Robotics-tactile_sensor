@@ -13,3 +13,4 @@
 venv*
 /logdir
 *index.html
+.env
