@@ -4,10 +4,11 @@ pandas
 numpy
 # trimesh==3.12.3
 matplotlib
-pytorch
+torch
 torchinfo
 tqdm
 torchvision
 jupyter
 sacred
 python-dotenv
+pymongo

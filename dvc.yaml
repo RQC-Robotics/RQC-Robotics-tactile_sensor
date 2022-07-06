@@ -91,6 +91,7 @@ stages:
             cache: false
       plots:
         - reports/video_lc.csv:
+            cache: false
             y: test_loss
             x_label: epoch
       outs:
