@@ -1,0 +1,4 @@
+exp_name: 'fiber_sensor_learning_on_videos'
+log_files:
+  - reports/video_lc.csv
+
