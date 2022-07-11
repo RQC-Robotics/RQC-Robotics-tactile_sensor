@@ -1,13 +1,14 @@
 dvc[all]
-tensorflow==2.9.1 # should be installed manually by instruction https://www.tensorflow.org/install/pip
+# tensorflow==2.9.1 # should be installed manually by instruction https://www.tensorflow.org/install/pip
 pandas
 numpy
 # trimesh==3.12.3
 matplotlib
-torch
+torch         # pytorch for conda
 torchinfo
-tqdm
+# cudatoolkit==11.3
 torchvision
+tqdm
 jupyter
 sacred
 python-dotenv
