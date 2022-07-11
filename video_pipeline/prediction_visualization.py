@@ -57,7 +57,7 @@ if not os.path.exists(save_path):
 i = 0
 step = 8
 for pressure, signal, file_name in tqdm(zip(test_dataset.pressure[::step], 
-    test_dataset.signal[::step], test_dataset.files[::step]), total=len(test_dataset.files)):
+    test_dataset.signal[::step], test_dataset.files[::step]), total=len(test_dataset.files)//step):
     i += 1
     file_name = file_name[:-4]
     begin = 0

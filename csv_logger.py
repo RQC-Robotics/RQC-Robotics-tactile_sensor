@@ -30,6 +30,7 @@ if "username" in os.environ and "host" in os.environ and "password" in os.enviro
         MongoObserver(client=client, db_name=os.environ['database']))
 else:
     ex.observers.append(FileStorageObserver('logdir'))
+    input("WARNING! No password for db. Confirm logging locally")
 
 ex.add_config('params.yaml')
 
