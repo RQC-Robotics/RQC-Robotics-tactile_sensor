@@ -39,8 +39,8 @@ ex.add_config('params.yaml')
 def send_csv(_run):
 
     for file_name in log_config['log_files']:
-        titles = np.loadtxt(file_name, delimiter=',', dtype=str, max_rows=1)
-        data = np.loadtxt(file_name, delimiter=',', skiprows=1)
+        titles = np.loadtxt(file_name, delimiter=',', dtype=str, max_rows=1, ndmin=1)
+        data = np.loadtxt(file_name, delimiter=',', skiprows=1, ndmin=2)
         for i, title in enumerate(titles):
             for j in range(len(data)):
                 _run.log_scalar(title, data[j, i])

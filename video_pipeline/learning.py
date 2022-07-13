@@ -113,9 +113,9 @@ for n_epochs, chain_len in epochs:
         
         titles = ['train_loss', 'test_loss', "full_train_loss", "full_test_loss"]
         res = np.array([titles] + history)
-        for i, title in enumerate(titles):
+        for j, title in enumerate(titles):
             np.savetxt(jn(path_config['reports_path'], title+'.csv'),
-                    res[:, i],
+                    res[:, j],
                     delimiter=',',
                     fmt='%s')
         np.savetxt(jn(path_config['reports_path'], 'epochs.csv'),
@@ -125,7 +125,7 @@ for n_epochs, chain_len in epochs:
         
         i += 1
         
-        os.system('dvc plots show --x-label "epochs" --y-label "loss" -q')
+        os.system('dvc plots show -q')
 # %%
 train_loss, test_loss, full_train_loss, full_test_loss = zip(*history)
 res = {

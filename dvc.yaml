@@ -66,3 +66,6 @@ stages:
       - data/v_model
     outs:
       - data/video/predict_vis
+
+  push_logs:
+    cmd: python csv_logger.py
