@@ -34,3 +34,12 @@ video_train:
   # list of (number epochs, chain_len) pairs
   model_name: TestModel
 test_batch_size: 100  # for evaluations without grads
+
+visual:
+  test:
+    step: 32
+    max_items: 128
+    # begin: 0
+  # train:
+  #   step: 32
+  #   max_items: 128

@@ -57,3 +57,12 @@ stages:
         
       outs:
       - data/v_model
+
+  visual:
+    cmd: python video_pipeline/prediction_visualization.py
+    params:
+      - visual
+    deps:
+      - data/v_model
+    outs:
+      - data/video/predict_vis
