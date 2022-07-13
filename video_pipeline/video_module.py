@@ -67,11 +67,17 @@ class Video_dataset(Dataset):
                 self.files.append(jn(relative_path, file_name))
 
         for name in self.files:
-            self.file_lens.append(len(np.load(jn(signal_path, name))))
-            self.signal.append(
-                np.load(jn(signal_path, name)).astype(np.float32))
-            self.pressure.append(
-                np.load(jn(pressure_path, name)).astype(np.float32))
+            if name.endswith('npz'):
+                self.signal.append(
+                    np.load(jn(signal_path, name))['arr_0'].astype(np.float32))
+                self.pressure.append(
+                    np.load(jn(pressure_path, name))['arr_0'].astype(np.float32))
+            else:
+                self.signal.append(
+                    np.load(jn(signal_path, name)).astype(np.float32))
+                self.pressure.append(
+                    np.load(jn(pressure_path, name)).astype(np.float32))
+            self.file_lens.append(len(self.signal[-1]))
 
     def __len__(self):
         return len(self.chains)
@@ -139,7 +145,7 @@ def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
     for signal, pressure in tqdm(chains_loader,
                                  ncols=100,
                                  desc='fit_epoch',
-                                 unit='chain'):
+                                 unit='batch'):
         signal = signal.to(device)
         pressure = pressure.to(device)
         optimizer.zero_grad()
@@ -165,7 +171,7 @@ def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device):
     for signal, pressure in tqdm(chains_loader,
                                  ncols=100,
                                  desc='eval_epoch',
-                                 unit='chain'):
+                                 unit='batch'):
         signal = signal.to(device)
         pressure = pressure.to(device)
 
@@ -190,6 +196,32 @@ def predict(model, signals, device, initial_pressure=None) -> np.array:
             model, signal[None], initial_pressure=initial_pressure[None])[0]
     return pressure.cpu().numpy()
 
+def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size, device):
+    '''Counts average loss on all videos in dataset'''
+    
+    chains_loader = DataLoader(list(zip(video_dataset.signal, video_dataset.pressure)), batch_size=batch_size)
+    running_loss = 0.0
+    processed_data = 0
+
+    for signal, pressure in tqdm(chains_loader,
+                                 ncols=100,
+                                 desc='eval_dataset',
+                                 unit='batch'):
+        signal = signal.to(device)
+        pressure = pressure.to(device)
+
+        with torch.no_grad():
+            prediction = \
+                predict_chain_batch(model, signal, initial_pressure=pressure[:, 0])
+            loss = criterion(prediction, pressure[:, 1:])
+
+        running_loss += loss.item() * (signal.shape[1] - 1) * signal.shape[0]
+        processed_data += (signal.shape[1] - 1) * signal.shape[0]
+
+    train_loss = running_loss / processed_data
+    return train_loss
+
+        
 
 # unfortunately doesn't work properly
 # 

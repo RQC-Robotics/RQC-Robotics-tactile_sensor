@@ -1,16 +1,12 @@
 # some pathes are hardcoded in dvc.yaml
 
 reports_path: reports
-model_path: data/model
 v_model_path: data/v_model
-batched_pic_path: data/pressure/batched_pic
-generated_pic_path: data/pressure/pic
-sensor_signal_path: data/sensor_signal
-gaus_param_path: data/gaus_param.npy
 
+isaac_videos_path: data/videos_from_isaac
 p_video_path: 'data/video/pressure' 
-s_video_path: 'data/video/signal'
-test_s_video_path: 'data/video/test/signal'
+train_s_video_path: 'data/video/train_signal'
+test_s_video_path: 'data/video/test_signal'
 base_model_path: data/base_model/TorchSensorNN5S_norm_deep.pt
 video_predict_vis_path: data/video/predict_vis
 

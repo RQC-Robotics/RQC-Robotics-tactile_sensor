@@ -24,23 +24,30 @@ hat_func = [[0 if (x - x0)**2 + (y - y0)**2 > r2 else 1
             for y in range(Y)]
 hat_func = np.array(hat_func)
 # %%
+input_path = path_config['isaac_videos_path']
 pic_path = path_config['p_video_path']
+inp_path_len = len(os.path.normpath(input_path)) + 1
 
 total = 0
-for path, folders, files in os.walk(pic_path):
+for path, folders, files in os.walk(input_path):
     total += 1
 
-for path, folders, files in tqdm(os.walk(pic_path), total=total):
-    
+for path, folders, files in tqdm(os.walk(input_path), total=total):
+    new_path = jn(pic_path,
+                  path[inp_path_len:])
+    if not os.path.exists(new_path):
+        os.makedirs(new_path)
     for file_name in files:
-        if file_name == 'force.npy':
+        if file_name[:-4] == 'force':
             try:
                 pic = np.load(jn(path, file_name))
-                pic *= 40           # norming
+                if file_name.endswith('.npz'):
+                    pic = pic['arr_0']
+                pic *= config['dataset']['mult_coeff']           # norming
                 pic *= hat_func     # cutting borders
             except Exception as e:
                 print("Can't load file " + jn(path, file_name))
                 logging.error(traceback.format_exc())
 
-            np.save(jn(path, 'prepared.npy'), pic)
+            np.savez_compressed(jn(new_path, 'prepared.npz'), pic)
             # os.remove(jn(path, file_name))

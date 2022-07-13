@@ -32,29 +32,62 @@ sim = tsl.FiberSimulator(config, device=device)
 
 # %%
 pic_path = path_config['p_video_path']
-signal_path = path_config['s_video_path']
+train_signal_path = path_config['train_s_video_path']
+test_signal_path = path_config['test_s_video_path']
+
 pic_path_len = len(os.path.normpath(pic_path)) + 1
+ids = set()
+
+
+def parse_id(item_path):
+    id = item_path[pic_path_len:]
+    if '/' in id:
+        id = id[:id.find('/')]
+    return id
+
+
 total = 0
 for path, folders, files in os.walk(pic_path):
+    id = parse_id(path)
+    if id:
+        ids.add(id)
     total += 1
+ids = np.array(list(ids))
+test_number = config['dataset']['test_items']
+if test_number is None:
+    test_number = int(len(ids) * config['dataset']['test_frac'])
+
+print(f"Test size is {test_number} items")
+
+test_inds = np.random.choice(len(ids), test_number)
+test_ids = set(ids[test_inds])
 
 for path, folders, files in tqdm(os.walk(pic_path), total=total):
-    new_path = jn(signal_path, path[pic_path_len:])
+    id = parse_id(path)
+    new_path = jn(test_signal_path if id in test_ids else train_signal_path,
+                  path[pic_path_len:])
     if not os.path.exists(new_path):
         os.makedirs(new_path)
 
     for file_name in files:
-        if file_name == 'prepared.npy':
+        if file_name[:-4] == 'prepared':
             try:
-                pic = np.load(jn(path, file_name)).astype(np.float32)
+                pic = np.load(jn(path, file_name))
+                if file_name.endswith('.npz'):
+                    pic = pic['arr_0']
+                pic = pic.astype(np.float32)
             except Exception as e:
-                print("Can't load file "+jn(path, file_name))
+                print("Can't load file " + jn(path, file_name))
                 logging.error(traceback.format_exc())
             dataloader = DataLoader(pic, batch_size=config['sim']['batch_size'])
             signals = []
             for batch in dataloader:
                 signal = sim.fiber_real_sim(batch.to(device)).cpu().numpy()
                 signals.append(signal)
-            np.save(jn(new_path, file_name), np.concatenate(signals))
+            if file_name.endswith('npz'):
+                np.savez_compressed(jn(new_path, file_name),
+                                    np.concatenate(signals))
+            else:
+                np.save(jn(new_path, file_name), np.concatenate(signals))
 
 # %%

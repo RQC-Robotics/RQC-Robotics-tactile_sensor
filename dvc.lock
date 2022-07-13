@@ -201,31 +201,78 @@ stages:
       size: 5162
   video_learning:
     cmd: python video_pipeline/learning.py
+    deps:
+    - path: data/video/test_signal
+      md5: 866e4358faf23af8b504fe046d07c160.dir
+      size: 1770222
+      nfiles: 64
+    - path: data/video/train_signal
+      md5: f9402a89179d7f3c7ae9cfa27211012e.dir
+      size: 21738984
+      nfiles: 704
+    - path: video_pipeline/learning.py
+      md5: 3c8952591ab54039fa10db0f1f94b026
+      size: 4455
     params:
       params.yaml:
         video_train:
-          batch_size: 200
+          batch_size: 100
           learning_rate: 0.0001
           epochs:
-          - - 20
-            - 20
-          - - 10
+          - - 1
             - 2
-          - - 5
-            - 5
-          - - 18
-            - 20
           model_name: TestModel
     outs:
     - path: data/v_model
-      md5: 57345a59b18623752bdafbb9e87dccda.dir
-      size: 25082119
+      md5: 9c9ddf318814e6460e23fcf3a1e296bc.dir
+      size: 25081991
       nfiles: 1
+    - path: reports/epochs.csv
+      md5: af43bc7944158ea30827632a9e1085e6
+      size: 16
+    - path: reports/full_test_loss.csv
+      md5: aa3a18256fe4115b989285e5ea004a11
+      size: 37
+    - path: reports/full_train_loss.csv
+      md5: 483866c1c0acf717c12bd6f276fbcbae
+      size: 37
+    - path: reports/test_loss.csv
+      md5: fced66df7a28ada0db6783306636141c
+      size: 32
+    - path: reports/train_loss.csv
+      md5: 396995ab2ffdeec0235f8cef43f641bc
+      size: 32
     - path: reports/v_summary.json
-      md5: 35167baa6f6098c3362a496a82e43321
+      md5: dd3c521b1a7d0befa17534f82d59a8ae
       size: 82
-    - path: reports/video_lc.csv
-      md5: 85b3e7de4dc1b182917b95336684592e
-      size: 2313
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
+    deps:
+    - path: data/video/pressure
+      md5: 8855d01ff494a6a19b43452e77eaa394.dir
+      size: 19542601
+      nfiles: 768
+    - path: video_pipeline/video_sim_runner.py
+      md5: 7bdd1f652da8882acb8ea6361fc3892b
+      size: 2621
+    params:
+      params.yaml:
+        dataset.test_frac: 0.1
+        dataset.test_items:
+        env.phys:
+          fiber_sensibility:
+            value: 0.5
+            accuracy: 5
+          kof: 1
+          relative_noise: 0.0
+          noise: 0.0
+        env.sen_geometry.n_angles: 4
+    outs:
+    - path: data/video/test_signal
+      md5: 866e4358faf23af8b504fe046d07c160.dir
+      size: 1770222
+      nfiles: 64
+    - path: data/video/train_signal
+      md5: f9402a89179d7f3c7ae9cfa27211012e.dir
+      size: 21738984
+      nfiles: 704

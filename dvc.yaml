@@ -1,22 +1,59 @@
 stages:
   prepare_dataset:
     cmd: python video_pipeline/prepare_dataset.py
+    deps:
+      - video_pipeline/prepare_dataset.py
+      - data/videos_from_isaac
   
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
+    params:
+        - env.sen_geometry.n_angles
+        - env.phys
+        - dataset.test_items
+        - dataset.test_frac
+    deps:
+        - video_pipeline/video_sim_runner.py
+        - data/video/pressure
+    outs:
+        - data/video/train_signal
+        - data/video/test_signal
+    
 
   video_learning:
       cmd: python video_pipeline/learning.py
       params:
         - video_train
 
+      deps:
+        - video_pipeline/learning.py
+        - data/video/train_signal
+        - data/video/test_signal
+
       metrics:
         - reports/v_summary.json:
             cache: false
       plots:
-        - reports/video_lc.csv:
+        - reports/test_loss.csv:
             cache: false
-            y: test_loss
             x_label: epoch
+        
+        - reports/train_loss.csv:
+            cache: false
+            x_label: epoch
+        
+        - reports/full_test_loss.csv:
+            cache: false
+            x_label: epoch
+        
+        - reports/full_train_loss.csv:
+            cache: false
+            x_label: epoch
+        
+        - reports/epochs.csv:
+            cache: false
+            x_label: epoch
+        
+        
       outs:
       - data/v_model
