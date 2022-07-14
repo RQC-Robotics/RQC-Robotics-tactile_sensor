@@ -30,7 +30,7 @@ sim:
 video_train:
   batch_size: 200   # for learning
   learning_rate: 0.0001
-  epochs: [[40, 20], [5, 8], [5, 10], [5, 15], [40, 20]]  
+  epochs: [[160, 20]]  
   # list of (number epochs, chain_len) pairs
   model_name: TestModel
 test_batch_size: 100  # for evaluations without grads
@@ -40,6 +40,6 @@ visual:
     step: 32
     max_items: 128
     # begin: 0
-  # train:
-  #   step: 32
-  #   max_items: 128
+  train:
+    step: 32
+    max_items: 32

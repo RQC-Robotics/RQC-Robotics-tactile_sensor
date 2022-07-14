@@ -216,39 +216,31 @@ stages:
           batch_size: 200
           learning_rate: 0.0001
           epochs:
-          - - 40
-            - 20
-          - - 5
-            - 8
-          - - 5
-            - 10
-          - - 5
-            - 15
-          - - 40
+          - - 160
             - 20
           model_name: TestModel
     outs:
     - path: data/v_model
-      md5: 4b103e945be0758c6109134e510a3e2f.dir
+      md5: 4a6417947133ca1a5ea181d41b6d3947.dir
       size: 25082311
       nfiles: 1
     - path: reports/epochs.csv
-      md5: f2fcfbf47eb7f667a03ad8ba1c188aa4
-      size: 290
+      md5: 6fc6ae3277745aff929ac68e024f2b11
+      size: 490
     - path: reports/full_test_loss.csv
-      md5: ce8653f28494500718f5aaf448e11bb1
-      size: 2028
+      md5: d1f5d9ffb8754d9856057307bca1a663
+      size: 3434
     - path: reports/full_train_loss.csv
-      md5: 0109beebcd6c4cde0d3b84bca8e75c00
-      size: 2028
+      md5: 58da40c804568a97c66db8caf473b2c9
+      size: 3431
     - path: reports/test_loss.csv
-      md5: 57852d7d411f9c5ee8fde20207c3a0f2
-      size: 2022
+      md5: eb28c18a352c0eb5739eba110632f08a
+      size: 3431
     - path: reports/train_loss.csv
-      md5: 2c531af5d50d3022718cd54a90bc44f7
-      size: 2023
+      md5: 46e382e9cf7282bad1700c4614d041ed
+      size: 3427
     - path: reports/v_summary.json
-      md5: 8f0bae8046d7f09f1f867303077ad5af
+      md5: 312a1cd289d842d5674cb6763d9b3a3b
       size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
@@ -295,7 +287,7 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 4b103e945be0758c6109134e510a3e2f.dir
+      md5: 4a6417947133ca1a5ea181d41b6d3947.dir
       size: 25082311
       nfiles: 1
     params:
@@ -304,10 +296,13 @@ stages:
           test:
             step: 32
             max_items: 128
+          train:
+            step: 32
+            max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: 2f109889d7736c4e6953f0a2b2d68079.dir
-      size: 12257406
-      nfiles: 35
+      md5: c32233e6cbd1eabb1c4c095bc31b4859.dir
+      size: 25736091
+      nfiles: 67
   push_logs:
     cmd: python csv_logger.py
