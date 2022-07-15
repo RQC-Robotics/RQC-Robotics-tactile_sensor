@@ -85,11 +85,11 @@ file = open(jn(save_path, "view.md"), 'w')
 print("# Visualization", file=file)
 
 test_dataset = Video_dataset(output_path, test_input_path)
-print("### Test dataset", file=file)
+print("# Test dataset", file=file)
 visual_dataset(test_dataset, **config['visual']['test'])
 
 if 'train' in config['visual'] and config['visual']['train']['max_items'] > 0:
     train_dataset = Video_dataset(output_path, input_path)
-    print("### Train dataset", file=file)
+    print("\n\n # Train dataset", file=file)
     visual_dataset(train_dataset, **config['visual']['train'])
 file.close()
