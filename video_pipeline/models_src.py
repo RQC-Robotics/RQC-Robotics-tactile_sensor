@@ -49,12 +49,41 @@ class TestModel(nn.Module):
         x = torch.squeeze(x, -3)
         return x
 
+class SingleTestModel(nn.Module):
+
+    def __init__(self, pressure_shape, signal_shape):
+        super(SingleTestModel, self).__init__()
+        self.signal_shape = signal_shape
+        self.pressure_shape = pressure_shape
+
+        self.sequential = nn.Sequential(
+            nn.Linear(signal_shape[-1] * signal_shape[-2], 600), nn.ReLU(),
+            nn.Linear(600, 1000), nn.ReLU(), nn.Linear(1000, 1000), nn.ReLU(),
+            nn.Linear(1000, 1000), nn.ReLU(),
+            nn.Linear(1000, 30*30))
+
+        self.upsample = nn.Upsample(size=self.pressure_shape[-2:], mode='bilinear')
+
+    def forward(self, previous_pressure, previous_signal, current_signal):
+        x = torch.concat([
+            torch.flatten(current_signal, 1)
+        ],
+                         dim=-1)
+        x = self.sequential(x)
+        x = x.view(-1, 1, 30, 30)
+        x = self.upsample(x)
+        x = torch.squeeze(x, -3)
+        return x
+
+
+
+
 
 if __name__ == "__main__":
 
     from torch.utils.tensorboard import SummaryWriter
 
-    model = TestModel((64, 64), (4, 64))
+    model = SingleTestModel((64, 64), (4, 64))
     writer = SummaryWriter('logdir')
     writer.add_graph(
         model,
