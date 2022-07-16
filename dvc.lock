@@ -216,31 +216,31 @@ stages:
           batch_size: 200
           learning_rate: 0.0001
           epochs:
-          - - 30
+          - - 60
             - 2
-          model_name: SingleTestModel
+          model_name: DoubleTestModel
     outs:
     - path: data/v_model
-      md5: d5e08b2866c8257d9f4c27b61c593841.dir
-      size: 14637511
+      md5: e52cad01d0ef8291b15ab82431ed1250.dir
+      size: 15251911
       nfiles: 1
     - path: reports/epochs.csv
-      md5: 41ec85c45138add2dcf97bf7983cd2ad
-      size: 70
+      md5: adaab4dfdcf12507930c46f6806aa6cc
+      size: 130
     - path: reports/full_test_loss.csv
-      md5: 321c4a1cb28763c7011b19949f3e243c
-      size: 661
+      md5: 8ae6cef5988210c8ae4165a98647f440
+      size: 1298
     - path: reports/full_train_loss.csv
-      md5: 893983ac501ef06574b3089ddfa85ab9
-      size: 654
+      md5: daf115b59d915a19da6c001a5fe48277
+      size: 1296
     - path: reports/test_loss.csv
-      md5: 0c891b4ac60a7aaf8398d36f05cf9f94
-      size: 654
+      md5: 6dd4fae9ca8b3e5e4cf46c41d8ad5be7
+      size: 1295
     - path: reports/train_loss.csv
-      md5: 53dac54ce12e77e87c78f05c28729cf1
-      size: 652
+      md5: 7dc69e2a6c7314fababfd6e47ab31990
+      size: 1301
     - path: reports/v_summary.json
-      md5: f847fbbd4629f99b76de6cae18abda1d
+      md5: accb45e9f53c647c268bc94dd8a386a8
       size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
@@ -287,8 +287,8 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: d5e08b2866c8257d9f4c27b61c593841.dir
-      size: 14637511
+      md5: e52cad01d0ef8291b15ab82431ed1250.dir
+      size: 15251911
       nfiles: 1
     params:
       params.yaml:
@@ -301,8 +301,8 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: ae0ae1074bf353dc4613cb0f253d504d.dir
-      size: 22439012
+      md5: cdc1a2f9e51adbaa516834a5c79e641e.dir
+      size: 22162574
       nfiles: 67
   push_logs:
     cmd: python csv_logger.py
