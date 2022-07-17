@@ -32,21 +32,27 @@ stages:
         - data/video/test_signal
 
       metrics:
-        - reports/v_summary.json
+        - reports/v_summary.json:
+            cache: false
       plots:
         - reports/test_loss.csv:
+            cache: false
             x_label: epoch
         
         - reports/train_loss.csv:
+            cache: false
             x_label: epoch
         
         - reports/full_test_loss.csv:
+            cache: false
             x_label: epoch
         
         - reports/full_train_loss.csv:
+            cache: false
             x_label: epoch
         
         - reports/epochs.csv:
+            cache: false
             x_label: epoch
         
         
@@ -54,7 +60,7 @@ stages:
       - data/v_model
 
   visual:
-    cmd: python video_pipeline/prediction_visualization.py
+    cmd: python video_pipeline/prediction_visualization.py & git add reports
     params:
       - visual
     deps:
