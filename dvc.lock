@@ -106,7 +106,7 @@ stages:
       size: 2076
     params:
       params.yaml:
-        dataset.n_samples: 50000
+        dataset.n_samples: 100000
         env.pressure_profile:
           n_gauses: 7
           size_kof: 5
@@ -119,8 +119,8 @@ stages:
         random_seed: 4732
     outs:
     - path: data/pressure/pic
-      md5: 0ae3dc23824fcd588ba59a2ce1281678.dir
-      size: 819200128
+      md5: 21855d841b0f2480fce69caf98754959.dir
+      size: 1638400128
       nfiles: 1
   batch_splitting:
     cmd: python dvc_sim_batch_split.py
@@ -144,8 +144,8 @@ stages:
     cmd: python dvc_sim_runner.py
     deps:
     - path: data/pressure/pic
-      md5: 0ae3dc23824fcd588ba59a2ce1281678.dir
-      size: 819200128
+      md5: 21855d841b0f2480fce69caf98754959.dir
+      size: 1638400128
       nfiles: 1
     - path: dvc_sim_runner.py
       md5: 543643a646a1fa10e1437351b7535f0c
@@ -173,8 +173,8 @@ stages:
           test_mod: false
     outs:
     - path: data/sensor_signal
-      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
-      size: 51200128
+      md5: d99037e37fed6a8ca9576c13ef121c40.dir
+      size: 102400128
       nfiles: 1
   evaluation:
     cmd: python dvc_evaluate_model.py
