@@ -51,10 +51,10 @@ if test_size == 'None':
     test_size = inputs.shape[0] // 20
 
 batchsize = config['train']['batch_size']
-test_dataloader = DataLoader(MyDataSet(inputs[-test_size:],
+test_dataloader = DataLoader(MyDataSet(inputs[-test_size:, ..., ::config['fib_step']],
                                        outputs[-test_size:]),
                              batch_size=batchsize)
-train_dataloader = DataLoader(MyDataSet(inputs[:-test_size],
+train_dataloader = DataLoader(MyDataSet(inputs[:-test_size, ..., ::config['fib_step']],
                                         outputs[:-test_size]),
                               batch_size=batchsize,
                               shuffle=True)

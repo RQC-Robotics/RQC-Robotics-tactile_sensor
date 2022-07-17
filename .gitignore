@@ -10,4 +10,6 @@
 .pylintrc
 .vscode
 venv*
+/logdir
+.env
 /logsdir

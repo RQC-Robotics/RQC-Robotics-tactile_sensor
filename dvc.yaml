@@ -35,6 +35,7 @@ stages:
 
     params:
     - train
+    - fib_step
 
     deps:
       - data/sensor_signal
