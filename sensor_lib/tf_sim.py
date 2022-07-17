@@ -158,8 +158,7 @@ def hat(x, r):
 
 def loss_fun(input, alf):
     return tf.keras.layers.Activation(lambda x: tf.math.sin(
-        alf * tf.math.minimum(tf.math.square(x), tf.math.square(np.pi / 2))))(
-            input)
+        alf * tf.math.minimum(tf.math.square(x), (np.pi / 2))))(input)
 
 
 def sum_losses(input):
