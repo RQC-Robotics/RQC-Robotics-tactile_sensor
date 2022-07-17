@@ -1,2 +1,8 @@
 rand_examples.png
 rand_examples.jpg
+/v_summary.json
+/test_loss.csv
+/train_loss.csv
+/full_test_loss.csv
+/full_train_loss.csv
+/epochs.csv

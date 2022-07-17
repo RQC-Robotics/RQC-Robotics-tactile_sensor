@@ -4,6 +4,8 @@ stages:
     deps:
       - video_pipeline/prepare_dataset.py
       - data/videos_from_isaac
+    outs:
+      - data/video/pressure
   
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
