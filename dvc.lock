@@ -216,31 +216,31 @@ stages:
           batch_size: 200
           learning_rate: 0.0001
           epochs:
-          - - 300
+          - - 160
             - 20
-          model_name: TestModel
+          model_name: SingleTestModel
     outs:
     - path: data/v_model
-      md5: 83dee2ca05cbc26c98ca4bbf154d8356.dir
-      size: 25082311
+      md5: 5272b792d535f13ba5fdab5bdef8a629.dir
+      size: 14637511
       nfiles: 1
     - path: reports/epochs.csv
-      md5: 6767ea097b6bbb5b1f6607cb63adfe33
-      size: 910
+      md5: 6fc6ae3277745aff929ac68e024f2b11
+      size: 490
     - path: reports/full_test_loss.csv
-      md5: bcfd9590e1eb69610b052bf34e64ac7e
-      size: 6434
+      md5: 30eb32539e20e3ea967500ae05e1e3c7
+      size: 3445
     - path: reports/full_train_loss.csv
-      md5: 81152256198b919385614fda1ff8757c
-      size: 6421
+      md5: 0f9bd27a0cf746e5a2449eaaac573252
+      size: 3456
     - path: reports/test_loss.csv
-      md5: e0ec826c390bd6d4cd0ec449683d89a2
-      size: 6445
+      md5: ba7dd608a7cc6d111edc77925ef78776
+      size: 3451
     - path: reports/train_loss.csv
-      md5: 81fdebab890d44e7ed3d046c83002cd1
-      size: 6425
+      md5: 1fc9edb1aa0da29cf15546e671b5c091
+      size: 3472
     - path: reports/v_summary.json
-      md5: 2c81bba4e5109372628190c4b22cdd45
+      md5: 4a8b1f5c350ca38c27b8636d6e112131
       size: 83
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
@@ -289,11 +289,11 @@ stages:
       size: 672278999
       nfiles: 12928
   visual:
-    cmd: python video_pipeline/prediction_visualization.py
+    cmd: python video_pipeline/prediction_visualization.py; git add reports
     deps:
     - path: data/v_model
-      md5: 83dee2ca05cbc26c98ca4bbf154d8356.dir
-      size: 25082311
+      md5: 5272b792d535f13ba5fdab5bdef8a629.dir
+      size: 14637511
       nfiles: 1
     params:
       params.yaml:
@@ -306,8 +306,8 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: ec69911453870159c632e5a811bc89e3.dir
-      size: 22732936
+      md5: 3d5612d1478765ae4196a8e67364141c.dir
+      size: 22628866
       nfiles: 67
   push_logs:
     cmd: python csv_logger.py

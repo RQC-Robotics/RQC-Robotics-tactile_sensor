@@ -60,7 +60,7 @@ stages:
       - data/v_model
 
   visual:
-    cmd: python video_pipeline/prediction_visualization.py & git add reports
+    cmd: python video_pipeline/prediction_visualization.py; git add reports
     params:
       - visual
     deps:
