@@ -8,8 +8,29 @@ from tqdm import tqdm
 from PIL import Image
 
 
-class Dinamic_video_dataset(Dataset):
+class Dynamic_video_dataset(Dataset):
     '''for big datasets'''
+
+    class SliceableDataset:
+
+        def __init__(self, files_path, files):
+            self.files_path = files_path
+            self.files = files
+            
+        def __getitem__(self, key):
+            if isinstance(key, slice):
+                res = []
+                for file_name in self.files[key]:
+                    res.append(np.load(jn(self.files_path, file_name)))
+                    if file_name.endswith('.npz'):
+                        res[-1] = res[-1]['arr_0']
+                return np.array(res)
+            else:
+                file_name = self.files[key]
+                res = np.load(jn(self.files_path, file_name))
+                if file_name.endswith('.npz'):
+                    res = res['arr_0']
+                return res
 
     def __init__(self, pressure_path, signal_path):
         self.pressure_path = pressure_path
@@ -25,9 +46,9 @@ class Dinamic_video_dataset(Dataset):
                 relative_path = path[pic_path_len:]
                 self.files.append(jn(relative_path, file_name))
 
-        for name in self.files:
-            self.file_lens.append(len(np.load(jn(signal_path, name))))
-
+        self.pressure = self.SliceableDataset(pressure_path, self.files)
+        self.signal = self.SliceableDataset(signal_path, self.files)
+        
     def __len__(self):
         return len(self.chains)
 
@@ -38,7 +59,11 @@ class Dinamic_video_dataset(Dataset):
         return signal[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)], \
                 pressure[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)]
 
+    # deprecate
     def split_to_chains(self, chain_len):
+        if len(self.file_lens) == 0:
+            for name in self.files:
+                self.file_lens.append(len(np.load(jn(self.signal_path, name))))
         self.chain_len = chain_len
         self.chains = []
 
@@ -71,7 +96,8 @@ class Video_dataset(Dataset):
                 self.signal.append(
                     np.load(jn(signal_path, name))['arr_0'].astype(np.float32))
                 self.pressure.append(
-                    np.load(jn(pressure_path, name))['arr_0'].astype(np.float32))
+                    np.load(jn(pressure_path,
+                               name))['arr_0'].astype(np.float32))
             else:
                 self.signal.append(
                     np.load(jn(signal_path, name)).astype(np.float32))
@@ -196,10 +222,14 @@ def predict(model, signals, device, initial_pressure=None) -> np.array:
             model, signal[None], initial_pressure=initial_pressure[None])[0]
     return pressure.cpu().numpy()
 
-def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size, device):
+
+def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size,
+                 device):
     '''Counts average loss on all videos in dataset'''
-    
-    chains_loader = DataLoader(list(zip(video_dataset.signal, video_dataset.pressure)), batch_size=batch_size)
+
+    chains_loader = DataLoader(list(
+        zip(video_dataset.signal, video_dataset.pressure)),
+                               batch_size=batch_size)
     running_loss = 0.0
     processed_data = 0
 
@@ -221,15 +251,14 @@ def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size, dev
     train_loss = running_loss / processed_data
     return train_loss
 
-        
 
 # unfortunately doesn't work properly
-# 
+#
 # def visual_chains(list_of_chains, outpath):
 #     '''
 #     Params:
 #     list_of_chains: List[np.array-s]
-#     outpath: (str) path for avi video 
+#     outpath: (str) path for avi video
 #     '''
 #     chains = np.concatenate(list_of_chains, -2)
 #     # norming
@@ -239,12 +268,13 @@ def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size, dev
 #     for i in range(len(chains)):
 #         video.write(cv2.cvtColor(chains[i], cv2.COLOR_RGB2GRAY))
 #         cv2.imshow('a', chains[i])
-#         #waits for user to press any key 
+#         #waits for user to press any key
 #         #(this is necessary to avoid Python kernel form crashing)
-#         cv2.waitKey(0) 
-#     #closing all open windows 
-#     cv2.destroyAllWindows()     
+#         cv2.waitKey(0)
+#     #closing all open windows
+#     cv2.destroyAllWindows()
 #     video.release()
+
 
 def visual_chains(list_of_chains, outpath):
     '''
@@ -259,4 +289,8 @@ def visual_chains(list_of_chains, outpath):
     images = []
     for i in range(len(chains)):
         images.append(Image.fromarray(chains[i]))
-    images[0].save(outpath+".gif", save_all=True, loop=0, duration=30, append_images=images[1:])
+    images[0].save(outpath + ".gif",
+                   save_all=True,
+                   loop=0,
+                   duration=30,
+                   append_images=images[1:])

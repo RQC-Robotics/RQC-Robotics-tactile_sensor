@@ -14,7 +14,7 @@ import torch
 from tqdm import tqdm
 import json
 
-from video_module import Video_dataset, \
+from video_module import Dynamic_video_dataset, \
     predict, visual_chains
 # %%
 with open('params.yaml') as conf_file:
@@ -55,13 +55,11 @@ if not os.path.exists(save_path):
 
 
 def visual_dataset(dataset, step, max_items, begin=0):
-    i = 0
     prev_id = ''
+    total=min(len(dataset.files) // step, max_items)
     for pressure, signal, file_name in tqdm(
-            zip(dataset.pressure[::step], dataset.signal[::step],
-                dataset.files[::step]),
-            total=min(len(dataset.files) // step, max_items)):
-        i += 1
+            zip(dataset.pressure[:total*step:step], dataset.signal[:total*step:step],
+                dataset.files[:total*step:step]), total=total):
         file_name = file_name[:-4]
         id = file_name[:file_name.rfind('/')]
         id = id[:id.rfind('/')]
@@ -77,19 +75,18 @@ def visual_dataset(dataset, step, max_items, begin=0):
                       jn(save_path, file_name.replace('/', '_')))
         print(f"<img src={file_name.replace('/', '_')+'.gif'} width=400>",
               file=file)
-        if i == max_items:
-            break
+
 
 
 file = open(jn(save_path, "view.md"), 'w')
 print("# Visualization", file=file)
 
-test_dataset = Video_dataset(output_path, test_input_path)
+test_dataset = Dynamic_video_dataset(output_path, test_input_path)
 print("# Test dataset", file=file)
 visual_dataset(test_dataset, **config['visual']['test'])
 
 if 'train' in config['visual'] and config['visual']['train']['max_items'] > 0:
-    train_dataset = Video_dataset(output_path, input_path)
+    train_dataset = Dynamic_video_dataset(output_path, input_path)
     print("\n\n # Train dataset", file=file)
     visual_dataset(train_dataset, **config['visual']['train'])
 file.close()
