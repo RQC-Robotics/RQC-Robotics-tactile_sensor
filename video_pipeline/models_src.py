@@ -18,18 +18,18 @@ class FullyConnectedImprover(nn.Module):
         return self.sequential(x)
 
 
-class TestModel(nn.Module):
+class TestModel1Sigm(nn.Module):
     """Some Information about TestModel"""
 
     def __init__(self, pressure_shape, signal_shape):
-        super(TestModel, self).__init__()
+        super(TestModel1Sigm, self).__init__()
         self.signal_shape = signal_shape
         self.pressure_shape = pressure_shape
 
         self.sequential = nn.Sequential(
             nn.Linear(
                 pressure_shape[-1] * pressure_shape[-2] +
-                2 * signal_shape[-1] * signal_shape[-2], 600), nn.ReLU(),
+                2 * signal_shape[-1] * signal_shape[-2], 600), nn.Sigmoid(),
             nn.Linear(600, 1000), nn.ReLU(), nn.Linear(1000, 1000), nn.ReLU(),
             nn.Linear(1000, 1000), nn.ReLU(),
             nn.Linear(1000, 30*30))
