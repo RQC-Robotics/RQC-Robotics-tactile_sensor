@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.transforms.functional import rotate as torch_rotate
+from torchvision.transforms.functional import gaussian_blur
 from torchvision.transforms import InterpolationMode
 import numpy as np
 from torch_sensor_lib.visual import visual_picture
-# import torch_sensor_lib.vi as ds
 '''
 Param requirements:
 
@@ -31,18 +31,7 @@ class FiberSimulator():
         self.alpha = self.phys['kof']
         self.n_angles = geom['n_angles']
 
-        x = geom['distance']    # 0.5
-        fwhm = self.phys['fiber_sensibility']['value']    # 0.5
-        fwhm = fwhm / x    # 1
-        gauss_kernel_size = self.phys['fiber_sensibility']['accuracy']
-        # gauss_kernel_size = min(int(gauss_kernel_size * fwhm), image_size)
-
-        x = np.arange(0, gauss_kernel_size, 1, self.dtype)
-        y = x[:, np.newaxis]
-        x0 = y0 = gauss_kernel_size // 2
-        gauss = np.exp(-4 * np.log(2) * ((x - x0)**2 + (y - y0)**2) / fwhm**2)
-        self.gauss_kernel = torch.from_numpy(np.expand_dims(gauss, (0, 1))).to(
-            self.device)
+        self.gaus_size = config['env']['phys']['gaus_kernel_size']
 
         self.test = self.config['sim']['test_mod']
 
@@ -53,7 +42,7 @@ class FiberSimulator():
         """Reproduces experimental transmission curve"""
         return 1 - torch.sin(self.alpha * torch.minimum(
             torch.square(self._second_derivative(input)),
-            torch.Tensor([np.pi/2]).to(self.device)))
+            torch.Tensor([np.pi / 2]).to(self.device)))
 
     def _sum_fiber_losses(self, input):
         return 1 - torch.prod(self._trans_fun(input), dim=-2)
@@ -81,7 +70,7 @@ class FiberSimulator():
 
         rot_tensor = self._rotate(pressure_mat)
 
-        blurred_mat = F.conv2d(rot_tensor, self.gauss_kernel, padding='same')
+        blurred_mat = gaussian_blur(rot_tensor, self.gaus_size)
 
         if self.test:
             print("Rot tensors")
@@ -101,7 +90,7 @@ class FiberSimulator():
             std=delt)
         if self.test:
             print("Loss in fiber")
-            visual_picture(1 - self._trans_fun(rot_tensor),
+            visual_picture(1 - self._trans_fun(blurred_mat),
                            self.n_angles,
                            size=(7, 5))
             print("Loss sums")
@@ -125,11 +114,10 @@ class FiberSimulator():
         gauss_kernel = torch.from_numpy(np.expand_dims(gauss,
                                                        (0, 1))).to(self.device)
 
-
         # then reproduce fiber_real_sim
         if not isinstance(pressure_mat, torch.Tensor):
             pressure_mat = torch.tensor(pressure_mat, device=self.device)
-            
+
         pressure_mat *= scale_factor**2    # to keep second derivative the same
 
         rot_tensor = self._rotate(pressure_mat)
