@@ -171,7 +171,10 @@ def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
     for signal, pressure in tqdm(chains_loader,
                                  ncols=100,
                                  desc='fit_epoch',
-                                 unit='batch'):
+                                 unit='batch',
+                                 leave=False,
+                                 position=1,
+                                 ):
         signal = signal.to(device)
         pressure = pressure.to(device)
         optimizer.zero_grad()
@@ -197,7 +200,9 @@ def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device):
     for signal, pressure in tqdm(chains_loader,
                                  ncols=100,
                                  desc='eval_epoch',
-                                 unit='batch'):
+                                 unit='batch',
+                                 leave=False,
+                                 position=1):
         signal = signal.to(device)
         pressure = pressure.to(device)
 
@@ -236,7 +241,9 @@ def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size,
     for signal, pressure in tqdm(chains_loader,
                                  ncols=100,
                                  desc='eval_dataset',
-                                 unit='batch'):
+                                 unit='batch',
+                                 leave=False,
+                                 position=1):
         signal = signal.to(device)
         pressure = pressure.to(device)
 

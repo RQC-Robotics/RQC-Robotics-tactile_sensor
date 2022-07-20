@@ -3,7 +3,6 @@
 from pathlib import Path
 import sys
 import os
-from aioitertools import chain
 
 path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root))
@@ -100,32 +99,35 @@ for n_epochs, chain_len in epochs:
 
 # %%
 i = 0
-for n_epochs, chain_len in epochs:
-    train_dataset.split_to_chains(chain_len)
-    test_dataset.split_to_chains(chain_len)
-    for h in iter_train(train_dataset, test_dataset, model, n_epochs, optim,
-                           loss_fn, chain_len):
-        history.append(h)
-        ch_len_hist.append([chain_len])
-        train_loss, test_loss, full_train_loss, full_test_loss = h
-        print(f"Epoch {i+1}/{total_epochs}",
-              f"train loss: {full_train_loss:.5f}, test_loss: {full_test_loss:.5f}")
-        
-        titles = ['train_loss', 'test_loss', "full_train_loss", "full_test_loss"]
-        res = np.array([titles] + history)
-        for j, title in enumerate(titles):
-            np.savetxt(jn(path_config['reports_path'], title+'.csv'),
-                    res[:, j],
+with tqdm(total=total_epochs, position=0, unit='epoch', desc="Learning", dynamic_ncols=True) as pbar:
+    for n_epochs, chain_len in epochs:
+        train_dataset.split_to_chains(chain_len)
+        test_dataset.split_to_chains(chain_len)
+        for h in iter_train(train_dataset, test_dataset, model, n_epochs, optim,
+                            loss_fn, chain_len):
+            history.append(h)
+            ch_len_hist.append([chain_len])
+            train_loss, test_loss, full_train_loss, full_test_loss = h
+            # print(f"Epoch {i+1}/{total_epochs}",
+            #       f"train loss: {full_train_loss:.5f}, test_loss: {full_test_loss:.5f}")
+            pbar.update()
+            pbar.set_postfix(train_loss=full_train_loss, test_loss=full_test_loss)
+            
+            titles = ['train_loss', 'test_loss', "full_train_loss", "full_test_loss"]
+            res = np.array([titles] + history)
+            for j, title in enumerate(titles):
+                np.savetxt(jn(path_config['reports_path'], title+'.csv'),
+                        res[:, j],
+                        delimiter=',',
+                        fmt='%s')
+            np.savetxt(jn(path_config['reports_path'], 'epochs.csv'),
+                    [['chain_len']] + ch_len_hist,
                     delimiter=',',
                     fmt='%s')
-        np.savetxt(jn(path_config['reports_path'], 'epochs.csv'),
-                   [['chain_len']] + ch_len_hist,
-                   delimiter=',',
-                   fmt='%s')
-        
-        i += 1
-        
-        os.system('dvc plots show -q')
+            
+            i += 1
+            
+            os.system('dvc plots show -q')
 # %%
 train_loss, test_loss, full_train_loss, full_test_loss = zip(*history)
 res = {
