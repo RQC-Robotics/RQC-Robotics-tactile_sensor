@@ -216,32 +216,32 @@ stages:
           batch_size: 200
           learning_rate: 0.0001
           epochs:
-          - - 100
-            - 2
-          model_name: SingleTestModel
+          - - 160
+            - 20
+          model_name: SigmNaiveRNN
     outs:
     - path: data/v_model
-      md5: 0740234044d337fa85cecad758d1ff3a.dir
-      size: 14637511
+      md5: 605fd8ad905526cb1986fc6b0d9fe19a.dir
+      size: 25082311
       nfiles: 1
     - path: reports/epochs.csv
-      md5: 14bc654580d1f30fd237e22490e92beb
-      size: 210
+      md5: 6fc6ae3277745aff929ac68e024f2b11
+      size: 490
     - path: reports/full_test_loss.csv
-      md5: 61d8ac398cc60baf81d71f793d44f0b8
-      size: 2166
+      md5: 65d7631f840400ceb3b1c308b477144e
+      size: 3392
     - path: reports/full_train_loss.csv
-      md5: ef8f405b364cb596cd6c63e76cd34fc5
-      size: 2159
+      md5: 94966f3fb5d96f799536b1fc8820b3d7
+      size: 3371
     - path: reports/test_loss.csv
-      md5: ac2ca13aecbd41287a472c73096e63cc
-      size: 2159
+      md5: d9c5285259b2340828d1c0957ee4b445
+      size: 3378
     - path: reports/train_loss.csv
-      md5: d570cafcbd227355b0ed3735c3fb751a
-      size: 2166
+      md5: 5830467ec480ce1c8b0eda4e0cae7fca
+      size: 3378
     - path: reports/v_summary.json
-      md5: 87fe8c66c9eb715f258a040261a137ea
-      size: 83
+      md5: 256e2be71f2dd2bb81bdbd73c2d5e2ab
+      size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
@@ -292,8 +292,8 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py; git add reports
     deps:
     - path: data/v_model
-      md5: 0740234044d337fa85cecad758d1ff3a.dir
-      size: 14637511
+      md5: 605fd8ad905526cb1986fc6b0d9fe19a.dir
+      size: 25082311
       nfiles: 1
     params:
       params.yaml:
@@ -306,8 +306,8 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: daa81fcf0502d2c07dbf19fb1d230ba7.dir
-      size: 21133538
+      md5: cd45702779982273b59726d7a439c5e0.dir
+      size: 18488474
       nfiles: 67
   push_logs:
     cmd: python csv_logger.py
