@@ -112,8 +112,8 @@ class Video_dataset(Dataset):
         ch = self.chains[index]
         signal = self.signal[ch[0]]
         pressure = self.pressure[ch[0]]
-        return signal[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)], \
-                pressure[self.chain_len * ch[1]:self.chain_len * (ch[1] + 1)]
+        return signal[(self.chain_len-1) * ch[1]:(self.chain_len-1) * ch[1] + self.chain_len], \
+                pressure[(self.chain_len-1) * ch[1]:(self.chain_len-1) * ch[1] + self.chain_len]
 
     def split_to_chains(self, chain_len):
         self.chain_len = chain_len
@@ -121,7 +121,7 @@ class Video_dataset(Dataset):
 
         for n, file in enumerate(self.files):
             self.chains.extend([
-                (n, i) for i in range(self.file_lens[n] // chain_len)
+                (n, i) for i in range((self.file_lens[n]-1) // (chain_len-1))
             ])
 
 
