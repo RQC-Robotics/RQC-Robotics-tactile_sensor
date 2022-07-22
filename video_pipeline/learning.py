@@ -52,8 +52,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # %%
 tr = config['video_train']
-test_dataset.split_to_chains(1)
-train_dataset.split_to_chains(1)
+test_dataset.split_to_chains(2)
+train_dataset.split_to_chains(2)
 
 signal_shape, pressure_shape = (x.shape for x in train_dataset[0])
 
@@ -62,10 +62,16 @@ print('input chain shape: ', signal_shape, '\noutput chain shape: ',
 
 model_name = tr['model_name']
 import models_src
+model_class = eval(f"models_src.{model_name}")
 
-model = eval(
-    f"models_src.{model_name}(pressure_shape[-2:], signal_shape[-2:]).to(device)"
-)
+args = []
+if model_name.startswith("Param"):
+    layers = tr['layers']
+    args.append(layers)
+
+model = model_class(pressure_shape[-2:], signal_shape[-2:], *args)
+model = model.to(device)
+
 print(model)
 optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()
