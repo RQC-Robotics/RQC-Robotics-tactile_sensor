@@ -35,23 +35,11 @@ stages:
         - reports/v_summary.json:
             cache: false
       plots:
-        - reports/test_loss.csv:
-            cache: false
-            x_label: epoch
-        
-        - reports/train_loss.csv:
-            cache: false
-            x_label: epoch
-        
         - reports/full_test_loss.csv:
             cache: false
             x_label: epoch
         
         - reports/full_train_loss.csv:
-            cache: false
-            x_label: epoch
-        
-        - reports/epochs.csv:
             cache: false
             x_label: epoch
         

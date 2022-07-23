@@ -144,7 +144,7 @@ class Stack_dataset(Dataset):
                 relative_path = path[pic_path_len:]
                 self.files.append(jn(relative_path, file_name))
 
-        for name in self.files:
+        for name in tqdm(self.files, leave=False, desc="Dataset loading", unit='video', dynamic_ncols=True):
             if name.endswith('npz'):
                 self.signal.append(
                     np.load(jn(signal_path, name))['arr_0'].astype(np.float32))
