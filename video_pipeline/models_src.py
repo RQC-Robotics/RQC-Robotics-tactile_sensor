@@ -133,14 +133,51 @@ class ParamSingle(nn.Module):
 
         return x
 
+class ParamStackNet(nn.Module):
+    def __init__(self, pressure_shape, signal_shape, single_layers: list[int], shared_layers: list[int], frames_number, frames_interval):
+        super(ParamStackNet, self).__init__()
+        
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
+
+        self.signal_shape = signal_shape
+        self.pressure_shape = pressure_shape
+        layers = [nn.Linear(
+                signal_shape[-1] * signal_shape[-2], single_layers[0]), nn.ReLU()] + \
+                    [nn.Sequential(nn.Linear(*single_layers[i:i+2]), nn.ReLU()) for i in range(len(single_layers)-1)]
+
+        self.sequential_single = nn.Sequential(*layers)
+        
+        layers = [nn.Linear(
+                single_layers[-1]*frames_number, shared_layers[0]), nn.ReLU()] + \
+                    [nn.Sequential(nn.Linear(*shared_layers[i:i+2]), nn.ReLU()) for i in range(len(shared_layers)-1)] + \
+                        [nn.Linear(shared_layers[-1], 32*32)]
+        self.sequential_shared = nn.Sequential(*layers)
+
+        self.upsample = nn.Upsample(size=self.pressure_shape[-2:],
+                                    mode='bilinear')
+
+    def forward(self, signals_stack):
+        props = []
+        signals_stack = torch.swapdims(signals_stack, 0, 1)
+        for signal in signals_stack:
+            props.append(self.sequential_single(torch.flatten(signal, 1)))
+        x = torch.concat(props, dim=-1)
+        x = self.sequential_shared(x)
+        x = x.view(-1, 1, 32, 32)
+        x = self.upsample(x)
+        x = torch.squeeze(x, -3)
+
+        return x
+
 
 if __name__ == "__main__":
 
     from torch.utils.tensorboard import SummaryWriter
 
-    model = ParamRNN((64, 64), (4, 64), [600, 1000, 1000, 1000])
+    model = ParamStackNet((64, 64), (4, 64), [400, 400], [600, 600, 600], 5, 5)
+    print(model)
     writer = SummaryWriter('logdir')
     writer.add_graph(
         model,
-        (torch.rand(1, 64, 64), torch.rand(1, 4, 64), torch.rand(1, 4, 64)))
+        (torch.rand(1, 5, 4, 64)))
     writer.close()

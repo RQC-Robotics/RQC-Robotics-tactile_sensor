@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 import json
 
-from video_module import Video_dataset, \
+from video_module import Stack_dataset, \
     fit_epoch, eval_epoch, predict, eval_dataset
 # %%
 with open('params.yaml') as conf_file:
@@ -39,8 +39,13 @@ input_path = path_config['train_s_video_path']
 test_input_path = path_config['test_s_video_path']
 output_path = path_config['p_video_path']
 
-test_dataset = Video_dataset(output_path, test_input_path)
-train_dataset = Video_dataset(output_path, input_path)
+tr = config['video_train']
+frames_number, frames_interval = tr["frames_number"], tr["frames_interval"]
+
+test_dataset = Stack_dataset(output_path, test_input_path, frames_number,
+                             frames_interval)
+train_dataset = Stack_dataset(output_path, input_path, frames_number,
+                              frames_interval)
 
 # %%
 
@@ -51,24 +56,23 @@ else:
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # %%
-tr = config['video_train']
-test_dataset.split_to_chains(2)
-train_dataset.split_to_chains(2)
 
 signal_shape, pressure_shape = (x.shape for x in train_dataset[0])
-
 print('input chain shape: ', signal_shape, '\noutput chain shape: ',
       pressure_shape)
 
 model_name = tr['model_name']
 import models_src
+
 model_class = eval(f"models_src.{model_name}")
 
 args = []
 if model_name.startswith("Param"):
     layers = tr['layers']
-    args.append(layers)
-
+    args.append(layers[0])
+    args.append(layers[1])
+args.append(frames_number)
+args.append(frames_interval)
 model = model_class(pressure_shape[-2:], signal_shape[-2:], *args)
 model = model.to(device)
 
@@ -79,63 +83,53 @@ loss_fn = torch.nn.MSELoss()
 # %%
 
 
-def iter_train(train_dataset, test_dataset, model, epochs, optimizer, criterion,
-               chain_len):
+def iter_train(train_dataset, test_dataset, model, epochs, optimizer,
+               criterion):
     for epoch in range(epochs):
         train_loss = fit_epoch(model, train_dataset, criterion, optimizer,
-                               chain_len, tr['batch_size'], device)
-        test_loss = eval_epoch(model, test_dataset, criterion, chain_len,
+                               tr['batch_size'], device)
+        test_loss = eval_epoch(model, test_dataset, criterion,
                                config['test_batch_size'], device)
         # print("loss", f"{train_loss:.3f}")
         # pbar.set_postfix(train_loss=train_loss, test_loss=test_loss)
-        full_train_loss = eval_dataset(model, train_dataset, criterion, config['test_batch_size'], device)
-        full_test_loss = eval_dataset(model, test_dataset, criterion, config['test_batch_size'], device)
-        yield (train_loss, test_loss, full_train_loss, full_test_loss)
+        # full_train_loss = eval_dataset(model, train_dataset, criterion, config['test_batch_size'], device)
+        # full_test_loss = eval_dataset(model, test_dataset, criterion, config['test_batch_size'], device)
+        yield (train_loss, test_loss)
 
 
 # %%
 history = []
-ch_len_hist = []
 
 # %%
 epochs = config['video_train']['epochs']
-total_epochs = 0
-for n_epochs, chain_len in epochs:
-    total_epochs += n_epochs
 
 # %%
-i = 0
-with tqdm(total=total_epochs, position=0, unit='epoch', desc="Learning", dynamic_ncols=True) as pbar:
-    for n_epochs, chain_len in epochs:
-        train_dataset.split_to_chains(chain_len)
-        test_dataset.split_to_chains(chain_len)
-        for h in iter_train(train_dataset, test_dataset, model, n_epochs, optim,
-                            loss_fn, chain_len):
-            history.append(h)
-            ch_len_hist.append([chain_len])
-            train_loss, test_loss, full_train_loss, full_test_loss = h
-            # print(f"Epoch {i+1}/{total_epochs}",
-            #       f"train loss: {full_train_loss:.5f}, test_loss: {full_test_loss:.5f}")
-            pbar.update()
-            pbar.set_postfix(train_loss=full_train_loss, test_loss=full_test_loss)
-            
-            titles = ['train_loss', 'test_loss', "full_train_loss", "full_test_loss"]
-            res = np.array([titles] + history)
-            for j, title in enumerate(titles):
-                np.savetxt(jn(path_config['reports_path'], title+'.csv'),
+with tqdm(total=epochs,
+          position=0,
+          unit='epoch',
+          desc="Learning",
+          dynamic_ncols=True) as pbar:
+    
+    for h in iter_train(train_dataset, test_dataset, model, epochs, optim,
+                        loss_fn):
+        history.append(h)
+        train_loss, test_loss = h
+        # print(f"Epoch {i+1}/{total_epochs}",
+        #       f"train loss: {full_train_loss:.5f}, test_loss: {full_test_loss:.5f}")
+        pbar.update()
+        pbar.set_postfix(train_loss=train_loss, test_loss=test_loss)
+
+        titles = ["full_train_loss", "full_test_loss"]
+        res = np.array([titles] + history)
+        for j, title in enumerate(titles):
+            np.savetxt(jn(path_config['reports_path'], title + '.csv'),
                         res[:, j],
                         delimiter=',',
                         fmt='%s')
-            np.savetxt(jn(path_config['reports_path'], 'epochs.csv'),
-                    [['chain_len']] + ch_len_hist,
-                    delimiter=',',
-                    fmt='%s')
-            
-            i += 1
-            
-            os.system('dvc plots show -q')
+
+        os.system('dvc plots show -q')
 # %%
-train_loss, test_loss, full_train_loss, full_test_loss = zip(*history)
+full_train_loss, full_test_loss = zip(*history)
 res = {
     'train': {
         'loss': full_train_loss[np.argmin(full_test_loss)]

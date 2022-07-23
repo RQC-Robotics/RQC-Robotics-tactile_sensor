@@ -91,7 +91,7 @@ class Video_dataset(Dataset):
                 relative_path = path[pic_path_len:]
                 self.files.append(jn(relative_path, file_name))
 
-        for name in self.files:
+        for name in tqdm(self.files, leave=False, desc="Dataset loading", unit='video', dynamic_ncols=True):
             if name.endswith('npz'):
                 self.signal.append(
                     np.load(jn(signal_path, name))['arr_0'].astype(np.float32))
@@ -114,6 +114,65 @@ class Video_dataset(Dataset):
         pressure = self.pressure[ch[0]]
         return signal[(self.chain_len-1) * ch[1]:(self.chain_len-1) * ch[1] + self.chain_len], \
                 pressure[(self.chain_len-1) * ch[1]:(self.chain_len-1) * ch[1] + self.chain_len]
+
+    def split_to_chains(self, chain_len):
+        self.chain_len = chain_len
+        self.chains = []
+
+        for n, file in enumerate(self.files):
+            self.chains.extend([
+                (n, i) for i in range((self.file_lens[n]-1) // (chain_len-1))
+            ])
+
+
+
+class Stack_dataset(Dataset):
+
+    def __init__(self, pressure_path, signal_path, frames_number, frames_interval):
+        self.pressure_path = pressure_path
+        self.signal_path = signal_path
+        self.files = []
+        self.pressure = []
+        self.signal = []
+        self.file_lens = []
+        self.stacks = []
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
+        pic_path_len = len(os.path.normpath(signal_path)) + 1
+
+        for path, folders, files in os.walk(signal_path):
+            for file_name in files:
+                relative_path = path[pic_path_len:]
+                self.files.append(jn(relative_path, file_name))
+
+        for name in self.files:
+            if name.endswith('npz'):
+                self.signal.append(
+                    np.load(jn(signal_path, name))['arr_0'].astype(np.float32))
+                self.pressure.append(
+                    np.load(jn(pressure_path,
+                               name))['arr_0'].astype(np.float32))
+            else:
+                self.signal.append(
+                    np.load(jn(signal_path, name)).astype(np.float32))
+                self.pressure.append(
+                    np.load(jn(pressure_path, name)).astype(np.float32))
+            self.file_lens.append(len(self.signal[-1]))
+        
+        self.shift = frames_interval*(frames_number-1)
+        for n, file in enumerate(self.files):
+            self.stacks.extend([
+                (n, i+self.shift) for i in range(self.file_lens[n] - self.shift)
+            ])
+        
+    def __len__(self):
+        return len(self.stacks)
+
+    def __getitem__(self, index):
+        st = self.stacks[index]
+        signal = self.signal[st[0]]
+        pressure = self.pressure[st[0]]
+        return signal[st[1]-self.shift:st[1]+1:self.frames_interval], \
+                pressure[st[1]]
 
     def split_to_chains(self, chain_len):
         self.chain_len = chain_len
@@ -161,14 +220,13 @@ def predict_chain_batch(model, chain_batch, initial_pressure=None):
     return torch.concat(prediction, 1)
 
 
-def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
+def fit_epoch(model, stack_dataset, criterion, optimizer, batch_size,
               device):
-    video_dataset.split_to_chains(chain_len)
-    chains_loader = DataLoader(video_dataset, batch_size=batch_size)
+    data_loader = DataLoader(stack_dataset, batch_size=batch_size)
     running_loss = 0.0
     processed_data = 0
 
-    for signal, pressure in tqdm(chains_loader,
+    for signal, pressure in tqdm(data_loader,
                                  ncols=100,
                                  desc='fit_epoch',
                                  unit='batch',
@@ -179,25 +237,23 @@ def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
         pressure = pressure.to(device)
         optimizer.zero_grad()
 
-        prediction = \
-            predict_chain_batch(model, signal, initial_pressure=pressure[:, 0])
-        loss = criterion(prediction, pressure[:, 1:])
+        prediction = model(signal)
+        loss = criterion(prediction, pressure)
         loss.backward()
         optimizer.step()
-        running_loss += loss.item() * (signal.shape[1] - 1) * signal.shape[0]
-        processed_data += (signal.shape[1] - 1) * signal.shape[0]
+        running_loss += loss.item() * signal.shape[0]
+        processed_data += signal.shape[0]
 
     train_loss = running_loss / processed_data
     return train_loss
 
 
-def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device):
-    video_dataset.split_to_chains(chain_len)
-    chains_loader = DataLoader(video_dataset, batch_size=batch_size)
+def eval_epoch(model, stack_dataset, criterion, batch_size, device):
+    data_loader = DataLoader(stack_dataset, batch_size=batch_size)
     running_loss = 0.0
     processed_data = 0
 
-    for signal, pressure in tqdm(chains_loader,
+    for signal, pressure in tqdm(data_loader,
                                  ncols=100,
                                  desc='eval_epoch',
                                  unit='batch',
@@ -207,38 +263,39 @@ def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device):
         pressure = pressure.to(device)
 
         with torch.no_grad():
-            prediction = \
-                predict_chain_batch(model, signal, initial_pressure=pressure[:, 0])
-            loss = criterion(prediction, pressure[:, 1:])
+            prediction = model(signal)
+            loss = criterion(prediction, pressure)
 
-        running_loss += loss.item() * (signal.shape[1] - 1) * signal.shape[0]
-        processed_data += (signal.shape[1] - 1) * signal.shape[0]
+        running_loss += loss.item() * signal.shape[0]
+        processed_data += signal.shape[0]
 
     train_loss = running_loss / processed_data
     return train_loss
 
 
-def predict(model, signals, device, initial_pressure=None) -> np.array:
-    signal = torch.tensor(signals, device=device)
-    if initial_pressure is not None:
-        initial_pressure = torch.tensor(initial_pressure, device=device)
+def predict(model, signals, device) -> np.array:
+    signals = np.expand_dims(signals, 1)
+    
+    frames_interval, frames_number = model.frames_interval, model.frames_number
+    length = len(signals) - frames_interval*(frames_number-1)
+    inputs = [signals[i*frames_interval:i*frames_interval + length] for i in range(frames_number)]
+    signal = torch.tensor(np.concatenate(inputs, 1), device=device)
     with torch.no_grad():
-        pressure = predict_chain_batch(
-            model, signal[None], initial_pressure=initial_pressure[None])[0]
+        pressure = model(signal)
     return pressure.cpu().numpy()
 
 
-def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size,
+def eval_dataset(model, stack_dataset: Stack_dataset, criterion, batch_size,
                  device):
     '''Counts average loss on all videos in dataset'''
 
-    chains_loader = DataLoader(list(
-        zip(video_dataset.signal, video_dataset.pressure)),
+    data_loader = DataLoader(list(
+        zip(stack_dataset.signal, stack_dataset.pressure)),
                                batch_size=batch_size)
     running_loss = 0.0
     processed_data = 0
 
-    for signal, pressure in tqdm(chains_loader,
+    for signal, pressure in tqdm(data_loader,
                                  ncols=100,
                                  desc='eval_dataset',
                                  unit='batch',

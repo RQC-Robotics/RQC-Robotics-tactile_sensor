@@ -68,8 +68,7 @@ def visual_dataset(dataset, step, max_items, begin=0):
             prev_id = id
         prediction = predict(v_model,
                              signal[begin:],
-                             device,
-                             initial_pressure=pressure[0 + begin])
+                             device)
         pressure = pressure[-prediction.shape[0]:]
         visual_chains([pressure, prediction],
                       jn(save_path, file_name.replace('/', '_')))

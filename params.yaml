@@ -31,10 +31,14 @@ sim:
 video_train:
   batch_size: 200   # for learning
   learning_rate: 0.0001
-  epochs: [[160, 20]]  
+  epochs: 40
   # list of (number epochs, chain_len) pairs
-  model_name: ParamRNN
-  layers: [600, 1000, 1000, 1000]
+  model_name: ParamStackNet
+  layers: 
+    - [400, 400]      # single layers
+    - [600, 600, 600] # shared layers
+  frames_number: 5
+  frames_interval: 5
 test_batch_size: 500  # for evaluations without grads
 
 visual:
