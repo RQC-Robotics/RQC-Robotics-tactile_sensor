@@ -52,7 +52,7 @@ for path, folders, files in os.walk(pic_path):
     if id:
         ids.add(id)
     total += 1
-ids = np.array(list(ids))
+ids = np.array(sorted(list(ids)))
 test_number = config['dataset']['test_items']
 if test_number is None:
     test_number = int(len(ids) * config['dataset']['test_frac'])
