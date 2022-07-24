@@ -58,7 +58,7 @@ if test_size == 'None':
 #                               shuffle=True)
 test_dataset = MyDataSet(inputs[-test_size:],
                                        outputs[-test_size:])
-test_dataloader = DataLoader(MyDataSet(inputs[-test_size:, ..., ::config['fib_step']],
+test_dataloader = DataLoader(MyDataSet(inputs[-test_size:],
                                        outputs[-test_size:]),
                              batch_size=100)
 
