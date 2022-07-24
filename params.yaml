@@ -4,7 +4,6 @@ gengaus:
   batch_size: 1000
   save_batch_size: None   # should be divisible by batch_size
 
-fib_step: 2  # for skipping some fiber signals 
 env:
   pressure_profile:
     n_gauses: 7
@@ -37,7 +36,8 @@ sim:
 train:
   batch_size: 200
   learning_rate: 0.0001
+  cycle_loss_alpha: 0.5
   n_epochs: 100
-  model_name: UpSampleNet
+  model_name: TorchSensorNN5S_norm_deep
   test_size: None   # if None, 1/20 fraction of dataset 
 commit_to_compare: b2599b

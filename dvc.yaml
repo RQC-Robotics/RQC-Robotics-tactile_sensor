@@ -35,7 +35,6 @@ stages:
 
     params:
     - train
-    - fib_step
 
     deps:
       - data/sensor_signal
@@ -67,6 +66,7 @@ stages:
     - reports/predict_examples.jpg:
         cache: false
     - reports/rand_examples.jpg
+    - reports/rand_train_examples.jpg
     - logsdir
 
   # make_plot:

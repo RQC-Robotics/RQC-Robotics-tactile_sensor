@@ -52,10 +52,12 @@ if test_size == 'None':
     test_size = inputs.shape[0] // 20
 
 # batchsize = config['train']['batch_size']
-# train_dataloader = DataLoader(MyDataSet(inputs[:-test_size],
-#                                         outputs[:-test_size]),
-#                               batch_size=batchsize,
-#                               shuffle=True)
+train_dataset = MyDataSet(inputs[:-test_size],
+                                        outputs[:-test_size])
+              
+train_dataloader = DataLoader(train_dataset,
+                              batch_size=100,
+                              shuffle=True)
 test_dataset = MyDataSet(inputs[-test_size:],
                                        outputs[-test_size:])
 test_dataloader = DataLoader(MyDataSet(inputs[-test_size:],
@@ -121,7 +123,7 @@ pred_pic.shape, losses.shape
 import torch_sensor_lib as tsl
 
 
-def create_examples_mesh(indecies, sample_titles):
+def create_examples_mesh(indecies, sample_titles, dataset=test_dataset):
     '''
     plots mesh of pictures, by indecies
     '''
@@ -133,7 +135,7 @@ def create_examples_mesh(indecies, sample_titles):
     data = []
     for ind in indecies:
         data.append([])
-        signal, pic = test_dataset[ind]
+        signal, pic = dataset[ind]
         data[-1].append(pic)
         data[-1].append(pred_pic[ind])
         true_signal = signal[0]
@@ -166,11 +168,20 @@ create_examples_mesh(indexes, sample_titles)
 plt.savefig(jn(out_path, 'predict_examples.jpg'), dpi=50)
 
 # more random predict examples
-n = 10
+n = 5
 indexes = np.random.randint(len(losses), size=n)
 sample_titles = [f"loss={losses[i]:.3f}" for i in indexes]
 create_examples_mesh(indexes, sample_titles)
 plt.savefig(jn(out_path, 'rand_examples.jpg'), dpi=100)
+
+losses, pred_pic = picturewise_loss_and_predict(
+    model, train_dataloader, torch.nn.MSELoss(reduction='none'))
+
+n = 5
+indexes = np.random.randint(len(train_dataset), size=n)
+sample_titles = [f"" for i in indexes]
+create_examples_mesh(indexes, sample_titles, dataset=train_dataset)
+plt.savefig(jn(out_path, 'rand_train_examples.jpg'), dpi=100)
 
 # %%
 print("## Examples of predictions", file=report)

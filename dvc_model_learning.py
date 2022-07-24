@@ -51,10 +51,10 @@ if test_size == 'None':
     test_size = inputs.shape[0] // 20
 
 batchsize = config['train']['batch_size']
-test_dataloader = DataLoader(MyDataSet(inputs[-test_size:, ..., ::config['fib_step']],
+test_dataloader = DataLoader(MyDataSet(inputs[-test_size:],
                                        outputs[-test_size:]),
                              batch_size=batchsize)
-train_dataloader = DataLoader(MyDataSet(inputs[:-test_size, ..., ::config['fib_step']],
+train_dataloader = DataLoader(MyDataSet(inputs[:-test_size],
                                         outputs[:-test_size]),
                               batch_size=batchsize,
                               shuffle=True)
@@ -82,6 +82,20 @@ model = eval(
 )
 # summary(model, next(iter(train_dataloader))[0].shape, device=device)
 # print(model)
+def loss_generator(alpha):
+    import torch_sensor_lib as tsl
+
+    sim = tsl.FiberSimulator(config, device=device)
+    def my_loss(output_pressure, target_pressure, loss1=torch.nn.MSELoss()):
+        l1 = loss1(output_pressure, target_pressure)
+        t_signal = sim.fiber_real_sim(target_pressure)
+        o_signal = sim.fiber_real_sim(output_pressure)
+        l2 = loss1(t_signal, o_signal)
+        return l1+alpha*l2
+    return my_loss
+
+train_loss_fn = loss_generator(tr['cycle_loss_alpha'])
+
 optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()
 
@@ -151,7 +165,7 @@ def iter_train(train_loader, test_loader, model, epochs, optimizer, criterion):
         for epoch in range(epochs):
             train_loss = fit_epoch(model,
                                    train_loader,
-                                   criterion,
+                                   train_loss_fn,
                                    optimizer,
                                    pbar=pbar)
             test_loss = eval_epoch(model, test_loader, criterion, pbar=pbar)
