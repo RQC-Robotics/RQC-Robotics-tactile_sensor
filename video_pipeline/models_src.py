@@ -110,14 +110,14 @@ class ParamRNN(nn.Module):
 class ParamSingle(nn.Module):
 
     def __init__(self, pressure_shape, signal_shape, hidden_layers: list[int]):
-        super(ParamRNN, self).__init__()
+        super(ParamSingle, self).__init__()
 
         self.signal_shape = signal_shape
         self.pressure_shape = pressure_shape
         layers = [nn.Linear(
                 signal_shape[-1] * signal_shape[-2], hidden_layers[0]), nn.ReLU()] + \
                     [nn.Sequential(nn.Linear(*hidden_layers[i:i+2]), nn.ReLU()) for i in range(len(hidden_layers)-1)] + \
-                        [nn.Linear(hidden_layers[-1], 30*30)]
+                        [nn.Linear(hidden_layers[-1], 32*32)]
 
         self.sequential = nn.Sequential(*layers)
 
@@ -127,7 +127,7 @@ class ParamSingle(nn.Module):
     def forward(self, previous_pressure, previous_signal, current_signal):
         x = torch.concat([torch.flatten(current_signal, 1)], dim=-1)
         x = self.sequential(x)
-        x = x.view(-1, 1, 30, 30)
+        x = x.view(-1, 1, 32, 32)
         x = self.upsample(x)
         x = torch.squeeze(x, -3)
 

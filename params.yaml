@@ -30,9 +30,10 @@ sim:
 video_train:
   batch_size: 200   # for learning
   learning_rate: 0.0001
-  epochs: [[160, 20]]  
+  epochs: [[80, 20]]  
   # list of (number epochs, chain_len) pairs
-  model_name: SingleTestModel
+  model_name: ParamSingle
+  layers: [600, 600, 600]
 test_batch_size: 500  # for evaluations without grads
 
 visual:
