@@ -4,7 +4,7 @@ gengaus:
   batch_size: 1000
   save_batch_size: None   # should be divisible by batch_size
 
-fib_step: 2  # for skipping some fiber signals 
+fib_step: 8  # for skipping some fiber signals 
 env:
   pressure_profile:
     n_gauses: 7
@@ -15,7 +15,7 @@ env:
     distance: 0.5     # between fibers in mm
     x_len: 64     # in pixels
     y_len: 64     # in pixels    
-    n_angles: 4
+    n_angles: 32
     n_spl: 1     # number of pictures to show in testing mode  
   phys:
     fiber_sensibility:
@@ -38,6 +38,6 @@ train:
   batch_size: 200
   learning_rate: 0.0001
   n_epochs: 100
-  model_name: UpSampleNet
+  model_name: TorchSensorNN
   test_size: None   # if None, 1/20 fraction of dataset 
 commit_to_compare: b2599b

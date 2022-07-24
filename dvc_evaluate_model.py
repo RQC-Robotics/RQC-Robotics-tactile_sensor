@@ -23,7 +23,7 @@ torch.manual_seed(config['random_seed'])
 np.random.seed(config['random_seed'])
 device = 'cpu'
 model = torch.load(
-    jn(path_config['model_path'], config['train']['model_name'] + '.pt'))
+    jn(path_config['model_path'], config['train']['model_name'] + '.pt')).to(device)
 model.eval()
 out_path = path_config['reports_path']
 
@@ -56,9 +56,11 @@ if test_size == 'None':
 #                                         outputs[:-test_size]),
 #                               batch_size=batchsize,
 #                               shuffle=True)
+step = config["fib_step"]
+
 test_dataset = MyDataSet(inputs[-test_size:],
                                        outputs[-test_size:])
-test_dataloader = DataLoader(MyDataSet(inputs[-test_size:, ..., ::config['fib_step']],
+test_dataloader = DataLoader(MyDataSet(inputs[-test_size:, ..., step//2::step],
                                        outputs[-test_size:]),
                              batch_size=100)
 
@@ -138,7 +140,7 @@ def create_examples_mesh(indecies, sample_titles):
         data[-1].append(pred_pic[ind])
         true_signal = signal[0]
         pred_signal = s._sum_fiber_losses(
-            torch.from_numpy(pred_pic[ind:ind + 1]))[0].numpy()
+            torch.from_numpy(pred_pic[ind:ind + 1]))[0].numpy()[..., ]
         data[-1].append(
             np.concatenate(
                 [true_signal.reshape(-1, 1),
