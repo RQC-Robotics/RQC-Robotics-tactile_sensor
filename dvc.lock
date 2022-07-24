@@ -203,12 +203,12 @@ stages:
     cmd: python video_pipeline/learning.py
     deps:
     - path: data/video/test_signal
-      md5: c55c29311ec37db5c746ee03336dc8c9.dir
-      size: 164167973
+      md5: 794aa7c47554ee4f6b107b7f409c11cc.dir
+      size: 30920890
       nfiles: 1088
     - path: data/video/train_signal
-      md5: 0f24c87dfb9ce8b64143aa61914285fc.dir
-      size: 1541896313
+      md5: aa68f3e3ac2f04b0a23fb194a41724d0.dir
+      size: 371901556
       nfiles: 11708
     params:
       params.yaml:
@@ -218,27 +218,28 @@ stages:
           epochs: 40
           model_name: ParamStackNet
           layers:
-          - - 400
-            - 400
-          - - 600
-            - 600
-            - 600
+          - - 300
+            - 100
+          - - 500
+            - 200
+            - 200
+            - 500
           frames_number: 5
           frames_interval: 5
     outs:
     - path: data/v_model
-      md5: 4786df5f810c4f69bd5d888d0893d302.dir
-      size: 12437185
+      md5: c8869842fc0e8c43b01840b590a9cbca.dir
+      size: 4454267
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 81a912b06bf129fdda1e1b330f0fa080
-      size: 872
+      md5: a160157270791c2a7bd97b485fcbb5d2
+      size: 882
     - path: reports/full_train_loss.csv
-      md5: 3e5c6a50c6515e999c698c86b77e4e1f
-      size: 878
+      md5: 9eaa7be8085a16ea822fe03db851ed62
+      size: 867
     - path: reports/v_summary.json
-      md5: c63feb290a99d74bce6b36fd0e5cf81b
-      size: 82
+      md5: 5dc859f5daa55dcc0bdc88e5bc1838aa
+      size: 83
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
@@ -260,15 +261,15 @@ stages:
           gaus_kernel_size: 3
           relative_noise: 0.0
           noise: 0.0
-        env.sen_geometry.n_angles: 16
+        env.sen_geometry.n_angles: 4
     outs:
     - path: data/video/test_signal
-      md5: c55c29311ec37db5c746ee03336dc8c9.dir
-      size: 164167973
+      md5: 794aa7c47554ee4f6b107b7f409c11cc.dir
+      size: 30920890
       nfiles: 1088
     - path: data/video/train_signal
-      md5: 0f24c87dfb9ce8b64143aa61914285fc.dir
-      size: 1541896313
+      md5: aa68f3e3ac2f04b0a23fb194a41724d0.dir
+      size: 371901556
       nfiles: 11708
   prepare_dataset:
     cmd: python video_pipeline/prepare_dataset.py
@@ -289,8 +290,8 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py; git add reports
     deps:
     - path: data/v_model
-      md5: 4786df5f810c4f69bd5d888d0893d302.dir
-      size: 12437185
+      md5: c8869842fc0e8c43b01840b590a9cbca.dir
+      size: 4454267
       nfiles: 1
     params:
       params.yaml:
@@ -303,8 +304,8 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: 3171096619f245071fcdc05a76e575e8.dir
-      size: 24680925
+      md5: dba41c0f3e9cedf61c86b986186ab897.dir
+      size: 20701262
       nfiles: 67
   push_logs:
     cmd: python csv_logger.py

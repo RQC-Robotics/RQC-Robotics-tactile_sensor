@@ -5,7 +5,7 @@ env:
     distance: 0.5     # between fibers in mm
     x_len: 64     # in pixels
     y_len: 64     # in pixels    
-    n_angles: 16
+    n_angles: 4
     n_spl: 1     # number of pictures to show in testing mode  
   phys:
     fiber_sensibility:
@@ -35,8 +35,8 @@ video_train:
   # list of (number epochs, chain_len) pairs
   model_name: ParamStackNet
   layers: 
-    - [400, 400]      # single layers
-    - [600, 600, 600] # shared layers
+    - [300, 100]      # single layers
+    - [500, 200, 200, 500] # shared layers
   frames_number: 5
   frames_interval: 5
 test_batch_size: 1000  # for evaluations without grads

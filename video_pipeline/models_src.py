@@ -173,11 +173,12 @@ class ParamStackNet(nn.Module):
 if __name__ == "__main__":
 
     from torch.utils.tensorboard import SummaryWriter
-
-    model = ParamStackNet((64, 64), (4, 64), [400, 400], [600, 600, 600], 5, 5)
+    from torchinfo import summary
+    model = ParamStackNet((64, 64), (4, 64), [300, 100], [500, 200, 200, 500], 5, 5)
     print(model)
-    writer = SummaryWriter('logdir')
-    writer.add_graph(
-        model,
-        (torch.rand(1, 5, 4, 64)))
-    writer.close()
+    summary(model, (1, 5, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
+    # writer = SummaryWriter('logdir')
+    # writer.add_graph(
+    #     model,
+    #     (torch.rand(1, 5, 4, 64, device='cpu')))
+    # writer.close()
