@@ -53,7 +53,7 @@ class FiberSimulator():
         """Reproduces experimental transmission curve"""
         return 1 - torch.sin(self.alpha * torch.minimum(
             torch.square(self._second_derivative(input)),
-            torch.Tensor([2.467401]).to(self.device)))
+            torch.Tensor([np.pi/2]).to(self.device)))
 
     def _sum_fiber_losses(self, input):
         return 1 - torch.prod(self._trans_fun(input), dim=-2)
