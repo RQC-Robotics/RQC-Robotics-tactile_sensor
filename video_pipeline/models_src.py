@@ -109,8 +109,10 @@ class ParamRNN(nn.Module):
 
 class ParamSingle(nn.Module):
 
-    def __init__(self, pressure_shape, signal_shape, hidden_layers: list[int]):
-        super(ParamRNN, self).__init__()
+    def __init__(self, pressure_shape, signal_shape, hidden_layers: list[int], frames_number, frames_interval):
+        super(ParamSingle, self).__init__()
+        
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
 
         self.signal_shape = signal_shape
         self.pressure_shape = pressure_shape
@@ -124,7 +126,7 @@ class ParamSingle(nn.Module):
         self.upsample = nn.Upsample(size=self.pressure_shape[-2:],
                                     mode='bilinear')
 
-    def forward(self, previous_pressure, previous_signal, current_signal):
+    def forward(self,  current_signal):
         x = torch.concat([torch.flatten(current_signal, 1)], dim=-1)
         x = self.sequential(x)
         x = x.view(-1, 1, 30, 30)
