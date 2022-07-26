@@ -244,12 +244,12 @@ stages:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
     - path: data/video/pressure
-      md5: 1286041c65abff46be3102fa604de0f2.dir
-      size: 755165093
-      nfiles: 12796
+      md5: f94c6cf8b4948624f03f9ace82072e98.dir
+      size: 711360637
+      nfiles: 12072
     - path: video_pipeline/video_sim_runner.py
-      md5: 7bdd1f652da8882acb8ea6361fc3892b
-      size: 2621
+      md5: d7da821352813aa324b51261763b3287
+      size: 2629
     params:
       params.yaml:
         dataset.test_frac: 0.1
@@ -264,28 +264,28 @@ stages:
         env.sen_geometry.n_angles: 4
     outs:
     - path: data/video/test_signal
-      md5: 794aa7c47554ee4f6b107b7f409c11cc.dir
-      size: 30920890
-      nfiles: 1088
+      md5: 1b6a0245e6f042ed37cd4ef8d60e4744.dir
+      size: 39770868
+      nfiles: 1024
     - path: data/video/train_signal
-      md5: aa68f3e3ac2f04b0a23fb194a41724d0.dir
-      size: 371901556
-      nfiles: 11708
+      md5: bcc41f87ad0d768a11b5b549033001e5.dir
+      size: 359779236
+      nfiles: 11048
   prepare_dataset:
     cmd: python video_pipeline/prepare_dataset.py
     deps:
     - path: data/videos_from_isaac
-      md5: 0977ed579f3f3efed8988e1a2c721cb2.dir
-      size: 650706739
-      nfiles: 12796
+      md5: ead7f1dc2648a1184cd0e93df53db3b9.dir
+      size: 611448858
+      nfiles: 12072
     - path: video_pipeline/prepare_dataset.py
       md5: 35a30578275103c397e54838c65dab1a
       size: 1776
     outs:
     - path: data/video/pressure
-      md5: 1286041c65abff46be3102fa604de0f2.dir
-      size: 755165093
-      nfiles: 12796
+      md5: f94c6cf8b4948624f03f9ace82072e98.dir
+      size: 711360637
+      nfiles: 12072
   visual:
     cmd: python video_pipeline/prediction_visualization.py; git add reports
     deps:

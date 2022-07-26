@@ -19,7 +19,7 @@ env:
 dataset:
   test_items: null
   test_frac: 0.1
-  mult_coeff: 40  # multiplies all pressures
+  mult_coeff: 80  # multiplies all pressures
 
 sim:
   random_rot: 1
@@ -37,8 +37,8 @@ video_train:
   layers: 
     - [300, 100]      # single layers
     - [500, 200, 200, 500] # shared layers
-  frames_number: 5
-  frames_interval: 5
+  frames_number: 3
+  frames_interval: 1
 test_batch_size: 1000  # for evaluations without grads
 
 visual:
