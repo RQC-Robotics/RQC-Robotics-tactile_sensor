@@ -15,9 +15,8 @@ env:
     gaus_kernel_size: 3  # odd integer!!
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
-    
 dataset:
-  test_items: null
+  test_items:
   test_frac: 0.1
   mult_coeff: 80  # multiplies all pressures
 
@@ -29,14 +28,14 @@ sim:
 
 
 video_train:
-  batch_size: 1000   # for learning
+  batch_size: 2000   # for learning
   learning_rate: 0.0001
-  epochs: 40
+  epochs: 140
   # list of (number epochs, chain_len) pairs
   model_name: ParamStackNet
-  layers: 
-    - [300, 100]      # single layers
-    - [500, 200, 200, 500] # shared layers
+  layers:
+  - [300, 100]        # single layers
+  - [500, 200, 200, 500]   # shared layers
   frames_number: 3
   frames_interval: 1
 test_batch_size: 1000  # for evaluations without grads
