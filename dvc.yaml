@@ -58,3 +58,5 @@ stages:
 
   push_logs:
     cmd: python csv_logger.py
+    deps:
+      - reports
