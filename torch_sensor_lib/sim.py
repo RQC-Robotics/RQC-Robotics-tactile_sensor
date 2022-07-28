@@ -95,10 +95,7 @@ class FiberSimulator():
         std = self.phys['relative_noise']
         delt = self.phys['noise']
 
-        signal = torch.normal(
-            loss_tensor *
-            torch.normal(1, std, loss_tensor.shape).to(self.device),
-            std=delt)
+        signal = loss_tensor
         if self.test:
             print("Loss in fiber")
             visual_picture(1 - self._trans_fun(rot_tensor), self.n_angles)
