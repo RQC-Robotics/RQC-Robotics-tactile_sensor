@@ -36,7 +36,7 @@ sim:
 train:
   batch_size: 200
   learning_rate: 0.0001
-  cycle_loss_alpha: 0.5
+  cycle_loss_alpha: 0
   n_epochs: 100
   model_name: TorchSensorNN5S_norm_deep
   test_size: None   # if None, 1/20 fraction of dataset 

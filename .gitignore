@@ -13,3 +13,4 @@ venv*
 /logdir
 .env
 /logsdir
+/dvc_plots

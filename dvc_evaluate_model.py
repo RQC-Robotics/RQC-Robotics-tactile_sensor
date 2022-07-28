@@ -56,8 +56,7 @@ train_dataset = MyDataSet(inputs[:-test_size],
                                         outputs[:-test_size])
               
 train_dataloader = DataLoader(train_dataset,
-                              batch_size=100,
-                              shuffle=True)
+                              batch_size=100)
 test_dataset = MyDataSet(inputs[-test_size:],
                                        outputs[-test_size:])
 test_dataloader = DataLoader(MyDataSet(inputs[-test_size:],
@@ -123,7 +122,7 @@ pred_pic.shape, losses.shape
 import torch_sensor_lib as tsl
 
 
-def create_examples_mesh(indecies, sample_titles, dataset=test_dataset):
+def create_examples_mesh(indecies, sample_titles, pred_pic, dataset=test_dataset):
     '''
     plots mesh of pictures, by indecies
     '''
@@ -139,8 +138,8 @@ def create_examples_mesh(indecies, sample_titles, dataset=test_dataset):
         data[-1].append(pic)
         data[-1].append(pred_pic[ind])
         true_signal = signal[0]
-        pred_signal = s._sum_fiber_losses(
-            torch.from_numpy(pred_pic[ind:ind + 1]))[0].numpy()
+        pred_signal = s.fiber_real_sim(
+            torch.from_numpy(pred_pic[ind:ind + 1]))[0][0].numpy()
         data[-1].append(
             np.concatenate(
                 [true_signal.reshape(-1, 1),
@@ -163,7 +162,7 @@ indexes = [best_ind, rand_ind1, rand_ind2, worst_ind]
 sample_titles = ["best", "random", "random", "worst"]
 y_titles = ["true", "predict", "signal"]
 
-create_examples_mesh(indexes, sample_titles)
+create_examples_mesh(indexes, sample_titles, pred_pic)
 
 plt.savefig(jn(out_path, 'predict_examples.jpg'), dpi=50)
 
@@ -171,7 +170,7 @@ plt.savefig(jn(out_path, 'predict_examples.jpg'), dpi=50)
 n = 5
 indexes = np.random.randint(len(losses), size=n)
 sample_titles = [f"loss={losses[i]:.3f}" for i in indexes]
-create_examples_mesh(indexes, sample_titles)
+create_examples_mesh(indexes, sample_titles, pred_pic)
 plt.savefig(jn(out_path, 'rand_examples.jpg'), dpi=100)
 
 losses, pred_pic = picturewise_loss_and_predict(
@@ -180,7 +179,7 @@ losses, pred_pic = picturewise_loss_and_predict(
 n = 5
 indexes = np.random.randint(len(train_dataset), size=n)
 sample_titles = [f"" for i in indexes]
-create_examples_mesh(indexes, sample_titles, dataset=train_dataset)
+create_examples_mesh(indexes, sample_titles, pred_pic, dataset=train_dataset)
 plt.savefig(jn(out_path, 'rand_train_examples.jpg'), dpi=100)
 
 # %%
