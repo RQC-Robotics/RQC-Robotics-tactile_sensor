@@ -1,4 +1,4 @@
-exp_name: 'fiber_sensor_frame_stack'
+exp_name: 'optimal frame_stack'
 log_files:
   - reports/full_test_loss.csv
   - reports/full_train_loss.csv
