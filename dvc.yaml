@@ -1,3 +1,5 @@
+vars:
+  - logger.yaml 
 stages:
   prepare_dataset:
     cmd: python video_pipeline/prepare_dataset.py
@@ -38,17 +40,14 @@ stages:
         - reports/full_test_loss.csv:
             cache: false
             x_label: epoch
-        
         - reports/full_train_loss.csv:
             cache: false
             x_label: epoch
-        
-        
       outs:
       - data/v_model
 
   visual:
-    cmd: python video_pipeline/prediction_visualization.py; git add reports
+    cmd: python video_pipeline/prediction_visualization.py
     params:
       - visual
     deps:
@@ -58,3 +57,5 @@ stages:
 
   push_logs:
     cmd: python csv_logger.py
+    deps:
+      - ${log_path}

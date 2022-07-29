@@ -227,7 +227,7 @@ def fit_epoch(model, stack_dataset, criterion, optimizer, batch_size,
     processed_data = 0
 
     for signal, pressure in tqdm(data_loader,
-                                 ncols=100,
+                                 dynamic_ncols=True,
                                  desc='fit_epoch',
                                  unit='batch',
                                  leave=False,
@@ -254,7 +254,7 @@ def eval_epoch(model, stack_dataset, criterion, batch_size, device):
     processed_data = 0
 
     for signal, pressure in tqdm(data_loader,
-                                 ncols=100,
+                                 dynamic_ncols=True,
                                  desc='eval_epoch',
                                  unit='batch',
                                  leave=False,
@@ -296,7 +296,7 @@ def eval_dataset(model, stack_dataset: Stack_dataset, criterion, batch_size,
     processed_data = 0
 
     for signal, pressure in tqdm(data_loader,
-                                 ncols=100,
+                                 dynamic_ncols=True,
                                  desc='eval_dataset',
                                  unit='batch',
                                  leave=False,

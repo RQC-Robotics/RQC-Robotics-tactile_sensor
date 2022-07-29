@@ -24,7 +24,6 @@ sim:
   random_rot: 1
   batch_size: 100  # if None - gengaus.batchsize/n_angles/2
   test_mod: false   # verbose mod for testing sim
-  gaussian_blur: 4  # sigma value
 
 
 video_train:

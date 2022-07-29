@@ -275,17 +275,17 @@ stages:
     cmd: python video_pipeline/prepare_dataset.py
     deps:
     - path: data/videos_from_isaac
-      md5: ead7f1dc2648a1184cd0e93df53db3b9.dir
-      size: 611448858
-      nfiles: 12072
+      md5: 447e0a01f6ef854b0b4ab207774fb7da.dir
+      size: 612364883
+      nfiles: 12160
     - path: video_pipeline/prepare_dataset.py
       md5: 35a30578275103c397e54838c65dab1a
       size: 1776
     outs:
     - path: data/video/pressure
-      md5: f94c6cf8b4948624f03f9ace82072e98.dir
-      size: 711360637
-      nfiles: 12072
+      md5: b1d3757b31ac004707186a2a9054518e.dir
+      size: 712489795
+      nfiles: 12160
   visual:
     cmd: python video_pipeline/prediction_visualization.py; git add reports
     deps:

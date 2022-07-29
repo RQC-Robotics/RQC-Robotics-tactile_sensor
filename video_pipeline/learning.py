@@ -76,7 +76,7 @@ args.append(frames_interval)
 model = model_class(pressure_shape[-2:], signal_shape[-2:], *args)
 model = model.to(device)
 
-print(model)
+# print(model)
 optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()
 
