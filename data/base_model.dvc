@@ -1,4 +1,4 @@
-md5: 62f179ef4d725142feabd69204f324ee
+md5: 69191c463ec2203d9ccd9185eff400c3
 frozen: true
 deps:
 - path: data/model
@@ -7,7 +7,7 @@ deps:
     rev: f3e270b0a7193eaeeb4aadc8234430618c64fe06
     rev_lock: f3e270b0a7193eaeeb4aadc8234430618c64fe06
 outs:
-- md5: 72d30a225843c6e503af87c14b37b9ee.dir
-  size: 16119752
-  nfiles: 1
+- md5: d751713988987e9331980363e24189ce.dir
+  size: 0
+  nfiles: 0
   path: base_model

@@ -37,7 +37,7 @@ video_train:
   - [300, 100]        # single layers
   - [500, 200, 200, 500]   # shared layers
   frames_number: 3
-  frames_interval: 1
+  frames_interval: 20
 test_batch_size: 1000  # for evaluations without grads
 
 visual:
