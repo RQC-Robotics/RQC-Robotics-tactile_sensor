@@ -1,4 +1,4 @@
-exp_name: 'fiber_sensor_blur_exp'
+exp_name: 'fiber_sensor_cutting_exp'
 log_files:
   - reports/full_test_loss.csv
   - reports/full_train_loss.csv

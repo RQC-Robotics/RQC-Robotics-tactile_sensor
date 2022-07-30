@@ -24,7 +24,7 @@ r2 = (x0 * x0)
 def func(x2, r2):
     if x2 >= r2:
         return 0
-    return np.exp(1 / 8 / ((x2/r2) - 1**2))
+    return 1
 
 
 hat_func = [[

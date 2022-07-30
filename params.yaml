@@ -12,7 +12,7 @@ env:
       value: 0.5       # width of fiber in mm
       # accuracy: 5       # it is [size of kernel]/value 
     kof: 1     # between apply force and loss in grams 
-    gaus_kernel_size: 3  # odd integer!!
+    gaus_kernel_size: 11  # odd integer!!
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
     
@@ -31,7 +31,7 @@ sim:
 video_train:
   batch_size: 1000   # for learning
   learning_rate: 0.0001
-  epochs: 1
+  epochs: 120
   # list of (number epochs, chain_len) pairs
   model_name: ParamSingle
   layers: [500,500,500,500,500]
