@@ -1,0 +1,12 @@
+md5: 54a871e081e433af65e74eaf5c90b381
+frozen: true
+deps:
+- path: data/model/TorchSensorNN5S_norm_deep.pt
+  repo:
+    url: git@github.com:RQC-Robotics/RQC-Robotics-tactile_sensor.git
+    rev: c77cf4c295454661af
+    rev_lock: c77cf4c295454661af96e28d675c1700e45124f5
+outs:
+- md5: d40fd0adf2c74d8f6af6e8fd83ea8634
+  size: 16120136
+  path: TorchSensorNN5S_norm_deep.pt

@@ -100,14 +100,36 @@ class ParamStackNet(nn.Module):
 
         return x
 
+class TransferNet(nn.Module):
+    def __init__(self, pressure_shape, signal_shape, frames_number, frames_interval):
+        if frames_number != 1:
+            raise "Can work only with signle image recognition"
+        super(TransferNet, self).__init__()
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
+
+        self.signal_shape = signal_shape
+        self.pressure_shape = pressure_shape
+        
+        from pathlib import Path
+        import sys
+
+        path_root = Path(__file__).parents[1]
+        sys.path.append(str(path_root))
+
+        
+        self.net = torch.load('data/base_model/TorchSensorNN5S_norm_deep.pt', map_location='cpu')
+        
+    def forward(self, signals):
+        return self.net(signals)
+
 
 if __name__ == "__main__":
 
     from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    model = ParamStackNet((64, 64), (4, 64), [[300, 100], [500, 200, 200, 500]], 5, 5)
+    model = TransferNet((64, 64), (4, 64), 1, 2)
     print(model)
-    summary(model, (1, 5, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
+    summary(model, (1, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
     # writer = SummaryWriter('logdir')
     # writer.add_graph(
     #     model,
