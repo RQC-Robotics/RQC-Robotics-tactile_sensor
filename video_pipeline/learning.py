@@ -69,8 +69,7 @@ model_class = eval(f"models_src.{model_name}")
 args = []
 if model_name.startswith("Param"):
     layers = tr['layers']
-    args.append(layers[0])
-    args.append(layers[1])
+    args.append(layers)
 args.append(frames_number)
 args.append(frames_interval)
 model = model_class(pressure_shape[-2:], signal_shape[-2:], *args)
