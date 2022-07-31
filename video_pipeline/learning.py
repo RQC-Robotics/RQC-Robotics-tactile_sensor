@@ -128,6 +128,16 @@ with tqdm(total=epochs,
 
         os.system('dvc plots show -q')
 # %%
+if epochs == 0:
+    history.append([0, 0])
+    titles = ["full_train_loss", "full_test_loss"]
+    res = np.array([titles] + history)
+    for j, title in enumerate(titles):
+        np.savetxt(jn(path_config['reports_path'], title + '.csv'),
+                    res[:, j],
+                    delimiter=',',
+                    fmt='%s')
+
 full_train_loss, full_test_loss = zip(*history)
 res = {
     'train': {
