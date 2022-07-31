@@ -39,7 +39,6 @@ stages:
     deps:
       - data/sensor_signal
       - dvc_model_learning.py
-      - torch_sensor_lib/nets.py
     outs:
     - data/model
 

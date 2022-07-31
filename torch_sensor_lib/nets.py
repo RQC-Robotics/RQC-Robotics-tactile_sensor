@@ -117,28 +117,31 @@ class DeepUpConv(nn.Module):
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(128, 64, (3, 3), padding='same'),
+            nn.Conv2d(128, 64, (1, input_shape[-1])),
             nn.ReLU()
         )
 
-        # self.linear = nn.Sequential(
-        #     nn.Linear(4*input_shape[-2], 15 * 13),
-        #     nn.ReLU(),
-        #     nn.Linear(15*13, 30*30),
-        #     nn.ReLU(),
+        self.linear = nn.Sequential(
+            nn.Linear(4*input_shape[-2], 15 * 13),
+            nn.ReLU(),
+            nn.Linear(15*13, 30*30),
+            nn.ReLU(),
         #     nn.Linear(30*30, output_shape[-1]*output_shape[-2]),
         #     nn.LeakyReLU(0.01)
-        # )
+        )
         
         self.UpConv = nn.Sequential(
-            nn.ConvTranspose2d(64, 32, (3, 3), stride=(2, 2)), nn.ReLU(), 
-            nn.Conv2d(32, 32, (3, 3), padding='same'), nn.ReLU(),
-            nn.ConvTranspose2d(32, 16, (3, 3), stride=(2, 2)), nn.ReLU(),
-            nn.Conv2d(16, 16, (3, 3), padding='same'), nn.ReLU(),
-            nn.ConvTranspose2d(16, 1, (4, 4), stride=(2, 2), padding=4), nn.ReLU(),
-            nn.Conv2d(1, 1, (5, 5), padding='same')
+            nn.ConvTranspose2d(1, 1, (5, 5), padding=1), nn.ReLU(), 
+            nn.ConvTranspose2d(1, 1, (4, 4), stride=2, padding=1)
+            
+            # , nn.ReLU(),
+            # nn.ConvTranspose2d(64, 32, (3, 3), stride=(2, 2)), nn.ReLU(), 
+            # nn.Conv2d(32, 32, (3, 3), padding='same'), nn.ReLU(),
+            # nn.ConvTranspose2d(32, 16, (3, 3), stride=(2, 2)), nn.ReLU(),
+            # nn.Conv2d(16, 16, (3, 3), padding='same'), nn.ReLU(),
+            # nn.ConvTranspose2d(16, 1, (4, 4), stride=(2, 2), padding=4), nn.ReLU(),
+            # nn.Conv2d(1, 1, (5, 5), padding='same')
         )
-        self.upsample = nn.Upsample(size=self.output_shape, mode='bilinear')
 
     def forward(self, x):
         x = torch.unsqueeze(x, 1)
@@ -156,8 +159,10 @@ class DeepUpConv(nn.Module):
         # x = torch.cat([x, checkpoint2], 1)
 
         x = self.conv2(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.linear(x)
+        x = x.view(-1, 1, 30, 30)
         x = self.UpConv(x)
-        x = self.upsample(x)
         x = torch.squeeze(x, -3)
         return x
     

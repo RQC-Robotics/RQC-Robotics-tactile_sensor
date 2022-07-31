@@ -43,34 +43,31 @@ stages:
     cmd: python dvc_model_learning.py
     deps:
     - path: data/sensor_signal
-      md5: 57a2a99930d16ff967cf0bea869dcfa7.dir
-      size: 51200128
+      md5: d99037e37fed6a8ca9576c13ef121c40.dir
+      size: 102400128
       nfiles: 1
     - path: dvc_model_learning.py
       md5: 3891ea1776e81cc5b466f56b94097005
       size: 6962
-    - path: torch_sensor_lib/nets.py
-      md5: f2b93cfdd9d61107f9591a61c388daf1
-      size: 5317
     params:
       params.yaml:
         train:
           batch_size: 200
           learning_rate: 0.0001
           n_epochs: 100
-          model_name: UpSampleNet
+          model_name: TorchSensorNN5S_norm_deep
           test_size: None
     outs:
     - path: data/model
-      md5: 83a270ae26f430052a56afdfbd6997d1.dir
-      size: 4674120
+      md5: 4e8cfd46e9aab7c1779ec70d2323ba5a.dir
+      size: 16120136
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 1a4a1907c0a942134c899b742b4f0b24
-      size: 4136
+      md5: bd69da3c77dda3fb5046aab8d6b4c412
+      size: 4146
     - path: reports/summary.json
-      md5: 012c29c885b7a17dcb038a2d7f3be15f
-      size: 81
+      md5: d560fd557f958196917f80f0c33f8729
+      size: 80
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
@@ -180,23 +177,26 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 83a270ae26f430052a56afdfbd6997d1.dir
-      size: 4674120
+      md5: 4e8cfd46e9aab7c1779ec70d2323ba5a.dir
+      size: 16120136
       nfiles: 1
     - path: dvc_evaluate_model.py
       md5: c98b6de01b0569483ae8aef0ab721543
       size: 5297
     outs:
     - path: logsdir
-      md5: 0e02fd9a7cac3c96b074fcc3e6dd0bb1.dir
+      md5: 00fb0cc106a3e52054c819590c20d194.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: b56fec9505738947845148a079ee4341
-      size: 27709
+      md5: b6fdad4e84bd4b3e5a3c70671b79d78d
+      size: 31066
     - path: reports/predict_examples.jpg
-      md5: 219b5229c3993f17d21e907127ad88d0
-      size: 52079
+      md5: b5c35081df5d6f6417778ea7277236fa
+      size: 53783
+    - path: reports/rand_examples.jpg
+      md5: bf6b152b895eb97a0c4f79a0ae83a5bf
+      size: 249102
     - path: reports/report.md
-      md5: a367631d7c0a738b92d80c22f758d7d5
-      size: 5220
+      md5: d90d16e396116cc9fd03504f740e2fd8
+      size: 5109

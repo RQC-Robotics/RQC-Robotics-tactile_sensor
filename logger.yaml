@@ -1,0 +1,3 @@
+exp_name: 'number of fibers experiments'
+log_files:
+  - reports/learning_curve.csv
