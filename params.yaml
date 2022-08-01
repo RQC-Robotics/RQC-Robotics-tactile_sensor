@@ -1,49 +1,46 @@
-random_seed: 4732
-
+dataset:
+  mult_coeff: 80
+  test_frac: 0.1
+  test_items:
 env:
-  sen_geometry:
-    distance: 0.5     # between fibers in mm
-    x_len: 64     # in pixels
-    y_len: 64     # in pixels    
-    n_angles: 4
-    n_spl: 1     # number of pictures to show in testing mode  
   phys:
     fiber_sensibility:
-      value: 0.5       # width of fiber in mm
-      # accuracy: 5       # it is [size of kernel]/value 
-    kof: 1     # between apply force and loss in grams 
-    gaus_kernel_size: 3  # odd integer!!
-    relative_noise: 0.00     # in fiber transmission detection
-    noise: 0.00     #  in fiber transmission detection
-    
-dataset:
-  test_items: null
-  test_frac: 0.1
-  mult_coeff: 80  # multiplies all pressures
-
+      value: 0.5
+    gaus_kernel_size: 3
+    kof: 1
+    noise: 0.0
+    relative_noise: 0.0
+  sen_geometry:
+    distance: 0.5
+    n_angles: 4
+    n_spl: 1
+    x_len: 64
+    y_len: 64
+random_seed: 4732
+seed: 716409876
 sim:
+  batch_size: 100
+  gaussian_blur: 4
   random_rot: 1
-  batch_size: 100  # if None - gengaus.batchsize/n_angles/2
-  test_mod: false   # verbose mod for testing sim
-  gaussian_blur: 4  # sigma value
-
-
+  test_mod: false
+test_batch_size: 1000
 video_train:
-  batch_size: 1000   # for learning
-  learning_rate: 0.0001
-  epochs: 1
-  # list of (number epochs, chain_len) pairs
-  model_name: ParamSingle
-  layers: [500,500,500,500,500]
-  frames_number: 1
+  batch_size: 1000
+  epochs: 140
   frames_interval: 1
-test_batch_size: 1000  # for evaluations without grads
-
+  frames_number: 1
+  layers:
+  - 500
+  - 500
+  - 500
+  - 500
+  - 500
+  learning_rate: 0.0001
+  model_name: ParamSingle
 visual:
   test:
-    step: 32
     max_items: 128
-    # begin: 0
-  train:
     step: 32
+  train:
     max_items: 32
+    step: 32

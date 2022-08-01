@@ -214,31 +214,31 @@ stages:
       params.yaml:
         video_train:
           batch_size: 1000
-          learning_rate: 0.0001
-          epochs: 1
-          model_name: ParamSingle
+          epochs: 140
+          frames_interval: 1
+          frames_number: 1
           layers:
           - 500
           - 500
           - 500
           - 500
           - 500
-          frames_number: 1
-          frames_interval: 1
+          learning_rate: 0.0001
+          model_name: ParamSingle
     outs:
     - path: data/v_model
-      md5: 39311bb8612334afa0414453fdcfb8c1.dir
+      md5: ac7b98acb85c305e74080d6427b2afff.dir
       size: 6332353
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: fdaf87b9d3cdb58b648b1d99a5590d58
-      size: 36
+      md5: 67f29fb46bc2aab1c365ba4ad0aa85f7
+      size: 2953
     - path: reports/full_train_loss.csv
-      md5: a15c7d5a5f8d068739cfd24d5e2c9331
-      size: 36
+      md5: ba0d78b19edbf6d5399f9d52b9bdb221
+      size: 2991
     - path: reports/v_summary.json
-      md5: 7900dc018b82bc6f0e1de12f97f3bab2
-      size: 80
+      md5: 370644ff40f9f53cf7c68353c321889a
+      size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
@@ -256,10 +256,10 @@ stages:
         env.phys:
           fiber_sensibility:
             value: 0.5
-          kof: 1
           gaus_kernel_size: 3
-          relative_noise: 0.0
+          kof: 1
           noise: 0.0
+          relative_noise: 0.0
         env.sen_geometry.n_angles: 4
     outs:
     - path: data/video/test_signal
@@ -289,22 +289,22 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py; git add reports
     deps:
     - path: data/v_model
-      md5: 39311bb8612334afa0414453fdcfb8c1.dir
+      md5: ac7b98acb85c305e74080d6427b2afff.dir
       size: 6332353
       nfiles: 1
     params:
       params.yaml:
         visual:
           test:
-            step: 32
             max_items: 128
-          train:
             step: 32
+          train:
             max_items: 32
+            step: 32
     outs:
     - path: data/video/predict_vis
-      md5: 4ab487971e53973937164398d1566172.dir
-      size: 45
-      nfiles: 1
+      md5: e971a3ab502e0735f1dd4185788a6e0c.dir
+      size: 19120410
+      nfiles: 65
   push_logs:
     cmd: python csv_logger.py
