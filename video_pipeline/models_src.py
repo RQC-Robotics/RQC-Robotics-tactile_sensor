@@ -64,9 +64,9 @@ class ParamSingle(nn.Module):
 
         return x
 
-class ParamStackNet(nn.Module):
+class ParamStackNetSingle(nn.Module):
     def __init__(self, pressure_shape, signal_shape, hidden_layers: list[list[int]], frames_number, frames_interval):
-        super(ParamStackNet, self).__init__()
+        super(ParamStackNetSingle, self).__init__()
         single_layers, shared_layers = hidden_layers
         self.frames_interval, self.frames_number = frames_interval, frames_number 
 
@@ -90,7 +90,8 @@ class ParamStackNet(nn.Module):
     def forward(self, signals_stack):
         props = []
         signals_stack = torch.swapdims(signals_stack, 0, 1)
-        for signal in signals_stack:
+        signal = signals_stack[-1]
+        for _ in signals_stack:
             props.append(self.sequential_single(torch.flatten(signal, 1)))
         x = torch.concat(props, dim=-1)
         x = self.sequential_shared(x)
@@ -199,9 +200,9 @@ if __name__ == "__main__":
 
     from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    model = SensorNN5S_norm_deep((64, 64), (4, 64), 1, 2)
+    model = ParamStackNetSingle((64, 64), (4, 64),[[300, 100], [500, 200, 200, 500]], 2, 2)
     print(model)
-    summary(model, (1, 1, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
+    summary(model, (1, 2, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
     # writer = SummaryWriter('logdir')
     # writer.add_graph(
     #     model,
