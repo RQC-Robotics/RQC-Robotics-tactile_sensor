@@ -120,6 +120,7 @@ class TransferNet(nn.Module):
         self.net = torch.load('data/base_model/TorchSensorNN5S_norm_deep.pt', map_location='cpu')
         
     def forward(self, signals):
+        signals = torch.squeeze(signals, -3)
         return self.net(signals)
 
 
