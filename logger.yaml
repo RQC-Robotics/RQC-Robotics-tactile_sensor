@@ -1,7 +1,2 @@
 exp_name: 'fiber_sensor_learning_on_videos'
-log_files:
-  - reports/test_loss.csv
-  - reports/train_loss.csv
-  - reports/full_test_loss.csv
-  - reports/full_train_loss.csv
-  - reports/epochs.csv
+log_path: reports
