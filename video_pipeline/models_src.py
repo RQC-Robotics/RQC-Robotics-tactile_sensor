@@ -168,7 +168,7 @@ class ParamLatentRNN(nn.Module):
     
     def forward(self, current_signal):
         if self.memory is None:
-            self.memory = torch.zeros((current_signal.shape[-3], self.memory_size))
+            self.memory = torch.zeros((current_signal.shape[-3], self.memory_size), device='cuda' if torch.cuda.is_available() else 'cpu')
         x = torch.concat([
             self.memory,
             torch.flatten(current_signal, -2)

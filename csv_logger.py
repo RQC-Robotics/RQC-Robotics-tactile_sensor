@@ -1,5 +1,6 @@
 import numpy as np
 import yaml
+import glob
 
 import os
 import dotenv
@@ -38,7 +39,7 @@ ex.add_config('params.yaml')
 @ex.automain
 def send_csv(_run):
 
-    for file_name in log_config['log_files']:
+    for file_name in glob.glob(log_config['log_path'] + "/*.csv"):
         titles = np.loadtxt(file_name, delimiter=',', dtype=str, max_rows=1, ndmin=1)
         data = np.loadtxt(file_name, delimiter=',', skiprows=1, ndmin=2)
         for i, title in enumerate(titles):
