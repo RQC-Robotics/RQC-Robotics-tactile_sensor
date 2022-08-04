@@ -1,7 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from torchvision.transforms.functional import rotate as torch_rotate
+from torchvision.transforms import InterpolationMode
+        
 
 
 class ParamRNN(nn.Module):
@@ -125,6 +127,33 @@ class TransferNet(nn.Module):
     
 
 
+class ParamInterpCNN(nn.Module):
+
+    def __init__(self, output_shape, input_shape, hidden_layers, frames_number, frames_interval):
+        assert frames_number == 1
+        input_shape = input_shape[-2:]
+        self.output_shape = output_shape[-2:]
+        super(ParamInterpCNN, self).__init__()
+
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
+
+        layers = [nn.Conv2d(input_shape[-2], hidden_layers[0], (5, 5), padding='same'), nn.ReLU()] +\
+            [nn.Sequential(nn.Conv2d(*hidden_layers[i:i+2], (5, 5), padding='same'), nn.ReLU()) for i in range(len(hidden_layers)-1)] + \
+                        [nn.Conv2d(hidden_layers[-1], 1, (5, 5), padding='same')]
+        
+        self.conv1 = nn.Sequential(*layers)
+        
+    def forward(self, x):
+        
+        x = x.unsqueeze(-2).repeat(1, 1, 64, 1)
+        for i in range(x.shape[-3]):
+            x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
+        
+            
+        x = self.conv1(x)
+        x = x.view(-1, *self.output_shape)
+        return x
+
 class SensorNN5S_norm_deep(nn.Module):
 
     def __init__(self, output_shape, input_shape, frames_number, frames_interval):
@@ -196,13 +225,14 @@ class SensorNN5S_norm_deep(nn.Module):
         return x
 
 
+
 if __name__ == "__main__":
 
     from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    model = ParamStackNetSingle((64, 64), (4, 64),[[300, 100], [500, 200, 200, 500]], 2, 2)
+    model = ParamInterpCNN((64, 64), (4, 64),[200, 100, 100, 50], 1, 1)
     print(model)
-    summary(model, (1, 2, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
+    summary(model, (1, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
     # writer = SummaryWriter('logdir')
     # writer.add_graph(
     #     model,
