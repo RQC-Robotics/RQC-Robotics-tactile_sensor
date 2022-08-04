@@ -150,7 +150,7 @@ class SubDataLoader():
         self.previous_pressure = pressure
 
 
-def predict_chain_batch(model, chain_batch, initial_pressure=None):
+def predict_chain_batch_old(model, chain_batch, initial_pressure=None):
     subdataloader = SubDataLoader(chain_batch,
                                   initial_pressure=initial_pressure)
     prediction = []
@@ -160,9 +160,21 @@ def predict_chain_batch(model, chain_batch, initial_pressure=None):
 
     return torch.concat(prediction, 1)
 
+def predict_chain_batch(model, chain_batch, heat_up=0):
+    prediction = []
+    if hasattr(model, "reset_memory"):
+        model.reset_memory()
+        
+    for i in range(chain_batch.shape[1]):
+        prediction.append(model(chain_batch[:, i])[:, None])
+        if hasattr(model, "reset_memory"):
+            model.reset_memory()
+    
+    return torch.concat(prediction[heat_up:], 1)
+
 
 def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
-              device):
+              device, heat_up=0):
     video_dataset.split_to_chains(chain_len)
     chains_loader = DataLoader(video_dataset, batch_size=batch_size)
     running_loss = 0.0
@@ -180,18 +192,18 @@ def fit_epoch(model, video_dataset, criterion, optimizer, chain_len, batch_size,
         optimizer.zero_grad()
 
         prediction = \
-            predict_chain_batch(model, signal, initial_pressure=pressure[:, 0])
-        loss = criterion(prediction, pressure[:, 1:])
+            predict_chain_batch(model, signal, heat_up=heat_up)
+        loss = criterion(prediction, pressure[:, -prediction.shape[1]:])
         loss.backward()
         optimizer.step()
-        running_loss += loss.item() * (signal.shape[1] - 1) * signal.shape[0]
-        processed_data += (signal.shape[1] - 1) * signal.shape[0]
+        running_loss += loss.item() * prediction.shape[1] * prediction.shape[0]
+        processed_data += prediction.shape[1] * prediction.shape[0]
 
     train_loss = running_loss / processed_data
     return train_loss
 
 
-def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device):
+def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device, heat_up=0):
     video_dataset.split_to_chains(chain_len)
     chains_loader = DataLoader(video_dataset, batch_size=batch_size)
     running_loss = 0.0
@@ -208,23 +220,21 @@ def eval_epoch(model, video_dataset, criterion, chain_len, batch_size, device):
 
         with torch.no_grad():
             prediction = \
-                predict_chain_batch(model, signal, initial_pressure=pressure[:, 0])
-            loss = criterion(prediction, pressure[:, 1:])
+                predict_chain_batch(model, signal, heat_up=heat_up)
+            loss = criterion(prediction, pressure[:, -prediction.shape[1]:])
 
-        running_loss += loss.item() * (signal.shape[1] - 1) * signal.shape[0]
-        processed_data += (signal.shape[1] - 1) * signal.shape[0]
+        running_loss += loss.item() * prediction.shape[1] * prediction.shape[0]
+        processed_data += prediction.shape[1] * prediction.shape[0]
 
     train_loss = running_loss / processed_data
     return train_loss
 
 
-def predict(model, signals, device, initial_pressure=None) -> np.array:
+def predict(model, signals, device) -> np.array:
     signal = torch.tensor(signals, device=device)
-    if initial_pressure is not None:
-        initial_pressure = torch.tensor(initial_pressure, device=device)
     with torch.no_grad():
         pressure = predict_chain_batch(
-            model, signal[None], initial_pressure=initial_pressure[None])[0]
+            model, signal[None])[0]
     return pressure.cpu().numpy()
 
 
@@ -249,11 +259,11 @@ def eval_dataset(model, video_dataset: Video_dataset, criterion, batch_size,
 
         with torch.no_grad():
             prediction = \
-                predict_chain_batch(model, signal, initial_pressure=pressure[:, 0])
-            loss = criterion(prediction, pressure[:, 1:])
+                predict_chain_batch(model, signal)
+            loss = criterion(prediction, pressure[:, -prediction.shape[1]:])
 
-        running_loss += loss.item() * (signal.shape[1] - 1) * signal.shape[0]
-        processed_data += (signal.shape[1] - 1) * signal.shape[0]
+        running_loss += loss.item() * prediction.shape[1] * prediction.shape[0]
+        processed_data += prediction.shape[1] * prediction.shape[0]
 
     train_loss = running_loss / processed_data
     return train_loss

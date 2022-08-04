@@ -68,9 +68,10 @@ args = []
 if model_name.startswith("Param"):
     layers = tr['layers']
     args.append(layers)
-
-model = model_class(pressure_shape[-2:], signal_shape[-2:], *args)
+kwargs = tr['net_params']
+model = model_class(pressure_shape[-2:], signal_shape[-2:], *args, **kwargs)
 model = model.to(device)
+heat_up = tr['rec_heat_up']
 
 print(model)
 optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
@@ -83,9 +84,9 @@ def iter_train(train_dataset, test_dataset, model, epochs, optimizer, criterion,
                chain_len):
     for epoch in range(epochs):
         train_loss = fit_epoch(model, train_dataset, criterion, optimizer,
-                               chain_len, tr['batch_size'], device)
+                               chain_len, tr['batch_size'], device, heat_up=heat_up)
         test_loss = eval_epoch(model, test_dataset, criterion, chain_len,
-                               config['test_batch_size'], device)
+                               config['test_batch_size'], device, heat_up=heat_up)
         # print("loss", f"{train_loss:.3f}")
         # pbar.set_postfix(train_loss=train_loss, test_loss=test_loss)
         full_train_loss = eval_dataset(model, train_dataset, criterion, config['test_batch_size'], device)
