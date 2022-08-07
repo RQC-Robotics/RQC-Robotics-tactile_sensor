@@ -252,22 +252,23 @@ def eval_epoch(model, stack_dataset, criterion, batch_size, device):
     data_loader = DataLoader(stack_dataset, batch_size=batch_size)
     running_loss = 0.0
     processed_data = 0
+    with tqdm(dynamic_ncols=True, desc='eval_epoch',
+                                    unit='batch',
+                                    leave=False,
+                                    position=1, total=len(data_loader)) as pbar:
+        for signal, pressure in data_loader:
+            signal = signal.to(device)
+            pressure = pressure.to(device)
 
-    for signal, pressure in tqdm(data_loader,
-                                 dynamic_ncols=True,
-                                 desc='eval_epoch',
-                                 unit='batch',
-                                 leave=False,
-                                 position=1):
-        signal = signal.to(device)
-        pressure = pressure.to(device)
+            with torch.no_grad():
+                prediction = model(signal)
+                loss = criterion(prediction, pressure)
 
-        with torch.no_grad():
-            prediction = model(signal)
-            loss = criterion(prediction, pressure)
-
-        running_loss += loss.item() * signal.shape[0]
-        processed_data += signal.shape[0]
+            running_loss += loss.item() * signal.shape[0]
+            processed_data += signal.shape[0]
+            
+            pbar.update(1)
+            pbar.set_postfix(batch_loss=loss)
 
     train_loss = running_loss / processed_data
     return train_loss

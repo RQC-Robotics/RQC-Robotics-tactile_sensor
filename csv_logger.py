@@ -34,6 +34,7 @@ else:
     input("WARNING! No password for db. Confirm logging locally")
 
 ex.add_config('params.yaml')
+ex.add_source_file("video_pipeline/models_src.py")
 
 
 @ex.automain
