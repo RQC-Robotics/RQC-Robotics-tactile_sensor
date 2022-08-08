@@ -144,8 +144,7 @@ class ParamInterpCNN(nn.Module):
         self.conv1 = nn.Sequential(*layers)
         
     def forward(self, x):
-        
-        x = x.unsqueeze(-2).repeat(1, 1, 64, 1)
+        x = torch.swapdims(x, -2, -3).repeat(1, 1, 64, 1)
         for i in range(x.shape[-3]):
             x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
         
