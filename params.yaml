@@ -29,10 +29,10 @@ sim:
 video_train:
   batch_size: 1000    # for learning
   learning_rate: 0.0001
-  epochs: 15
+  epochs: 60
   # list of (number epochs, chain_len) pairs
-  model_name: ParamInterpCNN
-  layers: [32, 16, 10]        # single layers
+  model_name: Unet
+  # layers: [32, 16, 10]        # single layers
   frames_number: 1
   frames_interval: 1
 test_batch_size: 1000  # for evaluations without grads

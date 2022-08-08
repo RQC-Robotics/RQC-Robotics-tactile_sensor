@@ -288,7 +288,7 @@ class Unet(nn.Module):
         x = self.up1(x)
         
         x = self.finalConv(x)
-        x = x.squeeze(-2)
+        x = x.squeeze(-3)
         
         # x = x.view(-1, *self.output_shape)
         return x
