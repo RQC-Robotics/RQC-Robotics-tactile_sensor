@@ -55,19 +55,19 @@ stages:
           batch_size: 200
           learning_rate: 0.0001
           n_epochs: 50
-          model_name: Unet
+          model_name: Unet1
           test_size: None
     outs:
     - path: data/model
-      md5: 396ba0891888b78a0d2426aaa6e24359.dir
-      size: 618735
+      md5: 95a0c854bf3f198da5e0c7eef698077d.dir
+      size: 3435563
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 9f40e89a351df57aa23a5d89d4a04782
-      size: 2045
+      md5: 44faea5f4998dbf6d7f7177d0a2c9ff0
+      size: 2063
     - path: reports/summary.json
-      md5: 40dd9fb43450e3b8f20834ad3806a0d3
-      size: 79
+      md5: e284d099ada874c011e10d7e71721805
+      size: 80
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
@@ -177,26 +177,26 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 396ba0891888b78a0d2426aaa6e24359.dir
-      size: 618735
+      md5: 95a0c854bf3f198da5e0c7eef698077d.dir
+      size: 3435563
       nfiles: 1
     - path: dvc_evaluate_model.py
       md5: c98b6de01b0569483ae8aef0ab721543
       size: 5297
     outs:
     - path: logsdir
-      md5: 65e17517eceaac40fc79591a99e8933f.dir
+      md5: 5a7b0f8b4647b663960ab578473f4476.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: c718213192bc23f2fc7f6f600fc19f0c
-      size: 25815
+      md5: 5f8d13e19daa655067212ba72b1d9a2b
+      size: 25377
     - path: reports/predict_examples.jpg
-      md5: 33b6a9b63af6751c57f22ebbf1c85eec
-      size: 53728
+      md5: 37645e2c85c747493f05db8d3ee4968b
+      size: 53113
     - path: reports/rand_examples.jpg
-      md5: 728bcb3d703530fe90e58b6785ba5690
-      size: 252188
+      md5: c6a36ac5c072d29bd23a68cfb8ead1d9
+      size: 243116
     - path: reports/report.md
-      md5: 25808ab425dc339cb7dddb8ac829ad86
-      size: 4557
+      md5: cdfac2b3d112a3df41929f2b4e38cf5c
+      size: 10663
