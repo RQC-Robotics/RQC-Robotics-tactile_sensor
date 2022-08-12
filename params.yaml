@@ -31,7 +31,7 @@ video_train:
   learning_rate: 0.0001
   epochs: 60
   # list of (number epochs, chain_len) pairs
-  model_name: Unet
+  model_name: Unet1
   # layers: [32, 16, 10]        # single layers
   frames_number: 1
   frames_interval: 1

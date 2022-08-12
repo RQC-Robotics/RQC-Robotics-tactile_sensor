@@ -294,11 +294,129 @@ class Unet(nn.Module):
         return x
 
 
+class Unet1(nn.Module):
+    
+    def __init__(self, output_shape, input_shape, frames_number, frames_interval):
+        assert frames_number == 1
+        input_shape = input_shape[-2:]
+        self.output_shape = output_shape[-2:]
+        super(Unet1, self).__init__()
+
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
+        
+        self.step1 = nn.Sequential(nn.Conv2d(input_shape[-2], 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   )
+        self.down1 = nn.Sequential(nn.Conv2d(16, 32, (3, 3), 2, 1),
+                                   nn.ReLU(),
+                                   nn.Conv2d(32, 32, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(32, 32, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   )
+        self.down2 = nn.Sequential(
+                                   nn.Conv2d(32, 32, (3, 3), 2, 1),
+                                   nn.ReLU(),
+                                   nn.Conv2d(32, 32, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(32, 32, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   )
+        self.down3 = nn.Sequential(nn.Conv2d(32, 64, (3, 3), 2, 1),
+                                   nn.ReLU(),
+                                   nn.Conv2d(64, 64, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(64, 64, (3, 3), 1, 'same'),
+                                    nn.ReLU(),)
+        self.down4 = nn.Sequential(
+                                    nn.Conv2d(64, 128, (3, 3), 2, 1),
+                                    nn.ReLU(),
+                                    nn.Conv2d(128, 128, (3, 3), 1, 'same'),
+                                    nn.ReLU(),
+                                    nn.Conv2d(128, 128, (3, 3), 1, 'same'),
+                                    nn.ReLU(),
+                                    nn.Conv2d(128, 128, (3, 3), 1, 'same'),
+                                    nn.ReLU(),)
+        self.up4 = nn.Sequential(
+                                   nn.Conv2d(128, 64, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(64, 64, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.ConvTranspose2d(64, 32, (2, 2), 2, 0),
+                                   nn.ReLU(),)
+        self.up3 = nn.Sequential(
+                                   nn.Conv2d(32+64, 32, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(32, 32, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.ConvTranspose2d(32, 16, (2, 2), 2, 0),
+                                   nn.ReLU(),)
+        self.up2 = nn.Sequential(
+                                   nn.Conv2d(48, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.ConvTranspose2d(16, 16, (2, 2), 2, 0),
+                                   nn.ReLU(),)
+        self.up1 = nn.Sequential(
+                                   nn.Conv2d(48, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),nn.ConvTranspose2d(16, 16, (2, 2), 2, 0),
+                                   nn.ReLU(),)
+        self.finalConv = nn.Sequential(
+                                   nn.Conv2d(32, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 1, 1, padding='same'))
+        
+    def forward(self, x):
+        
+        x = torch.swapaxes(x, -2, -3).repeat(1, 1, 64, 1)
+        for i in range(x.shape[-3]):
+            x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
+            
+        res0 = self.step1(x)
+        res1 = self.down1(res0)
+        
+        res2 = self.down2(res1)
+        
+        res3 = self.down3(res2)
+        
+        x = self.down4(res3)
+        x = self.up4(x)
+        
+        x = torch.concat([x, res3], -3)
+        x = self.up3(x)
+        
+        x = torch.concat([x, res2], -3)
+        
+        x = self.up2(x)
+        
+        x = torch.concat([x, res1], -3)
+        
+        x = self.up1(x)
+        
+        x = torch.concat([x, res0], -3)
+        
+        x = self.finalConv(x)
+        x = x.squeeze(-3)
+        
+        # x = x.view(-1, *self.output_shape)
+        return x
+
+
 if __name__ == "__main__":
 
     from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    model = Unet((64, 64), (4, 64), 1, 1)
+    model = Unet1((64, 64), (4, 64), 1, 1)
     print(model)
     summary(model, (1, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
     # writer = SummaryWriter('logdir')

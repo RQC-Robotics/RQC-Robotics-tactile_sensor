@@ -4,6 +4,7 @@
 *.npy
 *.gif
 *.nn
+*.pt
 *main_egnore.ipynb
 *.virtual_documents
 /models
