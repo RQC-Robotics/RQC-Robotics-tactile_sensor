@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torchvision.transforms.functional import rotate as torch_rotate
+from torchvision.transforms import InterpolationMode
+        
+
 
 class TorchSensorNN(nn.Module):
 
@@ -81,6 +85,30 @@ class TorchSensorNN5S_norm_deep(nn.Module):
         x = self.conv2(x)
         x = torch.flatten(x, start_dim=1)
         x = self.linear(x)
+        x = x.view(-1, *self.output_shape)
+        return x
+
+
+class ParamInterpCNN(nn.Module):
+
+    def __init__(self, input_shape, output_shape, hidden_layers=[32, 16, 10]):
+        input_shape = input_shape[-2:]
+        self.output_shape = output_shape[-2:]
+        super(ParamInterpCNN, self).__init__()
+
+        layers = [nn.Conv2d(input_shape[-2], hidden_layers[0], (5, 5), padding='same'), nn.ReLU()] +\
+            [nn.Sequential(nn.Conv2d(*hidden_layers[i:i+2], (5, 5), padding='same'), nn.ReLU()) for i in range(len(hidden_layers)-1)] + \
+                        [nn.Conv2d(hidden_layers[-1], 1, (5, 5), padding='same')]
+        
+        self.conv1 = nn.Sequential(*layers)
+        
+    def forward(self, x):
+        x = x.unsqueeze(-2).repeat(1, 1, 64, 1)
+        for i in range(x.shape[-3]):
+            x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
+        
+            
+        x = self.conv1(x)
         x = x.view(-1, *self.output_shape)
         return x
 
