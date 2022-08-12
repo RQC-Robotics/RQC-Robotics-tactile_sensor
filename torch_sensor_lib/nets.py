@@ -113,6 +113,75 @@ class ParamInterpCNN(nn.Module):
         return x
 
 
+class Unet(nn.Module):
+    
+    def __init__(self, input_shape, output_shape):
+        
+        input_shape = input_shape[-2:]
+        self.output_shape = output_shape[-2:]
+        super(Unet, self).__init__()
+
+        # layers = [nn.Conv2d(input_shape[-2], hidden_layers[0], (5, 5), padding='same'), nn.ReLU()] +\
+        #     [nn.Sequential(nn.Conv2d(*hidden_layers[i:i+2], (5, 5), padding='same'), nn.ReLU()) for i in range(len(hidden_layers)-1)] + \
+        #                 [nn.Conv2d(hidden_layers[-1], 1, (5, 5), padding='same')]
+        
+        # self.conv1 = nn.Sequential(*layers)
+        
+        self.down1 = nn.Sequential(nn.Conv2d(input_shape[-2], 16, (3, 3), 2, 1),
+                                   nn.ReLU())
+        self.down2 = nn.Sequential(nn.Conv2d(16, 32, (3, 3), 2, 1),
+                                   nn.ReLU())
+        self.down3 = nn.Sequential(nn.Conv2d(32, 64, (3, 3), 2, 1),
+                                   nn.ReLU())
+        self.down4 = nn.Sequential(nn.Conv2d(64, 128, (3, 3), 2, 1),
+                                   nn.ReLU())
+        self.up4 = nn.Sequential(nn.ConvTranspose2d(128, 64, (2, 2), 2, 0),
+                                   nn.ReLU())
+        self.up3 = nn.Sequential(nn.ConvTranspose2d(128, 32, (2, 2), 2, 0),
+                                   nn.ReLU())
+        self.up2 = nn.Sequential(nn.ConvTranspose2d(64, 16, (2, 2), 2, 0),
+                                   nn.ReLU())
+        self.up1 = nn.Sequential(nn.ConvTranspose2d(32, 8, (2, 2), 2, 0),
+                                   nn.ReLU())
+        
+        self.finalConv = nn.Conv2d(8, 1, (3, 3), padding='same')
+        
+        
+    def forward(self, x):
+        
+        x = x.unsqueeze(-2).repeat(1, 1, 64, 1)
+        for i in range(x.shape[-3]):
+            x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
+            
+        res1 = self.down1(x)
+        
+        res2 = self.down2(res1)
+        
+        res3 = self.down3(res2)
+        
+        res4 = self.down4(res3)
+        
+        x = self.up4(res4)
+        
+        x = torch.concat([x, res3], -3)
+        
+        x = self.up3(x)
+        
+        x = torch.concat([x, res2], -3)
+        
+        x = self.up2(x)
+        
+        x = torch.concat([x, res1], -3)
+        
+        x = self.up1(x)
+        
+        x = self.finalConv(x)
+        x = x.squeeze(-3)
+        
+        # x = x.view(-1, *self.output_shape)
+        return x
+
+
 class DeepUpConv(nn.Module):
 
     def __init__(self, input_shape, output_shape):

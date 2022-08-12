@@ -54,20 +54,20 @@ stages:
         train:
           batch_size: 200
           learning_rate: 0.0001
-          n_epochs: 75
-          model_name: ParamInterpCNN
+          n_epochs: 50
+          model_name: Unet
           test_size: None
     outs:
     - path: data/model
-      md5: e1681273b5084dcd51ec08194b4ca657.dir
-      size: 85903
+      md5: 396ba0891888b78a0d2426aaa6e24359.dir
+      size: 618735
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: ebc5105a2a73b71826ce8af29bf80d5f
-      size: 3061
+      md5: 9f40e89a351df57aa23a5d89d4a04782
+      size: 2045
     - path: reports/summary.json
-      md5: e42c2255b581f3ed4d5a0f9adf5099db
-      size: 80
+      md5: 40dd9fb43450e3b8f20834ad3806a0d3
+      size: 79
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
@@ -177,26 +177,26 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: e1681273b5084dcd51ec08194b4ca657.dir
-      size: 85903
+      md5: 396ba0891888b78a0d2426aaa6e24359.dir
+      size: 618735
       nfiles: 1
     - path: dvc_evaluate_model.py
       md5: c98b6de01b0569483ae8aef0ab721543
       size: 5297
     outs:
     - path: logsdir
-      md5: 7bfe64563f93018e70da3fbedc6850d9.dir
+      md5: 65e17517eceaac40fc79591a99e8933f.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: b3b4cc9d94a2179975a687e63876ca81
-      size: 29654
+      md5: c718213192bc23f2fc7f6f600fc19f0c
+      size: 25815
     - path: reports/predict_examples.jpg
-      md5: f0ce046ca7f8793cb273b5ffe4798252
-      size: 52584
+      md5: 33b6a9b63af6751c57f22ebbf1c85eec
+      size: 53728
     - path: reports/rand_examples.jpg
-      md5: 00a8a8afb63a26cc3886b98f898ce0cc
-      size: 244390
+      md5: 728bcb3d703530fe90e58b6785ba5690
+      size: 252188
     - path: reports/report.md
-      md5: e07b00a10d60ed43c60ced91227c276b
-      size: 2651
+      md5: 25808ab425dc339cb7dddb8ac829ad86
+      size: 4557
