@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader, Dataset
 import os
 from os.path import join as jn
 import numpy as np
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 from PIL import Image
 
 
