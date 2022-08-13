@@ -50,8 +50,8 @@ stages:
       md5: 737740ba96d60ae6b8f210b21920fb56
       size: 7463
     - path: torch_sensor_lib/nets.py
-      md5: f2b93cfdd9d61107f9591a61c388daf1
-      size: 5317
+      md5: 484bcf396b88e57749e4541293153048
+      size: 5393
     params:
       params.yaml:
         train:
@@ -59,19 +59,19 @@ stages:
           learning_rate: 0.0001
           cycle_loss_alpha: 0.2
           n_epochs: 100
-          model_name: TorchSensorNN5S_norm_deep
+          model_name: UpSampleNet
           test_size: None
     outs:
     - path: data/model
-      md5: 259986db5088a0ba75c34c41a5ff4064.dir
-      size: 16120136
+      md5: 43c8cf89bbc309201e8649eae1364527.dir
+      size: 4155464
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 8a51a6371f5fb2efd66ca9a1a2b8add6
-      size: 4133
+      md5: 2204c2eed03fe1558ca678afdffb624a
+      size: 4132
     - path: reports/summary.json
-      md5: ccb63a49666aa4615f7eb0063f42dfa6
-      size: 81
+      md5: 73e19767ec7c41a5f8ff72d2f311d7a5
+      size: 79
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
@@ -181,29 +181,29 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 259986db5088a0ba75c34c41a5ff4064.dir
-      size: 16120136
+      md5: 43c8cf89bbc309201e8649eae1364527.dir
+      size: 4155464
       nfiles: 1
     - path: dvc_evaluate_model.py
       md5: 0f96a9b381bd1cd58113efc123a86d2a
       size: 5688
     outs:
     - path: logsdir
-      md5: 335ae3f959e7e2af7eb4d4e229ef0b89.dir
+      md5: d537b49fded1c6ff52644ceaa79e0ed3.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: ebc272c2707c63afd49046603e12e69b
-      size: 30070
+      md5: b3d46207a18dd909ad49d3715ba12ee1
+      size: 30807
     - path: reports/predict_examples.jpg
-      md5: 1dca1de16df006142b5ac500e013d9fe
-      size: 53648
+      md5: e12e61482985483da00f88ab9db29692
+      size: 54133
     - path: reports/rand_examples.jpg
-      md5: e6610b1f9eb404e330d7dc93a66b76ee
-      size: 213880
+      md5: 17e429fc81a80ab621644dec9af6dacd
+      size: 211848
     - path: reports/rand_train_examples.jpg
-      md5: fbdbbf44f65d44a2ff45526d9b9fda79
-      size: 193517
+      md5: f2b208967f01febf7cb673a396e2e4cf
+      size: 192300
     - path: reports/report.md
-      md5: d90d16e396116cc9fd03504f740e2fd8
-      size: 5109
+      md5: 4e9f85c0ea4ede208f186f4e24688437
+      size: 5220
