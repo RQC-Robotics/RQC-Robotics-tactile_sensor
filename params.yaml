@@ -36,7 +36,7 @@ sim:
 train:
   batch_size: 200
   learning_rate: 0.0001
-  n_epochs: 50
+  n_epochs: 200
   model_name: Unet1
   test_size: None   # if None, 1/20 fraction of dataset 
 commit_to_compare: 8dcf4a
