@@ -80,7 +80,7 @@ class ParamStackNetSingle(nn.Module):
         
         layers = [nn.Linear(
                 single_layers[-1]*frames_number, shared_layers[0]), nn.ReLU()] + \
-                    [nn.Sequential(nn.Linear(*shared_layers[i:i+2]), nn.ReLU()) for i in range(len(shared_layers)-1)] + \
+                    [nn.Sequential(nn.Linear(*shared_layers[i:i+2]), nn.LayerNorm(shared_layers[i+1]), nn.ReLU()) for i in range(len(shared_layers)-1)] + \
                         [nn.Linear(shared_layers[-1], 32*32)]
         self.sequential_shared = nn.Sequential(*layers)
 
@@ -198,7 +198,7 @@ class SensorNN5S_norm_deep(nn.Module):
 
 if __name__ == "__main__":
 
-    from torch.utils.tensorboard import SummaryWriter
+    # from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
     model = ParamStackNetSingle((64, 64), (4, 64),[[300, 100], [500, 200, 200, 500]], 2, 2)
     print(model)
