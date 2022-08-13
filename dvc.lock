@@ -215,30 +215,29 @@ stages:
         video_train:
           batch_size: 1000
           learning_rate: 0.0001
-          epochs: 120
+          epochs: 60
           model_name: ParamStackNetSingle
           layers:
           - - 300
-            - 100
-          - - 500
-            - 200
-            - 200
+          - - 400
+            - 400
+            - 400
             - 500
-          frames_number: 3
+          frames_number: 1
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 3d4e100a93299f5d0ad3c75a85d9a1a7.dir
-      size: 4054267
+      md5: 1def57ed020b4a427fc11ee37d017359.dir
+      size: 4933889
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 1aeaf1f4d19c64aeb69ca5da16cd39c3
-      size: 2518
+      md5: f1df061f120ddb51c223c27ba04b61da
+      size: 1265
     - path: reports/full_train_loss.csv
-      md5: a14297f546c7f8151ddf3ede99fe7fc5
-      size: 2540
+      md5: f1b1748f7a5d5cd8a6f50049df8c71dc
+      size: 1272
     - path: reports/v_summary.json
-      md5: 54d235a91ef355081415d124f84a6850
+      md5: 5355e54d3a662b5677ee7e71edaf009b
       size: 81
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
@@ -290,8 +289,8 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 3d4e100a93299f5d0ad3c75a85d9a1a7.dir
-      size: 4054267
+      md5: 1def57ed020b4a427fc11ee37d017359.dir
+      size: 4933889
       nfiles: 1
     params:
       params.yaml:
@@ -304,8 +303,8 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: 414ab7480552fd5ab5057640668d5c98.dir
-      size: 20138405
+      md5: 7efb96c42f2b90a7c487074193220830.dir
+      size: 19956237
       nfiles: 65
   push_logs:
     cmd: python csv_logger.py
