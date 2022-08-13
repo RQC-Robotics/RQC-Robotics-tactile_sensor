@@ -57,21 +57,21 @@ stages:
         train:
           batch_size: 200
           learning_rate: 0.0001
-          cycle_loss_alpha: 0
+          cycle_loss_alpha: 0.2
           n_epochs: 100
           model_name: TorchSensorNN5S_norm_deep
           test_size: None
     outs:
     - path: data/model
-      md5: 8c5e49048873900c5869189c5837bd87.dir
+      md5: 259986db5088a0ba75c34c41a5ff4064.dir
       size: 16120136
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: b55a00c092cab3fa9504b94ff20c2777
-      size: 4136
+      md5: 8a51a6371f5fb2efd66ca9a1a2b8add6
+      size: 4133
     - path: reports/summary.json
-      md5: b07379d2ab73c001806d2178380e2908
-      size: 80
+      md5: ccb63a49666aa4615f7eb0063f42dfa6
+      size: 81
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
     deps:
@@ -181,7 +181,7 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 8c5e49048873900c5869189c5837bd87.dir
+      md5: 259986db5088a0ba75c34c41a5ff4064.dir
       size: 16120136
       nfiles: 1
     - path: dvc_evaluate_model.py
@@ -189,21 +189,21 @@ stages:
       size: 5688
     outs:
     - path: logsdir
-      md5: 3832b8255f1e2d0c3a655d8a1ad09eba.dir
+      md5: 335ae3f959e7e2af7eb4d4e229ef0b89.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: 3413aae3dba8365e5d3cac86dcb533dd
-      size: 30911
+      md5: ebc272c2707c63afd49046603e12e69b
+      size: 30070
     - path: reports/predict_examples.jpg
-      md5: 6000966403a6470f4d9637950641a57d
-      size: 53665
+      md5: 1dca1de16df006142b5ac500e013d9fe
+      size: 53648
     - path: reports/rand_examples.jpg
-      md5: f9ade2b6f7c4723c4e93bfd229c8502c
-      size: 212534
+      md5: e6610b1f9eb404e330d7dc93a66b76ee
+      size: 213880
     - path: reports/rand_train_examples.jpg
-      md5: cf05cfb76ff247251b721a61c5c77caf
-      size: 191055
+      md5: fbdbbf44f65d44a2ff45526d9b9fda79
+      size: 193517
     - path: reports/report.md
       md5: d90d16e396116cc9fd03504f740e2fd8
       size: 5109
