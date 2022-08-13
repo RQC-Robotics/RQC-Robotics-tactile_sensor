@@ -50,8 +50,8 @@ stages:
       md5: 737740ba96d60ae6b8f210b21920fb56
       size: 7463
     - path: torch_sensor_lib/nets.py
-      md5: f2b93cfdd9d61107f9591a61c388daf1
-      size: 5317
+      md5: 6e59d4ef1496230bc00488ee6fe90226
+      size: 5393
     params:
       params.yaml:
         train:
@@ -59,18 +59,18 @@ stages:
           learning_rate: 0.0001
           cycle_loss_alpha: 0.2
           n_epochs: 100
-          model_name: TorchSensorNN5S_norm_deep
+          model_name: UpSampleNet
           test_size: None
     outs:
     - path: data/model
-      md5: 259986db5088a0ba75c34c41a5ff4064.dir
-      size: 16120136
+      md5: 09217cd846a789caa90e5f01d8a2fc75.dir
+      size: 4674440
       nfiles: 1
     - path: reports/learning_curve.csv
-      md5: 8a51a6371f5fb2efd66ca9a1a2b8add6
-      size: 4133
+      md5: 4187f9b2b158babfcc799c2795359eca
+      size: 4147
     - path: reports/summary.json
-      md5: ccb63a49666aa4615f7eb0063f42dfa6
+      md5: 597f5a399c993e49c2de6236a789edda
       size: 81
   make_plot:
     cmd: dvc plots diff 9a8d6 --x-label "epochs" --y-label "loss"
@@ -181,29 +181,29 @@ stages:
     cmd: python dvc_evaluate_model.py
     deps:
     - path: data/model
-      md5: 259986db5088a0ba75c34c41a5ff4064.dir
-      size: 16120136
+      md5: 09217cd846a789caa90e5f01d8a2fc75.dir
+      size: 4674440
       nfiles: 1
     - path: dvc_evaluate_model.py
       md5: 0f96a9b381bd1cd58113efc123a86d2a
       size: 5688
     outs:
     - path: logsdir
-      md5: 335ae3f959e7e2af7eb4d4e229ef0b89.dir
+      md5: 826367a9ff793e555a253b3436a4757f.dir
       size: 40
       nfiles: 1
     - path: reports/l_curve.png
-      md5: ebc272c2707c63afd49046603e12e69b
-      size: 30070
+      md5: 1fa67317b64e1016d64a3bde987cb278
+      size: 30729
     - path: reports/predict_examples.jpg
-      md5: 1dca1de16df006142b5ac500e013d9fe
-      size: 53648
+      md5: 74744e6bdea220ae738ddb1b5fce87f6
+      size: 54270
     - path: reports/rand_examples.jpg
-      md5: e6610b1f9eb404e330d7dc93a66b76ee
-      size: 213880
+      md5: a063f7603f85efd9d7cfeff0c7e38bca
+      size: 212906
     - path: reports/rand_train_examples.jpg
-      md5: fbdbbf44f65d44a2ff45526d9b9fda79
-      size: 193517
+      md5: 6e6f16fe45f17fa7b3d9f9c6d2746eaa
+      size: 193357
     - path: reports/report.md
-      md5: d90d16e396116cc9fd03504f740e2fd8
-      size: 5109
+      md5: 6e0861d24bf350d94cb331729667612b
+      size: 5220
