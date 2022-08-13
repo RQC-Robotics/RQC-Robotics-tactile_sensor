@@ -227,18 +227,18 @@ stages:
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 288cb821332dc2b89ab19537fdfa524f.dir
-      size: 4934721
+      md5: fcb9d526f5142401ea0b446aa0aa82a3.dir
+      size: 4959764
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: afbb1f9b6f84d33c67420daab11776a1
-      size: 1275
+      md5: 2b6fdaa9f59eb16393d75d9b89ddf1b0
+      size: 1261
     - path: reports/full_train_loss.csv
-      md5: 34d66a57443f530c6aa55f2e89a46622
-      size: 1285
+      md5: b8b3ab7c3f90cc96e7eb45fd29464081
+      size: 1276
     - path: reports/v_summary.json
-      md5: 36f39a3fc8c03b4240a641c9a3af7a93
-      size: 82
+      md5: cfa5e92d9ffb12d465b6dea9e204414f
+      size: 81
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
@@ -289,8 +289,8 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 288cb821332dc2b89ab19537fdfa524f.dir
-      size: 4934721
+      md5: fcb9d526f5142401ea0b446aa0aa82a3.dir
+      size: 4959764
       nfiles: 1
     params:
       params.yaml:
@@ -303,13 +303,13 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: ae35b0cb179e4b16597fd7f49873c43b.dir
-      size: 22034837
+      md5: 8162488f9145204c8ce278b3d6291739.dir
+      size: 24986179
       nfiles: 65
   push_logs:
     cmd: python csv_logger.py
     deps:
     - path: reports
-      md5: ad338fd181acc831a6b1196979c3f520.dir
-      size: 2678
+      md5: 94d40616424ba849a81c601fae79953e.dir
+      size: 2654
       nfiles: 4

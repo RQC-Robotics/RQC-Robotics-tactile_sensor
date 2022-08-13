@@ -80,7 +80,7 @@ class ParamStackNetSingle(nn.Module):
         
         layers = [nn.Linear(
                 single_layers[-1]*frames_number, shared_layers[0]), nn.ReLU()] + \
-                    [nn.Sequential(nn.Linear(*shared_layers[i:i+2]), nn.InstanceNorm1d(shared_layers[i+1]), nn.ReLU()) for i in range(len(shared_layers)-1)] + \
+                    [nn.Sequential(nn.Linear(*shared_layers[i:i+2]), nn.BatchNorm1d(shared_layers[i+1]), nn.ReLU()) for i in range(len(shared_layers)-1)] + \
                         [nn.Linear(shared_layers[-1], 32*32)]
         self.sequential_shared = nn.Sequential(*layers)
 
