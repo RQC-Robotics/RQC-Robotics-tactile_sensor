@@ -36,8 +36,8 @@ sim:
 train:
   batch_size: 200
   learning_rate: 0.0001
-  cycle_loss_alpha: 0.2
+  cycle_loss_alpha: 0.8
   n_epochs: 100
-  model_name: TorchSensorNN5S_norm_deep
+  model_name: NormDeepBlur
   test_size: None   # if None, 1/20 fraction of dataset 
-commit_to_compare: b2599b
+commit_to_compare: 4d01f
