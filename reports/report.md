@@ -1,11 +1,11 @@
-# Report about training model **TorchSensorNN5S_norm_deep**
+# Report about training model **NormDeepBlur**
 ## Architecture summary
 ```
 
 ============================================================================================================================================
 Layer (type:depth-idx)                   Input Shape               Output Shape              Param #                   Kernel Shape
 ============================================================================================================================================
-TorchSensorNN5S_norm_deep                [100, 4, 64]              [100, 64, 64]             --                        --
+NormDeepBlur                             [100, 4, 64]              [100, 64, 64]             --                        --
 ├─Sequential: 1-1                        [100, 1, 64, 4]           [100, 8, 64, 4]           --                        --
 │    └─Conv2d: 2-1                       [100, 1, 64, 4]           [100, 8, 64, 4]           32                        [3, 1]
 │    └─ReLU: 2-2                         [100, 8, 64, 4]           [100, 8, 64, 4]           --                        --
