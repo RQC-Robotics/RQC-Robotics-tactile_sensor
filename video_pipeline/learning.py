@@ -45,7 +45,7 @@ frames_number, frames_interval = tr["frames_number"], tr["frames_interval"]
 test_dataset = Stack_dataset(output_path, test_input_path, frames_number,
                              frames_interval)
 train_dataset = Stack_dataset(output_path, input_path, frames_number,
-                              frames_interval)
+                              frames_interval, frac=0.7)
 
 # %%
 
