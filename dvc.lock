@@ -215,23 +215,23 @@ stages:
         video_train:
           batch_size: 1000
           learning_rate: 0.0001
-          epochs: 120
+          epochs: 35
           model_name: SensorNN5S_norm_deep
           frames_number: 1
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: f4866b3404f20a75aecb59389add5509.dir
+      md5: 0313a9094e7effec949be29ebb2fb864.dir
       size: 16120136
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 0fb3bb94304782d8911a7c3037550ed2
-      size: 2545
+      md5: cf320838a0a5c802a05a0dc76a1203cb
+      size: 742
     - path: reports/full_train_loss.csv
-      md5: 22044cc56c16852ad737a1369a9b5084
-      size: 2611
+      md5: 19385b8e14ce026e46e715d50be22559
+      size: 761
     - path: reports/v_summary.json
-      md5: 18b017abcc279322a0095c393d9704d9
+      md5: 3bed1d160b015bae6f4fc65673a964d8
       size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
@@ -283,7 +283,7 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: f4866b3404f20a75aecb59389add5509.dir
+      md5: 0313a9094e7effec949be29ebb2fb864.dir
       size: 16120136
       nfiles: 1
     params:
@@ -297,8 +297,13 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: 5bb612fdc6300728583667d458fa8d9e.dir
-      size: 14753401
+      md5: f87a9da4c37b0d5208953b6af5a82705.dir
+      size: 14275180
       nfiles: 65
   push_logs:
     cmd: python csv_logger.py
+    deps:
+    - path: reports
+      md5: b7e187706de0d05d0c42b33f0db66044.dir
+      size: 1621
+      nfiles: 4

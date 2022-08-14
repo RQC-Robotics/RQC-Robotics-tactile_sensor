@@ -128,7 +128,7 @@ class Video_dataset(Dataset):
 
 class Stack_dataset(Dataset):
 
-    def __init__(self, pressure_path, signal_path, frames_number, frames_interval):
+    def __init__(self, pressure_path, signal_path, frames_number, frames_interval, frac=None):
         self.pressure_path = pressure_path
         self.signal_path = signal_path
         self.files = []
@@ -143,7 +143,8 @@ class Stack_dataset(Dataset):
             for file_name in files:
                 relative_path = path[pic_path_len:]
                 self.files.append(jn(relative_path, file_name))
-
+        if frac is not None:
+            self.files = self.files[:int(len(self.files)*frac)]
         for name in tqdm(self.files, leave=False, desc="Dataset loading", unit='video', dynamic_ncols=True):
             if name.endswith('npz'):
                 self.signal.append(
