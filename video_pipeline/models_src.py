@@ -496,13 +496,165 @@ class Unet2(nn.Module):
         return x
             
             
+class Unet2_32fibers(nn.Module):
+    
+    def __init__(self, output_shape, input_shape, frames_number, frames_interval):
+        assert frames_number == 1
+        self.input_shape = input_shape[-2:]
+        self.output_shape = output_shape[-2:]
+        super(Unet2_32fibers, self).__init__()
+
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
         
- 
+        self.step1 = nn.Sequential(nn.Conv2d(input_shape[-2], 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   )
+        self.finalConv = nn.Sequential(
+                                   nn.Conv2d(32, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 1, 1, padding='same'))
+        def UnetBlocks(down_in_ch, down_out_ch, down_conv_n, up_in_ch, up_inner_ch, up_out_ch, up_conv_n):
+            down_layers = [nn.Conv2d(down_in_ch, down_out_ch, (3, 3), 2, 1),
+                                    nn.ReLU(),]
+            for i in range(down_conv_n):
+                down_layers.extend([nn.Conv2d(down_out_ch, down_out_ch, (3, 3), 1, 'same'),
+                                    nn.ReLU()])
+            down = nn.Sequential(*down_layers)
+            
+            
+            up_layers = [nn.Conv2d(up_in_ch, up_inner_ch, (3, 3), 1, 'same'),
+                                    nn.ReLU(),]
+            for i in range(down_conv_n-1):
+                up_layers.extend([nn.Conv2d(up_inner_ch, up_inner_ch, (3, 3), 1, 'same'),
+                                    nn.ReLU()])
+            up_layers.extend([nn.ConvTranspose2d(up_inner_ch, up_out_ch, (2, 2), 2, 0),
+                                   nn.ReLU(),])
+            up = nn.Sequential(*up_layers)
+            return down, up
+        
+        self.down1, self.up1 = UnetBlocks(16, 16, 3, 32, 32, 16, 3)
+        self.down2, self.up2 = UnetBlocks(16, 32, 3, 64, 32, 16, 3)
+        self.down3, self.up3 = UnetBlocks(32, 64, 3, 128, 64, 32, 3)
+        self.down4, self.up4 = UnetBlocks(64, 64, 3, 64, 64, 64, 3)
+        self.upsample = nn.Upsample(size=self.output_shape[-2:],
+                                    mode='bilinear')
+
+           
+    def forward(self, x):
+        step = 2
+        x = x[..., step//2::step]
+        x = torch.swapdims(x, -2, -3).repeat(1, 1, self.input_shape[-1]//step, 1)
+        x = self.upsample(x)
+        for i in range(x.shape[-3]):
+            x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
+        res0 = self.step1(x)
+        res1 = self.down1(res0)
+        res2 = self.down2(res1)
+        res3 = self.down3(res2)
+        x = self.down4(res3)
+        x = self.up4(x)
+        x = torch.concat([x, res3], -3)
+        x = self.up3(x)
+        x = torch.concat([x, res2], -3)
+        x = self.up2(x)
+        x = torch.concat([x, res1], -3)
+        x = self.up1(x)
+        x = torch.concat([x, res0], -3)
+        x = self.finalConv(x)
+        x = x.squeeze(-3)
+        # x = x.view(-1, *self.output_shape)
+        return x
+            
+
+
+class Unet2_16fibers(nn.Module):
+    
+    def __init__(self, output_shape, input_shape, frames_number, frames_interval):
+        assert frames_number == 1
+        self.input_shape = input_shape[-2:]
+        self.output_shape = output_shape[-2:]
+        super(Unet2_16fibers, self).__init__()
+
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
+        
+        self.step1 = nn.Sequential(nn.Conv2d(input_shape[-2], 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   )
+        self.finalConv = nn.Sequential(
+                                   nn.Conv2d(32, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 16, (3, 3), 1, 'same'),
+                                   nn.ReLU(),
+                                   nn.Conv2d(16, 1, 1, padding='same'))
+        def UnetBlocks(down_in_ch, down_out_ch, down_conv_n, up_in_ch, up_inner_ch, up_out_ch, up_conv_n):
+            down_layers = [nn.Conv2d(down_in_ch, down_out_ch, (3, 3), 2, 1),
+                                    nn.ReLU(),]
+            for i in range(down_conv_n):
+                down_layers.extend([nn.Conv2d(down_out_ch, down_out_ch, (3, 3), 1, 'same'),
+                                    nn.ReLU()])
+            down = nn.Sequential(*down_layers)
+            
+            
+            up_layers = [nn.Conv2d(up_in_ch, up_inner_ch, (3, 3), 1, 'same'),
+                                    nn.ReLU(),]
+            for i in range(down_conv_n-1):
+                up_layers.extend([nn.Conv2d(up_inner_ch, up_inner_ch, (3, 3), 1, 'same'),
+                                    nn.ReLU()])
+            up_layers.extend([nn.ConvTranspose2d(up_inner_ch, up_out_ch, (2, 2), 2, 0),
+                                   nn.ReLU(),])
+            up = nn.Sequential(*up_layers)
+            return down, up
+        
+        self.down1, self.up1 = UnetBlocks(16, 16, 3, 32, 32, 16, 3)
+        self.down2, self.up2 = UnetBlocks(16, 32, 3, 64, 32, 16, 3)
+        self.down3, self.up3 = UnetBlocks(32, 64, 3, 128, 64, 32, 3)
+        self.down4, self.up4 = UnetBlocks(64, 64, 3, 64, 64, 64, 3)
+        self.upsample = nn.Upsample(size=self.output_shape[-2:],
+                                    mode='bilinear')
+
+    def forward(self, x):        
+        step = 4
+        x = x[..., step//2::step]
+        x = torch.swapdims(x, -2, -3).repeat(1, 1, self.input_shape[-1]//step, 1)
+        x = self.upsample(x)
+        
+        for i in range(x.shape[-3]):
+            x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
+            
+        res0 = self.step1(x)
+        res1 = self.down1(res0)
+        res2 = self.down2(res1)
+        res3 = self.down3(res2)
+        x = self.down4(res3)
+        x = self.up4(x)
+        x = torch.concat([x, res3], -3)
+        x = self.up3(x)
+        x = torch.concat([x, res2], -3)
+        x = self.up2(x)
+        x = torch.concat([x, res1], -3)
+        x = self.up1(x)
+        x = torch.concat([x, res0], -3)
+        x = self.finalConv(x)
+        x = x.squeeze(-3)
+        return x
+            
 if __name__ == "__main__":
 
-    from torch.utils.tensorboard import SummaryWriter
+    # from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    model = Unet2((64, 64), (4, 64), 1, 1)
+    model = Unet2_32fibers((64, 64), (4, 64), 1, 1)
     print(model)
     summary(model, (1, 4, 64), col_names=["input_size", "output_size", "num_params"], device='cpu')
     # writer = SummaryWriter('logdir')

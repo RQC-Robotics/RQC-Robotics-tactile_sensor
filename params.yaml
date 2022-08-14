@@ -29,19 +29,19 @@ sim:
 video_train:
   batch_size: 1000    # for learning
   learning_rate: 0.0001
-  epochs: 60
+  epochs: 12
   # list of (number epochs, chain_len) pairs
-  model_name: Unet1
-  # layers: [32, 16, 10]        # single layers
+  model_name: Unet2
+  # layers: [10, 10, 10, 10, 10, 10]        # single layers
   frames_number: 1
   frames_interval: 1
 test_batch_size: 1000  # for evaluations without grads
 
 visual:
   test:
-    step: 32
+    step: 16
     max_items: 128
     # begin: 0
   train:
     step: 32
-    max_items: 32
+    max_items: 64
