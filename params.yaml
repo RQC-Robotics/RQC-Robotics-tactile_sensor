@@ -5,7 +5,7 @@ env:
     distance: 0.5     # between fibers in mm
     x_len: 64     # in pixels
     y_len: 64     # in pixels    
-    n_angles: 4
+    n_angles: 16
     n_spl: 1     # number of pictures to show in testing mode  
   phys:
     fiber_sensibility:
