@@ -215,31 +215,24 @@ stages:
         video_train:
           batch_size: 1000
           learning_rate: 0.0001
-          epochs: 120
-          model_name: ParamStackNetSingle
-          layers:
-          - - 300
-            - 100
-          - - 500
-            - 200
-            - 200
-            - 500
-          frames_number: 3
+          epochs: 12
+          model_name: Unet2_32fibers
+          frames_number: 1
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 3d4e100a93299f5d0ad3c75a85d9a1a7.dir
-      size: 4054267
+      md5: ad6eca36fc564cc1e7bc60621c44e6a0.dir
+      size: 2771969
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 1aeaf1f4d19c64aeb69ca5da16cd39c3
-      size: 2518
+      md5: f331b9ffe112a856237272eaf4145b34
+      size: 263
     - path: reports/full_train_loss.csv
-      md5: a14297f546c7f8151ddf3ede99fe7fc5
-      size: 2540
+      md5: 705dc219fbc12464dae85582e4e5974a
+      size: 265
     - path: reports/v_summary.json
-      md5: 54d235a91ef355081415d124f84a6850
-      size: 81
+      md5: 94848e357d470d65a2c3f4b6905fd8d6
+      size: 80
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
@@ -290,22 +283,27 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 3d4e100a93299f5d0ad3c75a85d9a1a7.dir
-      size: 4054267
+      md5: ad6eca36fc564cc1e7bc60621c44e6a0.dir
+      size: 2771969
       nfiles: 1
     params:
       params.yaml:
         visual:
           test:
-            step: 32
+            step: 16
             max_items: 128
           train:
             step: 32
-            max_items: 32
+            max_items: 64
     outs:
     - path: data/video/predict_vis
-      md5: 414ab7480552fd5ab5057640668d5c98.dir
-      size: 20138405
-      nfiles: 65
+      md5: 0f3c7b9703b9de56a0bb78608af215b5.dir
+      size: 24092383
+      nfiles: 129
   push_logs:
     cmd: python csv_logger.py
+    deps:
+    - path: reports
+      md5: 24dda79ebd8470a3c019816fbe7b52ff.dir
+      size: 644
+      nfiles: 4
