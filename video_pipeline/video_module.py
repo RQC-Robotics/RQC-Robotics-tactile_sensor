@@ -225,7 +225,7 @@ def fit_epoch(model, stack_dataset, criterion, optimizer, batch_size,
     data_loader = DataLoader(stack_dataset, batch_size=batch_size)
     running_loss = 0.0
     processed_data = 0
-    with tqdm(dynamic_ncols=True, desc='eval_epoch',
+    with tqdm(dynamic_ncols=True, desc='fit_epoch',
                                     unit='batch',
                                     leave=False,
                                     position=1, total=len(data_loader)) as pbar:
