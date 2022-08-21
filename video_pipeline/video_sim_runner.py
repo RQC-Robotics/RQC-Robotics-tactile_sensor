@@ -16,6 +16,9 @@ from os.path import join as jn
 import yaml
 import torch
 
+import h5py
+import hdf5plugin
+
 import traceback
 import logging
 # %%
@@ -32,62 +35,38 @@ sim = tsl.FiberSimulator(config, device=device)
 
 # %%
 pic_path = path_config['p_video_path']
-train_signal_path = path_config['train_s_video_path']
-test_signal_path = path_config['test_s_video_path']
+signal_path = path_config['s_video_path']
 
 pic_path_len = len(os.path.normpath(pic_path)) + 1
-ids = set()
 
-
-def parse_id(item_path):
-    id = item_path[pic_path_len:]
-    if '/' in id:
-        id = id[:id.find('/')]
-    return id
-
-
-total = 0
 for path, folders, files in os.walk(pic_path):
-    id = parse_id(path)
-    if id:
-        ids.add(id)
-    total += 1
-ids = np.array(sorted(list(ids)))
-test_number = config['dataset']['test_items']
-if test_number is None:
-    test_number = int(len(ids) * config['dataset']['test_frac'])
-
-print(f"Test size is {test_number} items")
-
-test_inds = np.random.choice(len(ids), test_number)
-test_ids = set(ids[test_inds])
-
-for path, folders, files in tqdm(os.walk(pic_path), total=total):
-    id = parse_id(path)
-    new_path = jn(test_signal_path if id in test_ids else train_signal_path,
-                  path[pic_path_len:])
+    new_path = jn(signal_path, path[pic_path_len:])
     if not os.path.exists(new_path):
         os.makedirs(new_path)
 
     for file_name in files:
-        if file_name[:-4] == 'prepared':
+        if file_name.endswith('.hdf5'):
             try:
-                pic = np.load(jn(path, file_name))
-                if file_name.endswith('.npz'):
-                    pic = pic['arr_0']
-                pic = pic.astype(np.float32)
+                pressure_file = h5py.File(jn(path, file_name), 'r')
             except Exception as e:
                 print("Can't load file " + jn(path, file_name))
                 logging.error(traceback.format_exc())
-            dataloader = DataLoader(pic, batch_size=config['sim']['batch_size'])
-            signals = []
-            for batch in dataloader:
-                signal = sim.fiber_real_sim(batch.to(device)).cpu().numpy()
-                signals.append(signal)
-            if file_name.endswith('npz'):
-                np.savez_compressed(jn(new_path, file_name),
-                                    np.concatenate(signals))
-            else:
-                np.save(jn(new_path, file_name), np.concatenate(signals))
+            signal_file = h5py.File(jn(new_path, file_name), 'w')
+            for label in tqdm(pressure_file.keys(),  desc=f'Simulating {jn(path[pic_path_len:], file_name)}', dynamic_ncols=True):
+                pic = pressure_file[label].astype(np.float32)
+                dataloader = DataLoader(pic, batch_size=config['sim']['batch_size'])
+                signals = []
+                for batch in dataloader:
+                    signal = sim.fiber_real_sim(batch.to(device)).cpu().numpy()
+                    signals.append(signal)
+                signals = np.concatenate(signals)
+                signal_file.create_dataset(label, data=signal, **hdf5plugin.Blosc(cname='blosclz', clevel=4, shuffle=hdf5plugin.Blosc.SHUFFLE))
+            
+            pressure_file.close()
+            signal_file.close()
+            
+        else:
+            print(f"Warning! File {file_name} is unsupported! Please, use hdf5.")
+                        
 
 # %%

@@ -16,8 +16,6 @@ env:
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
 dataset:
-  test_items:
-  test_frac: 0.1
   mult_coeff: 80  # multiplies all pressures
 
 sim:

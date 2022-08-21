@@ -5,8 +5,7 @@ v_model_path: data/v_model
 
 isaac_videos_path: data/videos_from_isaac
 p_video_path: 'data/video/pressure' 
-train_s_video_path: 'data/video/train_signal'
-test_s_video_path: 'data/video/test_signal'
+s_video_path: 'data/video/signal'
 base_model_path: data/base_model/TorchSensorNN5S_norm_deep.pt
 video_predict_vis_path: data/video/predict_vis
 
