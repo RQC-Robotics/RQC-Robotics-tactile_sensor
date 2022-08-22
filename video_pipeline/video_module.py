@@ -6,7 +6,8 @@ from os.path import join as jn
 import numpy as np
 from tqdm.autonotebook import tqdm
 from PIL import Image
-
+import h5py
+import hdf5plugin
 
 class Dynamic_video_dataset(Dataset):
     '''for big datasets'''
@@ -145,21 +146,31 @@ class Stack_dataset(Dataset):
                 self.files.append(jn(relative_path, file_name))
 
         for name in tqdm(self.files, leave=False, desc="Dataset loading", unit='video', dynamic_ncols=True):
-            if name.endswith('npz'):
+            if name.endswith('hdf5'):
+                with h5py.File(jn(signal_path, name)) as signal_file, \
+                    h5py.File(jn(pressure_path, name)) as pres_file:
+                    for key in tqdm(signal_file.keys(), dynamic_ncols=True, position=1, leave=False):
+
+                        self.signal.append(signal_file[key][:].astype(np.float32))
+                        self.pressure.append(pres_file[key][:].astype(np.float32))
+                        self.file_lens.append(len(self.signal[-1]))
+            
+            elif name.endswith('npz'):
                 self.signal.append(
                     np.load(jn(signal_path, name))['arr_0'].astype(np.float32))
                 self.pressure.append(
                     np.load(jn(pressure_path,
                                name))['arr_0'].astype(np.float32))
+                self.file_lens.append(len(self.signal[-1]))
             else:
                 self.signal.append(
                     np.load(jn(signal_path, name)).astype(np.float32))
                 self.pressure.append(
                     np.load(jn(pressure_path, name)).astype(np.float32))
-            self.file_lens.append(len(self.signal[-1]))
+                self.file_lens.append(len(self.signal[-1]))
         
         self.shift = frames_interval*(frames_number-1)
-        for n, file in enumerate(self.files):
+        for n in range(len(self.signal)):
             self.stacks.extend([
                 (n, i+self.shift) for i in range(self.file_lens[n] - self.shift)
             ])

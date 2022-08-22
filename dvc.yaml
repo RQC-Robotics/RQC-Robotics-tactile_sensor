@@ -20,8 +20,7 @@ stages:
         - video_train
 
       deps:
-        - data/video/train_signal
-        - data/video/test_signal
+        - data/video/signal
 
       metrics:
         - reports/v_summary.json:

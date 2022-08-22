@@ -35,16 +35,15 @@ np.random.seed(config['random_seed'])
 
 # %%
 
-input_path = path_config['train_s_video_path']
-test_input_path = path_config['test_s_video_path']
+input_path = path_config['s_video_path']
 output_path = path_config['p_video_path']
 
 tr = config['video_train']
 frames_number, frames_interval = tr["frames_number"], tr["frames_interval"]
 
-test_dataset = Stack_dataset(output_path, test_input_path, frames_number,
+test_dataset = Stack_dataset(jn(output_path, 'test'), jn(input_path, 'test'), frames_number,
                              frames_interval)
-train_dataset = Stack_dataset(output_path, input_path, frames_number,
+train_dataset = Stack_dataset(jn(output_path, 'train'), jn(input_path, 'train'), frames_number,
                               frames_interval)
 
 # %%

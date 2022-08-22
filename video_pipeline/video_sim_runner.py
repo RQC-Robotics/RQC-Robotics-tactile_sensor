@@ -53,14 +53,14 @@ for path, folders, files in os.walk(pic_path):
                 logging.error(traceback.format_exc())
             signal_file = h5py.File(jn(new_path, file_name), 'w')
             for label in tqdm(pressure_file.keys(),  desc=f'Simulating {jn(path[pic_path_len:], file_name)}', dynamic_ncols=True):
-                pic = pressure_file[label].astype(np.float32)
+                pic = pressure_file[label][:].astype(np.float32)
                 dataloader = DataLoader(pic, batch_size=config['sim']['batch_size'])
                 signals = []
                 for batch in dataloader:
                     signal = sim.fiber_real_sim(batch.to(device)).cpu().numpy()
                     signals.append(signal)
                 signals = np.concatenate(signals)
-                signal_file.create_dataset(label, data=signal, **hdf5plugin.Blosc(cname='blosclz', clevel=4, shuffle=hdf5plugin.Blosc.SHUFFLE))
+                signal_file.create_dataset(label, data=signals, **hdf5plugin.Blosc(cname='blosclz', clevel=4, shuffle=hdf5plugin.Blosc.SHUFFLE))
             
             pressure_file.close()
             signal_file.close()
