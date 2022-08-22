@@ -11,8 +11,8 @@ env:
     fiber_sensibility:
       value: 0.5       # width of fiber in mm
       # accuracy: 5       # it is [size of kernel]/value 
-    kof: 1     # between apply force and loss in grams 
-    gaus_kernel_size: 3  # odd integer!!
+    kof: 15     # between apply force and loss in grams 
+    gaus_kernel_size: 13  # odd integer!!
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
 dataset:
