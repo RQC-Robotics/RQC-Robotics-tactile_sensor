@@ -13,3 +13,7 @@ jupyter
 sacred
 python-dotenv
 pymongo
+hdf5
+hdf5plugin
+h5py
+natsort

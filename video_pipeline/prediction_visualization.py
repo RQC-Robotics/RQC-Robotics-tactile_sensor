@@ -12,7 +12,10 @@ import yaml
 
 import torch
 from tqdm import tqdm
-import json
+import h5py
+import hdf5plugin
+
+from natsort import natsorted
 
 from video_module import Dynamic_video_dataset, \
     predict, visual_chains
@@ -27,9 +30,8 @@ if not os.path.exists(path_config['reports_path']):
 
 # %%
 
-input_path = path_config['train_s_video_path']
-test_input_path = path_config['test_s_video_path']
-output_path = path_config['p_video_path']
+signal_path = path_config['s_video_path']
+pres_path = path_config['p_video_path']
 
 # %%
 
@@ -54,25 +56,25 @@ if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 
-def visual_dataset(dataset, step, max_items, begin=0):
+def visual_dataset(pres_file, signal_file, step, max_items, begin=0, end=None, duration=30):
     prev_id = ''
-    total=min(len(dataset.files) // step, max_items)
-    for pressure, signal, file_name in tqdm(
-            zip(dataset.pressure[:total*step:step], dataset.signal[:total*step:step],
-                dataset.files[:total*step:step]), total=total):
-        file_name = file_name[:-4]
-        id = file_name[:file_name.rfind('/')]
-        id = id[:id.rfind('/')]
+    total=min(len(signal_file.keys()) // step, max_items)
+    for key in tqdm(natsorted(signal_file.keys())[:total*step:step], total=total):
+        
+        pressure = pres_file[key][begin:end]
+        signal = signal_file[key][begin:end]
+        
+        id = key[:key.rfind('_')]
         if id != prev_id:
             print(f"\n#### id = {id}", file=file)
             prev_id = id
         prediction = predict(v_model,
-                             signal[begin:],
-                             device)
+                             signal,
+                             device)     
         pressure = pressure[-prediction.shape[0]:]
         visual_chains([pressure, prediction],
-                      jn(save_path, file_name.replace('/', '_')))
-        print(f"<img src={file_name.replace('/', '_')+'.gif'} width=400>",
+                      jn(save_path, key))
+        print(f"<img src={key+'.gif'} width=400>",
               file=file)
 
 
@@ -80,12 +82,11 @@ def visual_dataset(dataset, step, max_items, begin=0):
 file = open(jn(save_path, "view.md"), 'w')
 print("# Visualization", file=file)
 
-test_dataset = Dynamic_video_dataset(output_path, test_input_path)
-print("# Test dataset", file=file)
-visual_dataset(test_dataset, **config['visual']['test'])
+for data_path in config['visual']:
+    with h5py.File(jn(pres_path, data_path + '.hdf5')) as pres_file, \
+        h5py.File(jn(signal_path, data_path + '.hdf5')) as signal_file:
+        print(f"\n# {data_path}", file=file)
+        visual_dataset(pres_file, signal_file, **config['visual'][data_path])
+    
 
-if 'train' in config['visual'] and config['visual']['train']['max_items'] > 0:
-    train_dataset = Dynamic_video_dataset(output_path, input_path)
-    print("\n\n # Train dataset", file=file)
-    visual_dataset(train_dataset, **config['visual']['train'])
 file.close()

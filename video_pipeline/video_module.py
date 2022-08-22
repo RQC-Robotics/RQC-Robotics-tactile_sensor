@@ -353,7 +353,7 @@ def eval_dataset(model, stack_dataset: Stack_dataset, criterion, batch_size,
 #     video.release()
 
 
-def visual_chains(list_of_chains, outpath):
+def visual_chains(list_of_chains, outpath, duration=30):
     '''
     Params:
     list_of_chains: List[np.array-s]
@@ -369,5 +369,5 @@ def visual_chains(list_of_chains, outpath):
     images[0].save(outpath + ".gif",
                    save_all=True,
                    loop=0,
-                   duration=30,
+                   duration=duration,
                    append_images=images[1:])

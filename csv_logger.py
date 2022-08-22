@@ -40,12 +40,12 @@ for source_file in glob.glob("**/*.py", recursive=True):
 ex.add_source_file("video_pipeline/models_src.py")
 
 
-# @ex.automain
-# def send_csv(_run):
+@ex.automain
+def send_csv(_run):
 
-#     for file_name in glob.glob(log_config['log_path'] + "/*.csv"):
-#         titles = np.loadtxt(file_name, delimiter=',', dtype=str, max_rows=1, ndmin=1)
-#         data = np.loadtxt(file_name, delimiter=',', skiprows=1, ndmin=2)
-#         for i, title in enumerate(titles):
-#             for j in range(len(data)):
-#                 _run.log_scalar(title, data[j, i])
+    for file_name in glob.glob(log_config['log_path'] + "/*.csv"):
+        titles = np.loadtxt(file_name, delimiter=',', dtype=str, max_rows=1, ndmin=1)
+        data = np.loadtxt(file_name, delimiter=',', skiprows=1, ndmin=2)
+        for i, title in enumerate(titles):
+            for j in range(len(data)):
+                _run.log_scalar(title, data[j, i])
