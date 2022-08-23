@@ -108,7 +108,10 @@ dependencies:
   - gstreamer=1.20.3=hd4edc92_0
   - gtk2=2.24.33=h90689f9_2
   - gts=0.7.6=h64030ff_2
+  - h5py=3.7.0=nompi_py310h416281c_101
   - harfbuzz=4.4.1=hf9f4e7c_0
+  - hdf5=1.12.2=nompi_h2386368_100
+  - hdf5plugin=3.3.1=py310h2195f33_1
   - icu=70.1=h27087fc_0
   - idna=3.3=pyhd8ed1ab_0
   - importlib-metadata=4.11.4=py310hff52083_0
@@ -216,6 +219,7 @@ dependencies:
   - mysql-common=8.0.29=haf5c9bc_1
   - mysql-libs=8.0.29=h28c427c_1
   - nanotime=0.5.2=py_0
+  - natsort=8.1.0=pyhd8ed1ab_0
   - nbclient=0.6.6=pyhd8ed1ab_0
   - nbconvert=6.5.0=pyhd8ed1ab_0
   - nbconvert-core=6.5.0=pyhd8ed1ab_0

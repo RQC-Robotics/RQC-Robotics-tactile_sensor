@@ -1,309 +1,80 @@
 schema: '2.0'
 stages:
-  simulate:
-    cmd: python dvc_sim_runner.py
-    deps:
-    - path: data/pressure/batched_pic
-      md5: e15f48d4b08a06ddb2ddc24b541e1134.dir
-      size: 8192064000
-      nfiles: 500
-    - path: dvc_sim_runner.py
-      md5: 01d0d7f020a712148979871a96168057
-      size: 1201
-    params:
-      params.yaml:
-        dataset.pic_path: data/pressure/pic
-        dataset.signal_path: data/sensor_signal
-        env.phys:
-          fiber_sensibility:
-            value: 0.6
-            accuracy: 5
-          kof: 1
-          relative_noise: 0.01
-          noise: 0.01
-        env.sen_geometry:
-          distance: 0.5
-          x_len: 64
-          y_len: 64
-          n_angles: 4
-          n_spl: 1
-        random_seed: 4732
-        sim:
-          pic_path: data/pressure/batched_pic
-          random_rot: 1
-          batch_size: 1000
-          test_size: None
-          test_mod: false
-    outs:
-    - path: data/sensor_signal
-      md5: 0b5c3ae91b073162e9607774940a4305.dir
-      size: 512064000
-      nfiles: 500
-  learning:
-    cmd: python dvc_model_learning.py
-    deps:
-    - path: data/sensor_signal
-      md5: 79bf8bd89eda5db6b3b2a6f448448b6a.dir
-      size: 1024128
-      nfiles: 1
-    - path: dvc_model_learning.py
-      md5: 2e3234fcc2ae162e5b6b22afe9964f83
-      size: 7173
-    - path: torch_sensor_lib/nets.py
-      md5: 8a697ab7b311e5cff0bf440686caedb6
-      size: 2936
-    params:
-      params.yaml:
-        train:
-          batch_size: 7
-          learning_rate: 0.0001
-          n_epochs: 2
-          model_name: TorchSensorNN5S_norm_deep
-          test_size: None
-    outs:
-    - path: data/model
-      md5: c6201d6539fbf601191ad1979272f4b9.dir
-      size: 16205768
-      nfiles: 1
-    - path: reports/learning_curve.csv
-      md5: 36c506673267c50badf92a9d70b4afa3
-      size: 103
-    - path: reports/summary.json
-      md5: a8c5ade54b7adb67a158be580618b33e
-      size: 79
-  make_plot:
-    cmd: dvc plots diff 973a7c --x-label "epochs" --y-label "loss"
-    deps:
-    - path: reports/learning_curve.csv
-      md5: 36c506673267c50badf92a9d70b4afa3
-      size: 103
-    outs:
-    - path: dvc_plots/index.html
-      md5: d0d3e75dfd8b4d3f7a61aa1364b387b8
-      size: 7676
-  evaluate:
-    cmd: python3 dvc_evaluate_model.py
-    deps:
-    - path: data/model
-      md5: 0ef1bb24d4242dd46903ac12a4b2a04d.dir
-      size: 13352783
-      nfiles: 1
-    outs:
-    - path: reports/l_curve.png
-      md5: b62887387552fa6f9955f029da3d0162
-      size: 65073
-    - path: reports/predict_examples.png
-      md5: 066f179c4e09092e1b44a9e027a9d39c
-      size: 400472
-    - path: reports/report.md
-      md5: 4deb09523db60548c3e1abfdc5dd0cf8
-      size: 643
-  profile_generation:
-    cmd: python dvc_pressure_map_gen.py
-    deps:
-    - path: dvc_pressure_map_gen.py
-      md5: b964ef9c36d196d477e7583716bcd78d
-      size: 2076
-    params:
-      params.yaml:
-        dataset.n_samples: 1000
-        env.pressure_profile:
-          n_gauses: 10
-          size_kof: 5
-        env.sen_geometry.x_len: 64
-        env.sen_geometry.y_len: 64
-        gengaus:
-          batch_size: 100
-          save_batch_size: None
-        random_seed: 4732
-    outs:
-    - path: data/pressure/pic
-      md5: 93326f4d0dc01b23ff035d4057b84e4c.dir
-      size: 16384128
-      nfiles: 1
-  batch_splitting:
-    cmd: python dvc_sim_batch_split.py
-    deps:
-    - path: data/pressure/pic
-      md5: 93326f4d0dc01b23ff035d4057b84e4c.dir
-      size: 16384128
-      nfiles: 1
-    - path: dvc_sim_batch_split.py
-      md5: a7dae22c596ce5e964b94a946010c059
-      size: 1048
-    params:
-      params.yaml:
-        sim.batch_size: 100
-    outs:
-    - path: data/pressure/batched_pic
-      md5: 4d557bccde08a3283a58293c0b1a782f.dir
-      size: 16385280
-      nfiles: 10
-  simulation:
-    cmd: python dvc_sim_runner.py
-    deps:
-    - path: data/pressure/pic
-      md5: 93326f4d0dc01b23ff035d4057b84e4c.dir
-      size: 16384128
-      nfiles: 1
-    - path: dvc_sim_runner.py
-      md5: 543643a646a1fa10e1437351b7535f0c
-      size: 1363
-    params:
-      params.yaml:
-        env.phys:
-          fiber_sensibility:
-            value: 0.6
-            accuracy: 5
-          kof: 1
-          relative_noise: 0.0
-          noise: 0.0
-        env.sen_geometry:
-          distance: 0.5
-          x_len: 64
-          y_len: 64
-          n_angles: 4
-          n_spl: 1
-        random_seed: 4732
-        sim:
-          random_rot: 1
-          batch_size: 100
-          test_size: None
-          test_mod: false
-    outs:
-    - path: data/sensor_signal
-      md5: 4007c88af5dfa17fc9b933e19e0367c1.dir
-      size: 1024128
-      nfiles: 1
-  evaluation:
-    cmd: python dvc_evaluate_model.py
-    deps:
-    - path: data/model
-      md5: c6201d6539fbf601191ad1979272f4b9.dir
-      size: 16205768
-      nfiles: 1
-    - path: dvc_evaluate_model.py
-      md5: 4bbc024027e5540d52a5d7fd266a9773
-      size: 5475
-    outs:
-    - path: logsdir
-      md5: 0886ef72696b038960072d60b0440658.dir
-      size: 29992
-      nfiles: 1
-    - path: reports/l_curve.png
-      md5: f227cdcc7f30fc6bb85f687b69141992
-      size: 33926
-    - path: reports/predict_examples.jpg
-      md5: a1f9d9736d2e66e8ec99bad4aafd3a98
-      size: 65959
-    - path: reports/report.md
-      md5: 1dbea1158658df87c4ce21af98f9c12b
-      size: 5162
   video_learning:
     cmd: python video_pipeline/learning.py
     deps:
-    - path: data/video/test_signal
-      md5: 4288c109c49669991558ed7df90e2d20.dir
-      size: 56687265
-      nfiles: 1024
-    - path: data/video/train_signal
-      md5: 566d9ef7b4d010ede547e48b31801b70.dir
-      size: 562363694
-      nfiles: 11136
+    - path: data/video/signal
+      md5: 51bb2090fad2858b6aae19b82bac4d3a.dir
+      size: 762696790
+      nfiles: 2
     params:
       params.yaml:
         video_train:
           batch_size: 1000
           learning_rate: 0.0001
           epochs: 8
-          model_name: Unet2
+          model_name: Unet1
           frames_number: 1
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 100b3b5038cd1cd159a5347f06f014be.dir
-      size: 2771521
+      md5: 7bc2da7f6b3c703047f3e899c3b7798e.dir
+      size: 3435563
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: db221f948ee1b7670495d56b5ef1196e
-      size: 184
+      md5: 0132125b601d2cb89242a088f427d042
+      size: 186
     - path: reports/full_train_loss.csv
-      md5: ebdeb6e3fc68536f36aba24acee71b94
-      size: 184
+      md5: f89d20ab02f706e47dc4e9a425479937
+      size: 186
     - path: reports/v_summary.json
-      md5: a79b5866f34a30bf0bb5b616c85bc145
-      size: 81
+      md5: 2ba130cad8e5c0d4292bfd9f522ddd37
+      size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
     - path: data/video/pressure
-      md5: b1d3757b31ac004707186a2a9054518e.dir
-      size: 712489795
-      nfiles: 12160
+      md5: 2c5f037541b57703901aeaead0cdae3d.dir
+      size: 809807812
+      nfiles: 2
     - path: video_pipeline/video_sim_runner.py
-      md5: d7da821352813aa324b51261763b3287
-      size: 2629
+      md5: 5f758948e44176c194b94856a90f636a
+      size: 2246
     params:
       params.yaml:
-        dataset.test_frac: 0.1
-        dataset.test_items:
-        env.phys:
-          fiber_sensibility:
-            value: 0.5
-          kof: 15
-          gaus_kernel_size: 13
-          relative_noise: 0.0
-          noise: 0.0
+        env.phys.gaus_kernel_size: 13
+        env.phys.kof: 15
         env.sen_geometry.n_angles: 4
     outs:
-    - path: data/video/test_signal
-      md5: 4288c109c49669991558ed7df90e2d20.dir
-      size: 56687265
-      nfiles: 1024
-    - path: data/video/train_signal
-      md5: 566d9ef7b4d010ede547e48b31801b70.dir
-      size: 562363694
-      nfiles: 11136
-  prepare_dataset:
-    cmd: python video_pipeline/prepare_dataset.py
-    deps:
-    - path: data/videos_from_isaac
-      md5: 447e0a01f6ef854b0b4ab207774fb7da.dir
-      size: 612364883
-      nfiles: 12160
-    - path: video_pipeline/prepare_dataset.py
-      md5: 35a30578275103c397e54838c65dab1a
-      size: 1776
-    outs:
-    - path: data/video/pressure
-      md5: b1d3757b31ac004707186a2a9054518e.dir
-      size: 712489795
-      nfiles: 12160
+    - path: data/video/signal
+      md5: 51bb2090fad2858b6aae19b82bac4d3a.dir
+      size: 762696790
+      nfiles: 2
   visual:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 100b3b5038cd1cd159a5347f06f014be.dir
-      size: 2771521
+      md5: 7bc2da7f6b3c703047f3e899c3b7798e.dir
+      size: 3435563
       nfiles: 1
     params:
       params.yaml:
         visual:
-          test:
-            step: 16
+          test/test:
+            step: 32
             max_items: 128
-          train:
+          train/train_videos:
             step: 32
             max_items: 64
     outs:
     - path: data/video/predict_vis
-      md5: 0defabfc1d38e48a86e409839811e860.dir
-      size: 25809646
-      nfiles: 129
+      md5: 2e5522e2ea13e9d617873cbe082f1eda.dir
+      size: 11953425
+      nfiles: 65
   push_logs:
     cmd: python csv_logger.py
     deps:
     - path: reports
-      md5: 9b492b02e8a3d0488f90a95274e57595.dir
-      size: 485
+      md5: ef05029e62a5872a6091022e05a3d92b.dir
+      size: 490
       nfiles: 4

@@ -34,6 +34,9 @@ else:
     input("WARNING! No password for db. Confirm logging locally")
 
 ex.add_config('params.yaml')
+for source_file in glob.glob("**/*.py", recursive=True):
+    ex.add_source_file(source_file)
+    
 ex.add_source_file("video_pipeline/models_src.py")
 
 

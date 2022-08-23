@@ -16,8 +16,6 @@ env:
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
 dataset:
-  test_items:
-  test_frac: 0.1
   mult_coeff: 80  # multiplies all pressures
 
 sim:
@@ -31,17 +29,20 @@ video_train:
   learning_rate: 0.0001
   epochs: 8
   # list of (number epochs, chain_len) pairs
-  model_name: Unet2
-  # layers: [10, 10, 10, 10, 10, 10]        # single layers
+  model_name: Unet1
+  # layers: [32, 16, 10]        # single layers
   frames_number: 1
   frames_interval: 1
 test_batch_size: 1000  # for evaluations without grads
 
 visual:
-  test:
-    step: 16
+  test/test:
+    step: 32
     max_items: 128
     # begin: 0
-  train:
+  train/train_videos:
     step: 32
-    max_items: 64
+    max_items: 32
+  # train/gaus:  
+  #   end: 20
+  #   duration: 1000
