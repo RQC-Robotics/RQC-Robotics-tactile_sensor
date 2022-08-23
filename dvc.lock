@@ -4,8 +4,8 @@ stages:
     cmd: python video_pipeline/learning.py
     deps:
     - path: data/video/signal
-      md5: ec1c6b74f45b57c77ed8a95d3398815b.dir
-      size: 618163680
+      md5: 51bb2090fad2858b6aae19b82bac4d3a.dir
+      size: 762696790
       nfiles: 2
     params:
       params.yaml:
@@ -18,18 +18,18 @@ stages:
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 0f00d3094923fc6dd86071521ed3d372.dir
+      md5: 7bc2da7f6b3c703047f3e899c3b7798e.dir
       size: 3435563
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 10a43ad95998c233577a384c7ae04070
-      size: 183
+      md5: 0132125b601d2cb89242a088f427d042
+      size: 186
     - path: reports/full_train_loss.csv
-      md5: 9e0c5279a2f283b065f65b69cfc37f6c
-      size: 181
+      md5: f89d20ab02f706e47dc4e9a425479937
+      size: 186
     - path: reports/v_summary.json
-      md5: d194dc62edf54546139e4c9bc0c512c6
-      size: 81
+      md5: 2ba130cad8e5c0d4292bfd9f522ddd37
+      size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
@@ -42,19 +42,19 @@ stages:
       size: 2246
     params:
       params.yaml:
-        env.phys.gaus_kernel_size: 3
+        env.phys.gaus_kernel_size: 13
         env.phys.kof: 15
         env.sen_geometry.n_angles: 4
     outs:
     - path: data/video/signal
-      md5: ec1c6b74f45b57c77ed8a95d3398815b.dir
-      size: 618163680
+      md5: 51bb2090fad2858b6aae19b82bac4d3a.dir
+      size: 762696790
       nfiles: 2
   visual:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 0f00d3094923fc6dd86071521ed3d372.dir
+      md5: 7bc2da7f6b3c703047f3e899c3b7798e.dir
       size: 3435563
       nfiles: 1
     params:
@@ -68,13 +68,13 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: 79c817f63f1b9b5c0f680cce6f84dda3.dir
-      size: 11080755
+      md5: 2e5522e2ea13e9d617873cbe082f1eda.dir
+      size: 11953425
       nfiles: 65
   push_logs:
     cmd: python csv_logger.py
     deps:
     - path: reports
-      md5: 9eac7ec2aee3243eedc764068e87ee2e.dir
-      size: 481
+      md5: ef05029e62a5872a6091022e05a3d92b.dir
+      size: 490
       nfiles: 4
