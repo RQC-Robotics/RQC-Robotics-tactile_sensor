@@ -497,7 +497,7 @@ class Unet2(nn.Module):
             
 class ParamUnet(nn.Module):
       
-    def __init__(self, output_shape, input_shape, channels, frames_number, frames_interval):
+    def __init__(self, output_shape, input_shape, hidden_layers, frames_number, frames_interval):
         assert frames_number == 1
         input_shape = input_shape[-2:]
         self.output_shape = output_shape[-2:]
@@ -505,19 +505,19 @@ class ParamUnet(nn.Module):
 
         self.frames_interval, self.frames_number = frames_interval, frames_number 
         
-        self.step1 = nn.Sequential(nn.Conv2d(input_shape[-2], channels[0], (3, 3), 1, 'same'),
+        self.step1 = nn.Sequential(nn.Conv2d(input_shape[-2], hidden_layers[0], (3, 3), 1, 'same'),
                                    nn.ReLU(),
-                                   nn.Conv2d(channels[0], channels[0], (3, 3), 1, 'same'),
+                                   nn.Conv2d(hidden_layers[0], hidden_layers[0], (3, 3), 1, 'same'),
                                    nn.ReLU(),
-                                   nn.Conv2d(channels[0], channels[0], (3, 3), 1, 'same'),
+                                   nn.Conv2d(hidden_layers[0], hidden_layers[0], (3, 3), 1, 'same'),
                                    nn.ReLU(),
                                    )
         self.finalConv = nn.Sequential(
-                                   nn.Conv2d(channels[0]+channels[-1], channels[-1], (3, 3), 1, 'same'),
+                                   nn.Conv2d(hidden_layers[0]+hidden_layers[-1], hidden_layers[-1], (3, 3), 1, 'same'),
                                    nn.ReLU(),
-                                   nn.Conv2d(channels[-1], channels[-1], (3, 3), 1, 'same'),
+                                   nn.Conv2d(hidden_layers[-1], hidden_layers[-1], (3, 3), 1, 'same'),
                                    nn.ReLU(),
-                                   nn.Conv2d(channels[-1], 1, 1, padding='same'))
+                                   nn.Conv2d(hidden_layers[-1], 1, 1, padding='same'))
         def UnetBlocks(down_in_ch, down_out_ch, down_conv_n, up_in_ch, up_inner_ch, up_out_ch, up_conv_n):
             down_layers = [nn.Conv2d(down_in_ch, down_out_ch, (3, 3), 2, 1),
                                     nn.ReLU(),]
@@ -537,11 +537,11 @@ class ParamUnet(nn.Module):
         
         self.down_list = [self.step1]
         self.up_list = []
-        for i in range(len(channels)//2-2):
-            down, up = UnetBlocks(channels[i], channels[i+1], 3, channels[i+1] + channels[-i-2], channels[-i-2], channels[-i-1], 3)
+        for i in range(len(hidden_layers)//2-2):
+            down, up = UnetBlocks(hidden_layers[i], hidden_layers[i+1], 3, hidden_layers[i+1] + hidden_layers[-i-2], hidden_layers[-i-2], hidden_layers[-i-1], 3)
             self.down_list.append(down), self.up_list.append(up)
-        i = len(channels)//2-2
-        down, up = UnetBlocks(channels[i], channels[i+1], 2, channels[-i-2], channels[-i-2], channels[-i-1], 2)
+        i = len(hidden_layers)//2-2
+        down, up = UnetBlocks(hidden_layers[i], hidden_layers[i+1], 2, hidden_layers[-i-2], hidden_layers[-i-2], hidden_layers[-i-1], 2)
         self.down_list.append(down), self.up_list.append(up)
         
         self.up_list = self.up_list[::-1] + [self.finalConv]
@@ -575,7 +575,7 @@ if __name__ == "__main__":
 
     # from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    model = ParamUnet((64, 64), (4, 64), channels=[8, 16, 32, 64, 64, 32, 16, 8], frames_number=1, frames_interval=1)
+    model = ParamUnet((64, 64), (4, 64), hidden_layers=[8, 16, 32, 64, 64, 32, 16, 8], frames_number=1, frames_interval=1)
     # model = Unet2((64, 64), (4, 64), frames_number=1, frames_interval=1)
     # model = ParamSingle((64, 64), (4, 64), hidden_layers=[300, 300, 300, 500], frames_number=1, frames_interval=1)
     print(model)
