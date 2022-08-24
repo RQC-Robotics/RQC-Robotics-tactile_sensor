@@ -12,23 +12,34 @@ stages:
         video_train:
           batch_size: 1000
           learning_rate: 0.0001
-          epochs: 8
-          model_name: Unet1
+          epochs: 56
+          model_name: ParamUnet
+          layers:
+          - 4
+          - 8
+          - 16
+          - 32
+          - 64
+          - 64
+          - 32
+          - 16
+          - 8
+          - 8
           frames_number: 1
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 7bc2da7f6b3c703047f3e899c3b7798e.dir
-      size: 3435563
+      md5: dbef7eba3fb3678a3a2a75fcb5515697.dir
+      size: 1119437
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 0132125b601d2cb89242a088f427d042
-      size: 186
+      md5: 3ddfa8e0381345b90387a6769c8c5ed2
+      size: 1195
     - path: reports/full_train_loss.csv
-      md5: f89d20ab02f706e47dc4e9a425479937
-      size: 186
+      md5: b76fa20e0ff512a0539c04caff89994a
+      size: 1199
     - path: reports/v_summary.json
-      md5: 2ba130cad8e5c0d4292bfd9f522ddd37
+      md5: e079c9d6abfef0125ac2bd7eb469055e
       size: 82
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
@@ -54,8 +65,8 @@ stages:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 7bc2da7f6b3c703047f3e899c3b7798e.dir
-      size: 3435563
+      md5: dbef7eba3fb3678a3a2a75fcb5515697.dir
+      size: 1119437
       nfiles: 1
     params:
       params.yaml:
@@ -65,16 +76,16 @@ stages:
             max_items: 128
           train/train_videos:
             step: 32
-            max_items: 64
+            max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: 2e5522e2ea13e9d617873cbe082f1eda.dir
-      size: 11953425
+      md5: 36bd0364fb238afd0d258ba7a6d58b7b.dir
+      size: 12125981
       nfiles: 65
   push_logs:
     cmd: python csv_logger.py
     deps:
     - path: reports
-      md5: ef05029e62a5872a6091022e05a3d92b.dir
-      size: 490
+      md5: 6391ec99169ab12ea61e21aa220c799e.dir
+      size: 2512
       nfiles: 4

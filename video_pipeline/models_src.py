@@ -575,20 +575,21 @@ if __name__ == "__main__":
 
     # from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    model = ParamUnet((64, 64), (4, 64), hidden_layers=[8, 16, 32, 64, 64, 32, 16, 8], frames_number=1, frames_interval=1)
+    # model = ParamUnet((64, 64), (4, 64), hidden_layers=[8, 16, 32, 64, 64, 32, 16, 8], frames_number=1, frames_interval=1)
+    model = ParamUnet((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
     # model = Unet2((64, 64), (4, 64), frames_number=1, frames_interval=1)
     # model = ParamSingle((64, 64), (4, 64), hidden_layers=[300, 300, 300, 500], frames_number=1, frames_interval=1)
     print(model)
     summary(model, (1, 1, 4, 64), col_names=["input_size", "output_size", "num_params", 'mult_adds'], device='cpu')
     
-    # # time testing
-    # import time
-    # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    # input = torch.rand(100, 1, 4, 64).to(device)
-    # start = time.time()
-    # res = model.to(device)(input)
-    # end=time.time()
-    # print("Time per batch is", end-start, "s")
+    # time testing
+    import time
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    input = torch.rand(100, 1, 4, 64).to(device)
+    start = time.time()
+    res = model.to(device)(input)
+    end=time.time()
+    print("Time per batch is", end-start, "s")
     
     # writer = SummaryWriter('logdir')
     # writer.add_graph(

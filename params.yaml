@@ -27,12 +27,11 @@ sim:
 video_train:
   batch_size: 1000    # for learning
   learning_rate: 0.0001
-  epochs: 8
+  epochs: 56
   # list of (number epochs, chain_len) pairs
   model_name: ParamUnet
-  hidden_layers: [8, 16, 32, 64, 64, 32, 16, 8]
+  layers: [4, 8, 16, 32, 64, 64, 32, 16, 8, 8]
 
-  # layers: [32, 16, 10]        # single layers
   frames_number: 1
   frames_interval: 1
 test_batch_size: 1000  # for evaluations without grads

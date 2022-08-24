@@ -125,6 +125,13 @@ with tqdm(total=epochs,
                         delimiter=',',
                         fmt='%s')
 
+        # checkpoint saving
+        torch.save({
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optim.state_dict()
+            }, f'checkpoint{len(history)}.pt')
+
+        
         os.system('dvc plots show -q')
 # %%
 full_train_loss, full_test_loss = zip(*history)
