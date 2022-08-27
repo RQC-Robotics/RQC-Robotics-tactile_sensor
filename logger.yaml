@@ -1,3 +1,3 @@
-exp_name: 'fiber_sensor_Small_Unet_blur_exp'
+exp_name: 'fiber_sensor_gaus_adding'
 log_path: reports
   
