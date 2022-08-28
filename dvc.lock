@@ -4,9 +4,9 @@ stages:
     cmd: python video_pipeline/learning.py
     deps:
     - path: data/video/signal
-      md5: 1d4d80b6904a1e1a53b942312dfe57f2.dir
-      size: 827281694
-      nfiles: 3
+      md5: 7de5f099dfb0f342f712d4eca04e810a.dir
+      size: 746782297
+      nfiles: 2
     params:
       params.yaml:
         video_train:
@@ -29,25 +29,25 @@ stages:
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 1d5c82315f1eea1a85111b42e5d1d27d.dir
+      md5: 2e1c36f2fc8db0206b41b9956a31bcc4.dir
       size: 1114893
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 965c930a6ee228af82c1c709276b5622
-      size: 771
+      md5: ef11eda061ba642ecf7544faa098963f
+      size: 773
     - path: reports/full_train_loss.csv
-      md5: 3cbe1533838312b83b23adaef3f10a3b
-      size: 777
+      md5: 542580e2ef7c1f7af06cd35acda7e5ea
+      size: 774
     - path: reports/v_summary.json
-      md5: ea5405b2997a0e96890913a3e361099d
-      size: 82
+      md5: cf6d65d541367d4643afcdaa0446fd1e
+      size: 81
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
     - path: data/video/pressure
-      md5: b1738859c45d567a679e38fc88dbcc1d.dir
-      size: 2240658500
-      nfiles: 3
+      md5: a74e07b70602f660a264795a4cc7adbb.dir
+      size: 809720735
+      nfiles: 2
     - path: video_pipeline/video_sim_runner.py
       md5: 5f758948e44176c194b94856a90f636a
       size: 2246
@@ -58,14 +58,14 @@ stages:
         env.sen_geometry.n_angles: 4
     outs:
     - path: data/video/signal
-      md5: 1d4d80b6904a1e1a53b942312dfe57f2.dir
-      size: 827281694
-      nfiles: 3
+      md5: 7de5f099dfb0f342f712d4eca04e810a.dir
+      size: 746782297
+      nfiles: 2
   visual:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 1d5c82315f1eea1a85111b42e5d1d27d.dir
+      md5: 2e1c36f2fc8db0206b41b9956a31bcc4.dir
       size: 1114893
       nfiles: 1
     params:
@@ -79,13 +79,13 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: 8be5969b0b1750a256ff0b133423aefa.dir
-      size: 11139624
+      md5: 9c911d1149bd49e4b39a2d2199382268.dir
+      size: 11951425
       nfiles: 65
   push_logs:
     cmd: python csv_logger.py
     deps:
     - path: reports
-      md5: 48db577701e5df53ec42bf70ced5ce73.dir
-      size: 1666
+      md5: 07ec5b8db2a7779716ee874b3215b75d.dir
+      size: 1664
       nfiles: 4
