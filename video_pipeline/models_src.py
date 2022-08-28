@@ -497,10 +497,12 @@ class Unet2(nn.Module):
             
 class ParamUnet(nn.Module):
       
-    def __init__(self, output_shape, input_shape, hidden_layers, frames_number, frames_interval):
+    def __init__(self, output_shape, input_shape, hidden_layers, frames_number, frames_interval, step=1):
         assert frames_number == 1
         input_shape = input_shape[-2:]
+        self.input_shape = input_shape
         self.output_shape = output_shape[-2:]
+        self.step = step
         super(ParamUnet, self).__init__()
 
         self.frames_interval, self.frames_number = frames_interval, frames_number 
@@ -548,9 +550,19 @@ class ParamUnet(nn.Module):
 
         self.bottom = nn.Sequential(*self.down_list, *self.up_list)
         
+        self.upsample = nn.Upsample(size=self.output_shape[-2:],
+                                    mode='bilinear')
+        
     def forward(self, x):
         
-        x = torch.swapaxes(x, -2, -3).repeat(1, 1, 64, 1)
+        if self.step != 1:
+            x = x[..., self.step//2::self.step]
+            x = torch.swapdims(x, -2, -3).repeat(1, 1, self.input_shape[-1]//self.step, 1)
+            x = self.upsample(x)
+        else:
+            x = torch.swapaxes(x, -2, -3).repeat(1, 1, 64, 1)
+
+        
         for i in range(x.shape[-3]):
             x[:, i] = torch_rotate(x[:, i], -180/x.shape[-3]*i, interpolation=InterpolationMode.BILINEAR)
         
@@ -570,13 +582,30 @@ class ParamUnet(nn.Module):
         # x = x.view(-1, *self.output_shape)
         return x
   
- 
+class ParamUnet_4_fibers(ParamUnet):
+    
+    def __init__(self, *args, **kwargs):
+        super(ParamUnet_4_fibers, self).__init__(*args, step=16, **kwargs)
+    def forward(self, x):
+        return super(ParamUnet_4_fibers, self).forward(x)
+    
+class ParamUnet_8_fibers(ParamUnet):
+    
+    def __init__(self, *args, **kwargs):
+        super(ParamUnet_8_fibers, self).__init__(*args, step=8, **kwargs)
+    def forward(self, x):
+        return super(ParamUnet_8_fibers, self).forward(x)
+    
+
+        
+
 if __name__ == "__main__":
 
     # from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
-    # model = ParamUnet((64, 64), (4, 64), hidden_layers=[8, 16, 32, 64, 64, 32, 16, 8], frames_number=1, frames_interval=1)
-    model = ParamUnet((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
+    # model = ParamUnet((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
+    model = ParamUnet((64, 64), (4, 64), hidden_layers=[16, 32, 64, 64, 64, 64, 32, 16], frames_number=1, frames_interval=1)
+    # model = ParamUnet_4_fibers((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
     # model = Unet2((64, 64), (4, 64), frames_number=1, frames_interval=1)
     # model = ParamSingle((64, 64), (4, 64), hidden_layers=[300, 300, 300, 500], frames_number=1, frames_interval=1)
     print(model)
@@ -585,7 +614,7 @@ if __name__ == "__main__":
     # time testing
     import time
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    input = torch.rand(100, 1, 4, 64).to(device)
+    input = torch.rand(1000, 1, 4, 64).to(device)
     start = time.time()
     res = model.to(device)(input)
     end=time.time()
