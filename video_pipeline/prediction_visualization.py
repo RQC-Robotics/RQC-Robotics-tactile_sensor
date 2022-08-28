@@ -73,7 +73,7 @@ def visual_dataset(pres_file, signal_file, step, max_items, begin=0, end=None, d
                              device)     
         pressure = pressure[-prediction.shape[0]:]
         visual_chains([pressure, prediction],
-                      jn(save_path, key))
+                      jn(save_path, key), duration=duration)
         print(f"<img src={key+'.gif'} width=400>",
               file=file)
 
