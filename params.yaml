@@ -44,6 +44,8 @@ visual:
   train/train_videos:
     step: 32
     max_items: 32
-  # train/gaus:  
+  # train/train_gaus:
+  #   max_items: 128  
+  #   step: 1
   #   end: 20
   #   duration: 1000
