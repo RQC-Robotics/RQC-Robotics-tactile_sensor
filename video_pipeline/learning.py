@@ -79,8 +79,10 @@ optim = torch.optim.Adam(model.parameters(), lr=tr['learning_rate'])
 loss_fn = torch.nn.MSELoss()
 
 # %%
-
-
+checkp_dir = 'logdir/checkpoints/'
+if not os.path.exists(checkp_dir):
+    os.makedirs(checkp_dir)
+    
 def iter_train(train_dataset, test_dataset, model, epochs, optimizer,
                criterion):
     for epoch in range(epochs):
@@ -129,8 +131,7 @@ with tqdm(total=epochs,
         torch.save({
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optim.state_dict()
-            }, f'checkpoint{len(history)}.pt')
-
+            }, jn(checkp_dir, f'checkpoint{len(history)}.pt'))
         
         os.system('dvc plots show -q')
 # %%
