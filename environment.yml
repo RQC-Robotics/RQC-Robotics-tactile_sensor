@@ -12,6 +12,7 @@ dependencies:
   - aioitertools=0.10.0=pyhd8ed1ab_0
   - aiosignal=1.2.0=pyhd8ed1ab_0
   - alsa-lib=1.2.6.1=h7f98852_0
+  - anyio=3.5.0=py310h06a4308_0
   - aom=3.4.0=h27087fc_1
   - appdirs=1.4.4=pyh9f0ad1d_0
   - argon2-cffi=21.3.0=pyhd8ed1ab_0
@@ -23,6 +24,7 @@ dependencies:
   - atpublic=3.0.1=pyhd8ed1ab_0
   - attr=2.5.1=h166bdaf_0
   - attrs=21.4.0=pyhd8ed1ab_0
+  - babel=2.9.1=pyhd3eb1b0_0
   - backcall=0.2.0=pyh9f0ad1d_0
   - backports=1.0=py_2
   - backports.functools_lru_cache=1.6.4=pyhd8ed1ab_0
@@ -36,11 +38,11 @@ dependencies:
   - brotlipy=0.7.0=py310h5764c6d_1004
   - bzip2=1.0.8=h7f98852_4
   - c-ares=1.18.1=h7f98852_0
-  - ca-certificates=2022.6.15=ha878542_0
+  - ca-certificates=2022.07.19=h06a4308_0
   - cached-property=1.5.2=hd8ed1ab_1
   - cached_property=1.5.2=pyha770c72_1
   - cairo=1.16.0=ha61ee94_1011
-  - certifi=2022.6.15=py310hff52083_0
+  - certifi=2022.6.15=pyhd8ed1ab_1
   - cffi=1.15.1=py310h255011f_0
   - charset-normalizer=2.1.0=pyhd8ed1ab_0
   - click=8.1.3=py310hff52083_0
@@ -126,13 +128,17 @@ dependencies:
   - jinja2=3.1.2=pyhd8ed1ab_1
   - jmespath=1.0.1=pyhd8ed1ab_0
   - jpeg=9e=h166bdaf_2
+  - json5=0.9.6=pyhd3eb1b0_0
   - jsonpickle=1.5.1=pyhd8ed1ab_0
   - jsonschema=4.6.2=pyhd8ed1ab_0
   - jupyter=1.0.0=py310hff52083_7
   - jupyter_client=7.3.4=pyhd8ed1ab_0
   - jupyter_console=6.4.4=pyhd8ed1ab_0
   - jupyter_core=4.10.0=py310hff52083_0
+  - jupyter_server=1.18.1=py310h06a4308_0
+  - jupyterlab=3.4.4=py310h06a4308_0
   - jupyterlab_pygments=0.2.2=pyhd8ed1ab_0
+  - jupyterlab_server=2.12.0=py310h06a4308_0
   - jupyterlab_widgets=1.1.1=pyhd8ed1ab_0
   - keyutils=1.6.1=h166bdaf_0
   - kiwisolver=1.4.3=py310hbf28c38_0
@@ -220,6 +226,7 @@ dependencies:
   - mysql-libs=8.0.29=h28c427c_1
   - nanotime=0.5.2=py_0
   - natsort=8.1.0=pyhd8ed1ab_0
+  - nbclassic=0.3.5=pyhd3eb1b0_0
   - nbclient=0.6.6=pyhd8ed1ab_0
   - nbconvert=6.5.0=pyhd8ed1ab_0
   - nbconvert-core=6.5.0=pyhd8ed1ab_0
@@ -318,6 +325,7 @@ dependencies:
   - six=1.16.0=pyh6c4a22f_0
   - sleef=3.5.1=h9b69904_2
   - smmap=3.0.5=pyh44b312d_0
+  - sniffio=1.2.0=py310h06a4308_1
   - soupsieve=2.3.1=pyhd8ed1ab_0
   - sqlite=3.39.0=h4ff8645_0
   - stack_data=0.3.0=pyhd8ed1ab_0
@@ -329,6 +337,7 @@ dependencies:
   - tinycss2=1.1.1=pyhd8ed1ab_0
   - tk=8.6.12=h27826a3_0
   - toml=0.10.2=pyhd8ed1ab_0
+  - torchinfo=1.7.0=pyhd8ed1ab_0
   - torchvision=0.13.0=py310_cu113
   - tornado=6.2=py310h5764c6d_0
   - tqdm=4.64.0=pyhd8ed1ab_0
@@ -342,6 +351,7 @@ dependencies:
   - voluptuous=0.13.1=pyhd8ed1ab_0
   - wcwidth=0.2.5=pyh9f0ad1d_2
   - webencodings=0.5.1=py_1
+  - websocket-client=0.58.0=py310h06a4308_4
   - wheel=0.37.1=pyhd8ed1ab_0
   - widgetsnbextension=3.6.1=pyha770c72_0
   - wrapt=1.14.1=py310h5764c6d_0
