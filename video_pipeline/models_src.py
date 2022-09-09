@@ -597,18 +597,43 @@ class ParamUnet_8_fibers(ParamUnet):
         return super(ParamUnet_8_fibers, self).forward(x)
     
 
-        
+class ParamSingle_8_fibers(nn.Module):
+    def __init__(self, pressure_shape, signal_shape, hidden_layers: list[int], frames_number, frames_interval):
+        super(ParamSingle_8_fibers, self).__init__()
+        self.frames_interval, self.frames_number = frames_interval, frames_number 
+
+        self.signal_shape = signal_shape
+        self.pressure_shape = pressure_shape
+        self.step = 8
+
+        layers = [nn.Linear(signal_shape[-1]//self.step * signal_shape[-2], hidden_layers[0]), nn.ReLU()] + \
+            [nn.Sequential(nn.Linear(*hidden_layers[i:i+2]), nn.ReLU()) for i in range(len(hidden_layers)-1)] + \
+                        [nn.Linear(hidden_layers[-1], 32*32)]
+        self.sequential_shared = nn.Sequential(*layers)
+
+        self.upsample = nn.Upsample(size=self.pressure_shape[-2:],
+                                    mode='bilinear')
+
+    def forward(self, x):        
+        x = x[..., self.step//2::self.step]
+        x = self.sequential_shared(torch.flatten(x, 1))
+        x = x.view(-1, 1, 32, 32)
+        x = self.upsample(x)
+        x = torch.squeeze(x, -3)
+
+        return x
+
+
 
 if __name__ == "__main__":
 
     # from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
     # model = ParamUnet((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
-    # model = ParamUnet((64, 64), (4, 64), hidden_layers=[16, 32, 64, 64, 64, 64, 32, 16], frames_number=1, frames_interval=1)
-    model = ParamInterpCNN((64, 64), (4, 64), hidden_layers=[16, 16, 16, 16, 16, 16], frames_number=1, frames_interval=1)
+    model = ParamUnet((64, 64), (4, 64), hidden_layers=[16, 32, 64, 64, 64, 64, 32, 16], frames_number=1, frames_interval=1)
     # model = ParamUnet_4_fibers((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
     # model = Unet2((64, 64), (4, 64), frames_number=1, frames_interval=1)
-    # model = ParamSingle((64, 64), (4, 64), hidden_layers=[300, 300, 300, 500], frames_number=1, frames_interval=1)
+    # model = ParamSingle_8_fibers((64, 64), (4, 64), hidden_layers=[500,500,500,500,500], frames_number=1, frames_interval=1)
     print(model)
     summary(model, (1, 1, 4, 64), col_names=["input_size", "output_size", "num_params", 'mult_adds'], device='cpu')
     

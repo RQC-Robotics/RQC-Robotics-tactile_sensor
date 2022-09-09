@@ -29,8 +29,8 @@ video_train:
   learning_rate: 0.0001
   epochs: 50
   # list of (number epochs, chain_len) pairs
-  model_name: ParamInterpCNN
-  layers: [16, 16, 16, 16, 16, 16]
+  model_name: ParamUnet
+  layers: [16, 32, 64, 64, 64, 64, 32, 16]
 
   frames_number: 1
   frames_interval: 1
