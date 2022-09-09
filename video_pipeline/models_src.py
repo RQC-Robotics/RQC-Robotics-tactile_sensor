@@ -136,9 +136,9 @@ class ParamInterpCNN(nn.Module):
 
         self.frames_interval, self.frames_number = frames_interval, frames_number 
 
-        layers = [nn.Conv2d(input_shape[-2], hidden_layers[0], (5, 5), padding='same'), nn.ReLU()] +\
-            [nn.Sequential(nn.Conv2d(*hidden_layers[i:i+2], (5, 5), padding='same'), nn.ReLU()) for i in range(len(hidden_layers)-1)] + \
-                        [nn.Conv2d(hidden_layers[-1], 1, (5, 5), padding='same')]
+        layers = [nn.Conv2d(input_shape[-2], hidden_layers[0], (3, 3), padding='same'), nn.ReLU()] +\
+            [nn.Sequential(nn.Conv2d(*hidden_layers[i:i+2], (3, 3), padding='same'), nn.ReLU()) for i in range(len(hidden_layers)-1)] + \
+                        [nn.Conv2d(hidden_layers[-1], 1, (3, 3), padding='same')]
         
         self.conv1 = nn.Sequential(*layers)
         
@@ -604,7 +604,8 @@ if __name__ == "__main__":
     # from torch.utils.tensorboard import SummaryWriter
     from torchinfo import summary
     # model = ParamUnet((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
-    model = ParamUnet((64, 64), (4, 64), hidden_layers=[16, 32, 64, 64, 64, 64, 32, 16], frames_number=1, frames_interval=1)
+    # model = ParamUnet((64, 64), (4, 64), hidden_layers=[16, 32, 64, 64, 64, 64, 32, 16], frames_number=1, frames_interval=1)
+    model = ParamInterpCNN((64, 64), (4, 64), hidden_layers=[16, 16, 16, 16, 16, 16], frames_number=1, frames_interval=1)
     # model = ParamUnet_4_fibers((64, 64), (4, 64), hidden_layers=[4, 8, 16, 32, 64, 64, 32, 16, 8, 4], frames_number=1, frames_interval=1)
     # model = Unet2((64, 64), (4, 64), frames_number=1, frames_interval=1)
     # model = ParamSingle((64, 64), (4, 64), hidden_layers=[300, 300, 300, 500], frames_number=1, frames_interval=1)
