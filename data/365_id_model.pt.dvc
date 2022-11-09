@@ -1,0 +1,4 @@
+outs:
+- md5: 2a6a0b0731fb7d675f3248c78e4bc06c
+  size: 6906241
+  path: 365_id_model.pt
