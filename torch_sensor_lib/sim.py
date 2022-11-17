@@ -31,21 +31,24 @@ class FiberSimulator():
         self.alpha = self.phys['kof']
         self.n_angles = geom['n_angles']
 
-        self.gaus_size = config['env']['phys']['gaus_kernel_size']
+        gaus_sigma_mm = config['env']['phys']['sigma']
+        self.pixel_distance = config['env']['sen_geometry']['distance']
+        self.gaus_sigma_pix = gaus_sigma_mm/self.pixel_distance
+        self.gaus_kernel_size = 1 + 2*int(3*self.gaus_sigma_pix)   # approximately good formua to get odd integer
 
         self.test = self.config['sim']['test_mod']
 
     def _second_derivative(self, input):
-        return F.conv2d(input, self.derivative_kernel)
+        return F.conv2d(input, self.derivative_kernel)/self.pixel_distance**2
 
-    def _trans_fun(self, input):
+    def _trans_fun(self, curvature):
         """Reproduces experimental transmission curve"""
         return 1 - torch.sin(self.alpha * torch.minimum(
-            torch.square(self._second_derivative(input)),
+            torch.square(self.pixel_distance**2*curvature),
             torch.Tensor([np.pi / 2]).to(self.device)))
 
     def _sum_fiber_losses(self, input):
-        return 1 - torch.prod(self._trans_fun(input), dim=-2)
+        return 1 - torch.prod(self._trans_fun(self._second_derivative(input)), dim=-2)
 
     def _rotate(self, input):
         return torch.concat([
@@ -70,7 +73,7 @@ class FiberSimulator():
 
         rot_tensor = self._rotate(pressure_mat)
 
-        blurred_mat = gaussian_blur(rot_tensor, self.gaus_size)
+        blurred_mat = gaussian_blur(rot_tensor, self.gaus_kernel_size, self.gaus_sigma_pix)
 
         if self.test:
             print("Rot tensors")
@@ -100,57 +103,58 @@ class FiberSimulator():
 
         return signal
 
-    def high_resolution_sim(self, pressure_mat, scale_factor: int):
-        '''works with picture that is scale_factor times bigger then standard
-        shape: (batch_size, x_len*scale_factor, y_len*scale_factor)'''
-        gauss_kernel_size = scale_factor * (
-            self.phys['fiber_sensibility']['accuracy'] - 1) + 1
+    # # deprecated in process of making sim physical
+    # def high_resolution_sim(self, pressure_mat, scale_factor: int):
+    #     '''works with picture that is scale_factor times bigger then standard
+    #     shape: (batch_size, x_len*scale_factor, y_len*scale_factor)'''
+    #     gauss_kernel_size = scale_factor * (
+    #         self.phys['fiber_sensibility']['accuracy'] - 1) + 1
 
-        x = np.arange(0, gauss_kernel_size, 1, self.dtype)
-        y = x[:, np.newaxis]
-        x0 = y0 = gauss_kernel_size // 2
-        gauss = np.exp(-2 * np.log(2) * ((x - x0)**2 + (y - y0)**2) /
-                       scale_factor**2)
-        gauss_kernel = torch.from_numpy(np.expand_dims(gauss,
-                                                       (0, 1))).to(self.device)
+    #     x = np.arange(0, gauss_kernel_size, 1, self.dtype)
+    #     y = x[:, np.newaxis]
+    #     x0 = y0 = gauss_kernel_size // 2
+    #     gauss = np.exp(-2 * np.log(2) * ((x - x0)**2 + (y - y0)**2) /
+    #                    scale_factor**2)
+    #     gauss_kernel = torch.from_numpy(np.expand_dims(gauss,
+    #                                                    (0, 1))).to(self.device)
 
-        # then reproduce fiber_real_sim
-        if not isinstance(pressure_mat, torch.Tensor):
-            pressure_mat = torch.tensor(pressure_mat, device=self.device)
+    #     # then reproduce fiber_real_sim
+    #     if not isinstance(pressure_mat, torch.Tensor):
+    #         pressure_mat = torch.tensor(pressure_mat, device=self.device)
 
-        pressure_mat *= scale_factor**2    # to keep second derivative the same
+    #     pressure_mat *= scale_factor**2    # to keep second derivative the same
 
-        rot_tensor = self._rotate(pressure_mat)
+    #     rot_tensor = self._rotate(pressure_mat)
 
-        blurred_mat = F.conv2d(rot_tensor, gauss_kernel, padding='same')
+    #     blurred_mat = F.conv2d(rot_tensor, gauss_kernel, padding='same')
 
-        if self.test:
-            print("Rot tensors")
-            visual_picture(rot_tensor, self.n_angles, size=(7, 5))
-            print("After blur")
-            visual_picture(blurred_mat, self.n_angles, size=(7, 5))
+    #     if self.test:
+    #         print("Rot tensors")
+    #         visual_picture(rot_tensor, self.n_angles, size=(7, 5))
+    #         print("After blur")
+    #         visual_picture(blurred_mat, self.n_angles, size=(7, 5))
 
-        loss_tensor = (1 - torch.float_power(
-            torch.prod(self._trans_fun(blurred_mat), dim=-2),
-            1 / scale_factor)).view(-1, self.n_angles,
-                                    blurred_mat.shape[-1])[..., ::scale_factor]
+    #     loss_tensor = (1 - torch.float_power(
+    #         torch.prod(self._trans_fun(blurred_mat), dim=-2),
+    #         1 / scale_factor)).view(-1, self.n_angles,
+    #                                 blurred_mat.shape[-1])[..., ::scale_factor]
 
-        std = self.phys['relative_noise']
-        delt = self.phys['noise']
+    #     std = self.phys['relative_noise']
+    #     delt = self.phys['noise']
 
-        # take 1/scale_factor power to compensate increase in number of multipliers
-        signal = torch.normal(
-            loss_tensor *
-            torch.normal(1, std, loss_tensor.shape).to(self.device),
-            std=delt)
-        if self.test:
-            print("Loss in fiber")
-            visual_picture(1 - self._trans_fun(rot_tensor),
-                           self.n_angles,
-                           size=(7, 5))
-            print("Loss sums")
-            visual_picture(loss_tensor, self.n_angles, dim=1)
-            print("Signal")
-            visual_picture(signal, self.n_angles, dim=1)
+    #     # take 1/scale_factor power to compensate increase in number of multipliers
+    #     signal = torch.normal(
+    #         loss_tensor *
+    #         torch.normal(1, std, loss_tensor.shape).to(self.device),
+    #         std=delt)
+    #     if self.test:
+    #         print("Loss in fiber")
+    #         visual_picture(1 - self._trans_fun(rot_tensor),
+    #                        self.n_angles,
+    #                        size=(7, 5))
+    #         print("Loss sums")
+    #         visual_picture(loss_tensor, self.n_angles, dim=1)
+    #         print("Signal")
+    #         visual_picture(signal, self.n_angles, dim=1)
 
-        return signal
+    #     return signal

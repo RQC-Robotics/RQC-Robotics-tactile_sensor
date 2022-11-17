@@ -2,17 +2,15 @@ random_seed: 4732
 
 env:
   sen_geometry:
-    distance: 0.5     # between fibers in mm
+    distance: 0.35     # between fibers in mm
     x_len: 64     # in pixels
     y_len: 64     # in pixels    
     n_angles: 4
-    n_spl: 1     # number of pictures to show in testing mode  
   phys:
     fiber_sensibility:
-      value: 0.5       # width of fiber in mm
-      # accuracy: 5       # it is [size of kernel]/value 
     kof: 15     # between apply force and loss in grams 
-    gaus_kernel_size: 13  # odd integer!!
+    # gaus_kernel_size: 13  # odd integer!!
+    sigma: 0.8          # gaussian blur sigma in mm-s
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
 dataset:
