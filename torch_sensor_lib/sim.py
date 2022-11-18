@@ -6,6 +6,7 @@ from torchvision.transforms.functional import gaussian_blur
 from torchvision.transforms import InterpolationMode
 import numpy as np
 from torch_sensor_lib.visual import visual_picture
+import pickle
 '''
 Param requirements:
 
@@ -37,6 +38,10 @@ class FiberSimulator():
         self.gaus_kernel_size = 1 + 2*int(3*self.gaus_sigma_pix)   # approximately good formua to get odd integer
 
         self.test = self.config['sim']['test_mod']
+        with open('/home/amir/rqc_internship/frame_stack/torch_sensor_lib/714_loss_coeff_func_1.pck', 'rb') as file_handle:
+            self.experimental_loss_coeff_function = pickle.load(file_handle)
+
+ 
 
     def _second_derivative(self, input):
         return F.conv2d(input, self.derivative_kernel)/self.pixel_distance**2
@@ -46,9 +51,21 @@ class FiberSimulator():
         return 1 - torch.sin(self.alpha * torch.minimum(
             torch.square(self.pixel_distance**2*curvature),
             torch.Tensor([np.pi / 2]).to(self.device)))
+        
+        
+    def _loss_coeff_function(self, curvature):
+        """
+        Takes curvature -- in radians/mm
+        Returns coeffitient k form formula
+        Power = P_0*exp(inegral(k(curv)dr))
+        Now it is formula, in future -- interpolation of experimantal data or cycle fitting by real measuremnts."""
+        return torch.tensor(self.experimental_loss_coeff_function(torch.abs(curvature)).astype(np.float32))
+
+        # return -torch.log(self._trans_fun(curvature))/self.pixel_distance
 
     def _sum_fiber_losses(self, input):
-        return 1 - torch.prod(self._trans_fun(self._second_derivative(input)), dim=-2)
+        return 1 - torch.exp(-self.pixel_distance*torch.sum(self._loss_coeff_function(self._second_derivative(input)), dim=-2))
+        # return 1 - torch.prod(self._trans_fun(self._second_derivative(input)), dim=-2)
 
     def _rotate(self, input):
         return torch.concat([
