@@ -59,9 +59,9 @@ class FiberSimulator():
         Returns coeffitient k form formula
         Power = P_0*exp(inegral(k(curv)dr))
         Now it is formula, in future -- interpolation of experimantal data or cycle fitting by real measuremnts."""
-        # return torch.tensor(self.experimental_loss_coeff_function(torch.abs(curvature)).astype(np.float32))
+        return torch.tensor(self.experimental_loss_coeff_function(torch.abs(curvature)).astype(np.float32))
 
-        return -torch.log(self._trans_fun(curvature))/self.pixel_distance
+        # return -torch.log(self._trans_fun(curvature))/self.pixel_distance
 
     def _sum_fiber_losses(self, input):
         return 1 - torch.exp(-self.pixel_distance*torch.sum(self._loss_coeff_function(self._second_derivative(input)), dim=-2))
