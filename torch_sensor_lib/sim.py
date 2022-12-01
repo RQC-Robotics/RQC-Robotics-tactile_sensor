@@ -36,11 +36,12 @@ class FiberSimulator():
         self.pixel_distance = config['env']['sen_geometry']['distance']
         self.gaus_sigma_pix = gaus_sigma_mm/self.pixel_distance
         self.gaus_kernel_size = 1 + 2*int(3*self.gaus_sigma_pix)   # approximately good formua to get odd integer
+        
+        self.const_distance_for_old_sim = 0.35
 
         self.test = self.config['sim']['test_mod']
         with open('/home/amir/rqc_internship/frame_stack/torch_sensor_lib/714_loss_coeff_func_1.pck', 'rb') as file_handle:
             self.experimental_loss_coeff_function = pickle.load(file_handle)
-
  
 
     def _second_derivative(self, input):
@@ -49,7 +50,7 @@ class FiberSimulator():
     def _trans_fun(self, curvature):
         """Reproduces experimental transmission curve"""
         return 1 - torch.sin(self.alpha * torch.minimum(
-            torch.square(self.pixel_distance**2*curvature),
+            torch.square(self.const_distance_for_old_sim**2*curvature),
             torch.Tensor([np.pi / 2]).to(self.device)))
         
         
@@ -61,7 +62,7 @@ class FiberSimulator():
         Now it is formula, in future -- interpolation of experimantal data or cycle fitting by real measuremnts."""
         # return torch.tensor(self.experimental_loss_coeff_function(torch.abs(curvature)).astype(np.float32))
 
-        return -torch.log(self._trans_fun(curvature))/self.pixel_distance
+        return -torch.log(self._trans_fun(curvature))/self.const_distance_for_old_sim
 
     def _sum_fiber_losses(self, input):
         return 1 - torch.exp(-self.pixel_distance*torch.sum(self._loss_coeff_function(self._second_derivative(input)), dim=-2))
