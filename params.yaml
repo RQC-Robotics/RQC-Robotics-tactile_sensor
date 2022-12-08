@@ -15,9 +15,10 @@ env:
     noise: 0.00     #  in fiber transmission detection
   bimodal:
     period: 2.3     # period of two modes interference
-    intermodel_matrix:    # defines speed of decay and transferring of energy between modes
+    intermode_matrix:    # defines speed of decay and transferring of energy between modes
       [[1, 0.2],
       [0.1, 1]]
+    main_loss_coeff: 1.5  # multiplies all coefficients in intermode matrix
     borning_modes: [1, 0.2] # amplitudes of primary and secondary modes borning from primary mode in beginning of sensor
     impact_modes: [1, 0.2]  # impact of primary and secondary modes to primary mode after sensor
 dataset:

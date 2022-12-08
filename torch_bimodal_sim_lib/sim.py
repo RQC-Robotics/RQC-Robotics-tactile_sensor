@@ -38,13 +38,12 @@ class FiberSimulator():
         self.gaus_kernel_size = 1 + 2*int(3*self.gaus_sigma_pix)   # approximately good formua to get odd integer
 
         self.test = self.config['sim']['test_mod']
-        with open('/home/amir/rqc_internship/frame_stack/torch_sensor_lib/714_loss_coeff_func_1.pck', 'rb') as file_handle:
-            self.experimental_loss_coeff_function = pickle.load(file_handle)
 
         self.dk = 2*np.pi/config['env']['bimodal']['period']
-        C = config['env']['bimodal']['intermodel_matrix']   # intermodel_matrix
+        C = config['env']['bimodal']['intermode_matrix']   # intermode_matrix
+        self.main_loss_coeff = config['env']['bimodal']['main_loss_coeff']
         self.loss_funcs = [
-            [lambda x, i=i, j=j: self.pixel_distance*C[i][j]*x**2 for j in range(2)]
+            [lambda x, i=i, j=j: self.main_loss_coeff*self.pixel_distance*C[i][j]*x**2 for j in range(2)]
             for i in range(2)
         ]
         self.vector1 = np.array(config['env']['bimodal']['borning_modes']).reshape(2)
@@ -54,23 +53,7 @@ class FiberSimulator():
     def _second_derivative(self, input):
         return F.conv2d(input, self.derivative_kernel)/self.pixel_distance**2
 
-    def _trans_fun(self, curvature):
-        """Reproduces experimental transmission curve"""
-        return 1 - torch.sin(self.alpha * torch.minimum(
-            torch.square(self.pixel_distance**2*curvature),
-            torch.Tensor([np.pi / 2]).to(self.device)))
         
-        
-    def _loss_coeff_function(self, curvature):
-        """
-        Takes curvature -- in radians/mm
-        Returns coeffitient k form formula
-        Power = P_0*exp(inegral(k(curv)dr))
-        Now it is formula, in future -- interpolation of experimantal data or cycle fitting by real measuremnts."""
-        return torch.tensor(self.experimental_loss_coeff_function(torch.abs(curvature)).astype(np.float32))
-
-        # return -torch.log(self._trans_fun(curvature))/self.pixel_distance
-
     def _sum_fiber_losses(self, curvatures):
         
         array_of_matrixes = np.zeros((curvatures.shape[-2], 2, 2), dtype=torch.Tensor)
@@ -84,7 +67,7 @@ class FiberSimulator():
             array_of_matrixes[i, 1, 1] = (1 - self.loss_funcs[1][1](curvatures[..., i, :]))*torch.exp(I*self.pixel_distance*self.dk)
         
         result_matrixes = np.linalg.multi_dot(array_of_matrixes)
-        result_numbers = self.vector2@result_matrixes@self.vector1
+        result_numbers = 1-(self.vector2@result_matrixes@self.vector1).abs()
 
         return result_numbers
         
