@@ -6,7 +6,6 @@ from torchvision.transforms.functional import gaussian_blur
 from torchvision.transforms import InterpolationMode
 import numpy as np
 from torch_sensor_lib.visual import visual_picture
-import pickle
 '''
 Param requirements:
 
@@ -38,11 +37,9 @@ class FiberSimulator():
         self.gaus_kernel_size = 1 + 2*int(3*self.gaus_sigma_pix)   # approximately good formua to get odd integer
         
         self.const_distance_for_old_sim = 0.35
+        self.elasticity = config['env']['phys']['elasticity']
 
         self.test = self.config['sim']['test_mod']
-        with open('/home/amir/rqc_internship/frame_stack/torch_sensor_lib/714_loss_coeff_func_1.pck', 'rb') as file_handle:
-            self.experimental_loss_coeff_function = pickle.load(file_handle)
- 
 
     def _second_derivative(self, input):
         return F.conv2d(input, self.derivative_kernel)/self.pixel_distance**2
@@ -89,7 +86,7 @@ class FiberSimulator():
         if not isinstance(pressure_mat, torch.Tensor):
             pressure_mat = torch.tensor(pressure_mat, device=self.device)
 
-        rot_tensor = self._rotate(pressure_mat)
+        rot_tensor = self._rotate(pressure_mat*self.elasticity)
 
         blurred_mat = gaussian_blur(rot_tensor, self.gaus_kernel_size, self.gaus_sigma_pix)
 

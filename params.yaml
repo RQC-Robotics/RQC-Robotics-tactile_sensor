@@ -9,10 +9,10 @@ env:
   phys:
     fiber_sensibility:
     kof: 15     # between apply force and loss in grams 
-    # gaus_kernel_size: 13  # odd integer!!
     sigma: 0.8          # gaussian blur sigma in mm-s
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
+    elasticity: 1   # coefficient between pressure and deformation of silicon 
   bimodal:
     period: 2.3     # period of two modes interference
     intermode_matrix:    # defines speed of decay and transferring of energy between modes

@@ -6,7 +6,6 @@ from torchvision.transforms.functional import gaussian_blur
 from torchvision.transforms import InterpolationMode
 import numpy as np
 from torch_sensor_lib.visual import visual_picture
-import pickle
 '''
 Param requirements:
 
@@ -36,6 +35,8 @@ class FiberSimulator():
         self.pixel_distance = config['env']['sen_geometry']['distance']
         self.gaus_sigma_pix = gaus_sigma_mm/self.pixel_distance
         self.gaus_kernel_size = 1 + 2*int(3*self.gaus_sigma_pix)   # approximately good formua to get odd integer
+        self.elasticity = config['env']['phys']['elasticity']
+
 
         self.test = self.config['sim']['test_mod']
 
@@ -92,7 +93,7 @@ class FiberSimulator():
         if not isinstance(pressure_mat, torch.Tensor):
             pressure_mat = torch.tensor(pressure_mat, device=self.device)
 
-        rot_tensor = self._rotate(pressure_mat)
+        rot_tensor = self._rotate(pressure_mat*self.elasticity)
 
         blurred_mat = gaussian_blur(rot_tensor, self.gaus_kernel_size, self.gaus_sigma_pix)
 
