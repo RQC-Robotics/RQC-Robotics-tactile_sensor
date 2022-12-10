@@ -94,8 +94,11 @@ class FiberSimulator():
             pressure_mat = torch.tensor(pressure_mat, device=self.device)
 
         rot_tensor = self._rotate(pressure_mat*self.elasticity)
-
-        blurred_mat = gaussian_blur(rot_tensor, self.gaus_kernel_size, self.gaus_sigma_pix)
+        # max_shapes = [2*t for t in rot_tensor.shape[-2:][::-1]]
+        max_shapes = rot_tensor.shape[-2:][::-1]
+        kernel_shape = np.minimum(max_shapes, self.gaus_kernel_size)
+        kernel_shape = [t if t%2==1 else t-1 for t in kernel_shape]
+        blurred_mat = gaussian_blur(rot_tensor, kernel_shape, self.gaus_sigma_pix)
 
         curvature = self._second_derivative(blurred_mat)
         if self.test:
@@ -115,13 +118,9 @@ class FiberSimulator():
             torch.normal(1, std, loss_tensor.shape).to(self.device),
             std=delt)
         if self.test:
-            print("Loss in fiber")
-            visual_picture(1 - self._trans_fun(blurred_mat),
-                           self.n_angles,
-                           size=(7, 5))
             print("Loss sums")
             visual_picture(loss_tensor, self.n_angles, dim=1)
-            print("Signal")
-            visual_picture(signal, self.n_angles, dim=1)
+            # print("Signal")
+            # visual_picture(signal, self.n_angles, dim=1)
 
         return signal
