@@ -9,7 +9,7 @@ env:
   phys:
     fiber_sensibility:
     kof: 15     # between apply force and loss in grams 
-    sigma: 0.8          # gaussian blur sigma in mm-s
+    sigma: 1          # gaussian blur sigma in mm-s
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
     elasticity: 1   # coefficient between pressure and deformation of silicon 
@@ -19,8 +19,8 @@ env:
       [[1, 0.2],
       [0.1, 1]]
     main_loss_coeff: 1.5  # multiplies all coefficients in intermode matrix
-    borning_modes: [1, 0.2] # amplitudes of primary and secondary modes borning from primary mode in beginning of sensor
-    impact_modes: [1, 0.2]  # impact of primary and secondary modes to primary mode after sensor
+    borning_modes: [1, 0] # amplitudes of primary and secondary modes borning from primary mode in beginning of sensor
+    impact_modes: [1, 1]  # impact of primary and secondary modes to primary mode after sensor
 dataset:
   mult_coeff: 80  # multiplies all pressures
 
