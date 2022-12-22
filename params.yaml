@@ -9,7 +9,7 @@ env:
   phys:
     fiber_sensibility:
     kof: 15     # between apply force and loss in grams 
-    sigma: 0.8          # gaussian blur sigma in mm-s
+    sigma: 1          # gaussian blur sigma in mm-s
     relative_noise: 0.00     # in fiber transmission detection
     noise: 0.00     #  in fiber transmission detection
     elasticity: 1   # coefficient between pressure and deformation of silicon 
