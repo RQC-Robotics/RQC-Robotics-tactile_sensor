@@ -16,8 +16,8 @@ env:
   bimodal:
     period: 2.3     # period of two modes interference
     intermode_matrix:    # defines speed of decay and transferring of energy between modes
-      [[1, 0.2],
-      [0.1, 1]]
+      [[1, 0],
+      [0, 1]]
     main_loss_coeff: 1.5  # multiplies all coefficients in intermode matrix
     borning_modes: [1, 0] # amplitudes of primary and secondary modes borning from primary mode in beginning of sensor
     impact_modes: [1, 1]  # impact of primary and secondary modes to primary mode after sensor

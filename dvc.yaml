@@ -7,7 +7,8 @@ stages:
     params:
         - env.sen_geometry.n_angles
         - env.phys.kof
-        - env.phys.gaus_kernel_size
+        - env.phys.sigma
+        - env.bimodal.intermode_matrix
     deps:
         - video_pipeline/video_sim_runner.py
         - data/video/pressure

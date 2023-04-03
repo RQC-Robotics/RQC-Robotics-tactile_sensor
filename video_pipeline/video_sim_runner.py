@@ -8,7 +8,7 @@ path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root))
 
 from tqdm import tqdm
-import torch_sensor_lib as tsl
+import torch_bimodal_sim_lib as tbsl
 from torch.utils.data import DataLoader
 
 import numpy as np
@@ -31,7 +31,7 @@ seed = np.random.seed(config['random_seed'])
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # %%
-sim = tsl.FiberSimulator(config, device=device)
+sim = tbsl.FiberSimulator(config, device=device)
 
 # %%
 pic_path = path_config['p_video_path']
