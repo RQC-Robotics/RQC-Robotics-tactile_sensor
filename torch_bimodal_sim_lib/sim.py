@@ -6,14 +6,7 @@ from torchvision.transforms.functional import gaussian_blur
 from torchvision.transforms import InterpolationMode
 import numpy as np
 from torch_sensor_lib.visual import visual_picture
-'''
-Param requirements:
-
-random_seed
-env.sen_geometry
-env.phys
-
-'''
+import warnings
 
 
 class FiberSimulator():
@@ -60,13 +53,17 @@ class FiberSimulator():
         array_of_matrixes = np.zeros((curvatures.shape[-2], 2, 2), dtype=torch.Tensor)
         # (Y-2, 2, 2), contains big tensors (n_angles*n_pictures, 1, 64), that will be element-wise multipiled
         I = torch.view_as_complex(torch.Tensor([0, 1.]))
+        
+        max_integrate = self.loss_funcs[0][0](curvatures).max()
+        if max_integrate > 10:
+            warnings.warn(f"Integrated value is very big. ({max_integrate} >> 1)."+ \
+                          " Consider using smaller intgrated length step.")
         for i in range(curvatures.shape[-2]):
-            #TODO проверить, что не слишком большие штуки интегрируем
-            array_of_matrixes[i, 0, 0] = 1 - self.loss_funcs[0][0](curvatures[..., i, :])
+            array_of_matrixes[i, 0, 0] = torch.exp(-self.loss_funcs[0][0](curvatures[..., i, :]))
             array_of_matrixes[i, 0, 1] = self.loss_funcs[0][1](curvatures[..., i, :])
             array_of_matrixes[i, 1, 0] = self.loss_funcs[1][0](curvatures[..., i, :])
-            array_of_matrixes[i, 1, 1] = (1 - self.loss_funcs[1][1](curvatures[..., i, :]))*torch.exp(I*self.pixel_distance*self.dk)
-        
+            array_of_matrixes[i, 1, 1] = torch.exp(-self.loss_funcs[1][1](curvatures[..., i, :]))*torch.exp(I*self.pixel_distance*self.dk)
+
         result_matrixes = np.linalg.multi_dot(array_of_matrixes)
         result_numbers = 1-(self.vector2@result_matrixes@self.vector1).abs()
 
@@ -106,6 +103,8 @@ class FiberSimulator():
             visual_picture(rot_tensor, self.n_angles, size=(7, 5))
             print("After blur")
             visual_picture(blurred_mat, self.n_angles, size=(7, 5))
+            print("Curvature")
+            visual_picture(curvature, self.n_angles, size=(7, 5))
 
         loss_tensor = self._sum_fiber_losses(curvature).view(
             -1, self.n_angles, blurred_mat.shape[-1])
@@ -120,7 +119,4 @@ class FiberSimulator():
         if self.test:
             print("Loss sums")
             visual_picture(loss_tensor, self.n_angles, dim=1)
-            # print("Signal")
-            # visual_picture(signal, self.n_angles, dim=1)
-
         return signal
