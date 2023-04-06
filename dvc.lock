@@ -49,17 +49,22 @@ stages:
       size: 809807812
       nfiles: 2
     - path: video_pipeline/video_sim_runner.py
-      md5: 5f758948e44176c194b94856a90f636a
-      size: 2246
+      md5: 5d607ee2914ea7e257c3ab3bb5e46f0b
+      size: 2253
     params:
       params.yaml:
-        env.phys.gaus_kernel_size: 13
+        env.bimodal.intermode_matrix:
+        - - 1
+          - 0
+        - - 0
+          - 1
         env.phys.kof: 15
+        env.phys.sigma: 1
         env.sen_geometry.n_angles: 4
     outs:
     - path: data/video/signal
-      md5: 51bb2090fad2858b6aae19b82bac4d3a.dir
-      size: 762696790
+      md5: 6caae252a492546992443f7a6b7c26a4.dir
+      size: 814407266
       nfiles: 2
   visual:
     cmd: python video_pipeline/prediction_visualization.py
