@@ -4,43 +4,41 @@ stages:
     cmd: python video_pipeline/learning.py
     deps:
     - path: data/video/signal
-      md5: 51bb2090fad2858b6aae19b82bac4d3a.dir
-      size: 762696790
+      md5: 09f79ad5dfe478b748ec574ad305ba6e.dir
+      size: 809012080
       nfiles: 2
     params:
       params.yaml:
         video_train:
           batch_size: 1000
           learning_rate: 0.0001
-          epochs: 8
+          epochs: 50
           model_name: ParamUnet
           layers:
-          - 4
-          - 8
           - 16
           - 32
           - 64
           - 64
+          - 64
+          - 64
           - 32
           - 16
-          - 8
-          - 4
           frames_number: 1
           frames_interval: 1
     outs:
     - path: data/v_model
-      md5: 708955cbf586741d70ca5c5290bc6e4d.dir
-      size: 1114893
+      md5: 2326d7d46fff34d846ca7c226df1ae1f.dir
+      size: 2309821
       nfiles: 1
     - path: reports/full_test_loss.csv
-      md5: 34656d105eefd6c94091702a1a49916c
-      size: 184
+      md5: f2a0c1cfdba30b23af37c170e779226a
+      size: 1077
     - path: reports/full_train_loss.csv
-      md5: 0dddc3875963294c21f534f3147475b7
-      size: 183
+      md5: 046f255af257cca268ca42d7adbcd1db
+      size: 1089
     - path: reports/v_summary.json
-      md5: a5f89770cd4960ab87aae016e1385bc9
-      size: 81
+      md5: 367d3a03f1f499571d41cab335e06c2f
+      size: 83
   video_sim:
     cmd: python video_pipeline/video_sim_runner.py
     deps:
@@ -63,15 +61,15 @@ stages:
         env.sen_geometry.n_angles: 4
     outs:
     - path: data/video/signal
-      md5: 6caae252a492546992443f7a6b7c26a4.dir
-      size: 814407266
+      md5: 09f79ad5dfe478b748ec574ad305ba6e.dir
+      size: 809012080
       nfiles: 2
   visual:
     cmd: python video_pipeline/prediction_visualization.py
     deps:
     - path: data/v_model
-      md5: 708955cbf586741d70ca5c5290bc6e4d.dir
-      size: 1114893
+      md5: 2326d7d46fff34d846ca7c226df1ae1f.dir
+      size: 2309821
       nfiles: 1
     params:
       params.yaml:
@@ -84,8 +82,8 @@ stages:
             max_items: 32
     outs:
     - path: data/video/predict_vis
-      md5: d765021027d957afaa8363d72c0c14b1.dir
-      size: 16123146
+      md5: c18530a5735d9d7ac963cff17b49ea1f.dir
+      size: 11693488
       nfiles: 65
   push_logs:
     cmd: python csv_logger.py
